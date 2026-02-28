@@ -5,7 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.4.2] – 2026-03-01
+## [1.4.3] – 2026-03-01
+
+### Fixed
+- **URL bar & Method selector** — reverted sticky/pinned approach; now rendered as a compact premium scrollable card below the AppBar with no overlap or layout issues.
+
+---
+
 
 ### Fixed
 - **URL bar layout** — moved from `AppBar.bottom` slot (caused overlap/jumble) into a dedicated `SliverPersistentHeader(pinned: true)` that sits cleanly below the AppBar title with no interference.
