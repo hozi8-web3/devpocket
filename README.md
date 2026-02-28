@@ -13,6 +13,10 @@ DevPocket is a premium, beautifully crafted multi-tool designed specifically for
 
 Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
 
+### 📜 Changelog v1.2.6 (Full HTTP Support)
+*   **Plain HTTP Support**: Explicitly allowed cleartext traffic for both Android and iOS release builds.
+*   **Protocol Flexibility**: Refined API Tester logic to allow intentional `http://` calls (like httpbin or local servers).
+
 ### 📜 Changelog v1.2.5 (Connectivity Fix)
 *   **Android Network Permissions**: Added `ACCESS_WIFI_STATE`, `CHANGE_WIFI_STATE`, `WIFI_LOCK`, and `CHANGE_NETWORK_STATE` to resolve connectivity issues in release builds.
 *   **Background Monitoring Stability**: Improved network state polling resilience for the Server Monitor.

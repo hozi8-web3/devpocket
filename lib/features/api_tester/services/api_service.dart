@@ -18,7 +18,9 @@ class ApiService {
 
     // Build URL with params
     String url = request.url.trim();
-    if (!url.startsWith('http')) url = 'https://$url';
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://$url';
+    }
 
     if (request.params.isNotEmpty) {
       final query = request.params.entries
