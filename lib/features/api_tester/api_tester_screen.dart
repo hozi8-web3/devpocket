@@ -89,10 +89,10 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
             ],
           ),
         ),
-        child: CustomScrollView(
+         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            // ── Sticky App Bar with Method + URL + Send ──
+            // ── App Bar (title only) ──
             SliverAppBar(
               pinned: true,
               backgroundColor: Colors.transparent,
@@ -133,60 +133,62 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                 ),
                 const SizedBox(width: 4),
               ],
-              // ─ Sticky URL + Send bar lives in the AppBar bottom slot ─
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(110),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Method + URL row
-                      Row(
-                        children: [
-                          MethodSelector(
-                            selected: state.request.method,
-                            onChanged: notifier.updateMethod,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _UrlBar(
-                              controller: _urlController,
-                              method: state.request.method,
-                              onChanged: notifier.updateUrl,
-                              history: state.requestHistory,
-                              onHistorySelect: (url) {
-                                notifier.updateUrl(url);
-                                _urlController.text = url;
-                              },
+            ),
+
+            // ── Sticky Method + URL + Send bar (pinned below AppBar) ──
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _UrlBarDelegate(
+                child: FrostedGlass(
+                  blur: context.isDarkMode ? 15.0 : 0,
+                  color: context.adaptiveAppBarBackground,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            MethodSelector(
+                              selected: state.request.method,
+                              onChanged: notifier.updateMethod,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      // Send button — always visible
-                      _SendButton(
-                        isLoading: state.isLoading,
-                        onSend: () {
-                          HapticFeedback.lightImpact();
-                          ref.read(apiTesterProvider.notifier).sendRequest();
-                          Future.delayed(const Duration(milliseconds: 300), () {
-                            _scrollController.animateTo(
-                              _scrollController.position.maxScrollExtent,
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeOut,
-                            );
-                          });
-                        },
-                      ),
-                    ],
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _UrlBar(
+                                controller: _urlController,
+                                method: state.request.method,
+                                onChanged: notifier.updateUrl,
+                                history: state.requestHistory,
+                                onHistorySelect: (url) {
+                                  notifier.updateUrl(url);
+                                  _urlController.text = url;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        _SendButton(
+                          isLoading: state.isLoading,
+                          onSend: () {
+                            HapticFeedback.lightImpact();
+                            ref.read(apiTesterProvider.notifier).sendRequest();
+                            Future.delayed(const Duration(milliseconds: 300), () {
+                              _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 400),
+                                curve: Curves.easeOut,
+                              );
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-
-            // Method selector (removed — now in AppBar)
-            // URL bar (removed — now in AppBar)
 
             // ── Request Editor Tabs (IndexedStack approach) ──
             SliverPadding(
@@ -488,6 +490,26 @@ class _TabContent extends StatelessWidget {
       ),
     );
   }
+}
+
+// ------ URL Bar Sticky Header Delegate ------
+class _UrlBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  const _UrlBarDelegate({required this.child});
+
+  @override
+  double get minExtent => 112;
+  @override
+  double get maxExtent => 112;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(_UrlBarDelegate oldDelegate) => true;
 }
 
 // ------ URL Bar ------
