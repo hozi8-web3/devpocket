@@ -13,15 +13,13 @@ DevPocket is a premium, beautifully crafted multi-tool designed specifically for
 
 Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
 
-### Changelog v1.1.0 (Advanced Pro Update)
-*   **In-App Updates**: DevPocket now automatically checks for updates securely through the official GitHub API and prompts you with a direct download link when a new release is available!
-*   **Export & Import API Collections**: You can now backup your entire workspace! Export your saved REST requests as a JSON file to share with your team or import them to a new device directly from the Collections drawer.
-*   **Custom Branding**: Completely replaced all generic icons and animations with the official DevPocket logo for a premium app feel!
-
 ## 📸 Screenshots
 
 </div>
-
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+    <img width="100%" height="auto" alt="image" src="https://github.com/user-attachments/assets/498f0e52-c7ed-4a14-8af1-d8be77af3b8f" />
+    <img width="100%" height="auto" alt="image" src="https://github.com/user-attachments/assets/13857cf0-674a-441b-a939-731e9996a436" />
+</div>
 ---
 
 ## ✨ Features
