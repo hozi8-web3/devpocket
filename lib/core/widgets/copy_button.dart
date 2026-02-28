@@ -77,7 +77,7 @@ class _CopyButtonState extends State<CopyButton>
               _copied ? Icons.check_circle_rounded : Icons.copy_rounded,
               key: ValueKey(_copied),
               size: 18,
-              color: _copied ? AppColors.success : AppColors.textMuted,
+              color: _copied ? AppColors.success : context.adaptiveTextSecondary,
             ),
           ),
         ),
@@ -94,7 +94,7 @@ class _CopyButtonState extends State<CopyButton>
           decoration: BoxDecoration(
             color: _copied
                 ? AppColors.success.withOpacity(0.15)
-                : AppColors.surface,
+                : context.adaptiveSurface,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: _copied
@@ -111,7 +111,7 @@ class _CopyButtonState extends State<CopyButton>
                   _copied ? Icons.check_rounded : Icons.copy_rounded,
                   key: ValueKey(_copied),
                   size: 14,
-                  color: _copied ? AppColors.success : AppColors.textSecondary,
+                  color: _copied ? AppColors.success : context.adaptiveTextSecondary,
                 ),
               ),
               const SizedBox(width: 6),
@@ -123,7 +123,7 @@ class _CopyButtonState extends State<CopyButton>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: _copied ? AppColors.success : AppColors.textSecondary,
+                    color: _copied ? AppColors.success : context.adaptiveTextSecondary,
                   ),
                 ),
               ),

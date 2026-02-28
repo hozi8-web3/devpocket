@@ -63,7 +63,7 @@ class _BodyEditorState extends State<BodyEditor> {
                 onSelected: (_) => widget.onTypeChanged(t),
                 selectedColor: AppColors.primary.withOpacity(0.2),
                 labelStyle: context.textStyles.labelSmall.copyWith(
-                  color: sel ? AppColors.primary : AppColors.textMuted,
+                  color: sel ? AppColors.primary : context.adaptiveTextSecondary,
                 ),
               ),
             );
@@ -79,6 +79,9 @@ class _BodyEditorState extends State<BodyEditor> {
             hintText: widget.bodyType == 'json'
                 ? '{\n  "key": "value"\n}'
                 : 'Request body...',
+            hintStyle: context.textStyles.code.copyWith(
+              color: context.adaptiveTextSecondary,
+            ),
             errorText: _jsonError,
             alignLabelWithHint: true,
           ),

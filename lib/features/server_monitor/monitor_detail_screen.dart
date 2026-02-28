@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/widgets/status_badge.dart';
 import '../../core/utils/formatters.dart';
 import 'models/server_entry.dart';
 import 'providers/monitor_provider.dart';
@@ -81,7 +80,13 @@ class MonitorDetailScreen extends ConsumerWidget {
                   const Spacer(),
                   if (server.lastResponseMs != null)
                     Column(children: [
-                      Text('${server.lastResponseMs}ms', style: context.textStyles.codeBold.copyWith(color: AppColors.textPrimary, fontSize: 22)),
+                      Text(
+                        '${server.lastResponseMs}ms',
+                        style: context.textStyles.codeBold.copyWith(
+                          color: context.adaptiveTextPrimary,
+                          fontSize: 22,
+                        ),
+                      ),
                       Text('Response', style: context.textStyles.caption),
                     ]),
                 ],
@@ -107,7 +112,7 @@ class MonitorDetailScreen extends ConsumerWidget {
                 border: Border.all(color: context.adaptiveCardBorder),
               ),
               child: Row(children: [
-                const Icon(Icons.link_rounded, size: 16, color: AppColors.textMuted),
+                Icon(Icons.link_rounded, size: 16, color: context.adaptiveTextSecondary),
                 const SizedBox(width: 8),
                 Expanded(child: Text(server.url, style: context.textStyles.codeSmall, overflow: TextOverflow.ellipsis)),
               ]),
@@ -143,7 +148,7 @@ class MonitorDetailScreen extends ConsumerWidget {
                       }
                     },
                     touchTooltipData: LineTouchTooltipData(
-                      getTooltipColor: (touchedSpot) => AppColors.surface.withOpacity(0.95),
+                      getTooltipColor: (touchedSpot) => context.adaptiveOverlaySurface,
                       tooltipBorder: BorderSide(color: AppColors.primary.withOpacity(0.5)),
                       tooltipRoundedRadius: 8,
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
@@ -154,7 +159,7 @@ class MonitorDetailScreen extends ConsumerWidget {
                             children: [
                               TextSpan(
                                 text: 'Response',
-                                style: context.textStyles.caption.copyWith(color: AppColors.textSecondary),
+                                style: context.textStyles.caption.copyWith(color: context.adaptiveTextSecondary),
                               ),
                             ],
                           );
@@ -165,7 +170,7 @@ class MonitorDetailScreen extends ConsumerWidget {
                   gridData: FlGridData(
                     show: true,
                     drawHorizontalLine: true,
-                    getDrawingHorizontalLine: (_) => FlLine(color: AppColors.glassBorder, strokeWidth: 0.5),
+                    getDrawingHorizontalLine: (_) => FlLine(color: context.adaptiveGlassBorder, strokeWidth: 0.5),
                     drawVerticalLine: false,
                   ),
                   borderData: FlBorderData(show: false),

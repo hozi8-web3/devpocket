@@ -131,7 +131,7 @@ class _PingTabState extends State<_PingTab> {
                     Text('Ping ${i + 1}', style: context.textStyles.body),
                     const Spacer(),
                     Text(t != null ? '${t}ms' : 'Timeout', style: context.textStyles.code.copyWith(
-                      color: t != null ? AppColors.textPrimary : AppColors.danger)),
+                      color: t != null ? context.adaptiveTextPrimary : AppColors.danger)),
                   ],
                 ),
               );
@@ -357,7 +357,7 @@ class _HeadersTabState extends State<_HeadersTab> {
                       size: 16, color: present ? AppColors.success : AppColors.danger),
                     const SizedBox(width: 8),
                     Text(h, style: context.textStyles.codeSmall.copyWith(
-                      color: present ? AppColors.textPrimary : AppColors.textSecondary)),
+                      color: present ? context.adaptiveTextPrimary : context.adaptiveTextSecondary)),
                   ]),
                 );
               }),
@@ -492,7 +492,13 @@ class _StatCard extends StatelessWidget {
         child: Column(children: [
           Text(label, style: context.textStyles.caption.copyWith(color: color)),
           const SizedBox(height: 4),
-          Text(value, style: context.textStyles.code.copyWith(fontSize: 13, color: AppColors.textPrimary)),
+          Text(
+            value,
+            style: context.textStyles.code.copyWith(
+              fontSize: 13,
+              color: context.adaptiveTextPrimary,
+            ),
+          ),
         ]),
       ),
     );
@@ -517,7 +523,7 @@ class _InfoTile extends StatelessWidget {
         ),
         child: Row(children: [
           SizedBox(width: 100, child: Text(label, style: context.textStyles.caption)),
-          Expanded(child: Text(value, style: context.textStyles.body.copyWith(color: AppColors.textPrimary))),
+          Expanded(child: Text(value, style: context.textStyles.body.copyWith(color: context.adaptiveTextPrimary))),
         ]),
       ),
     );

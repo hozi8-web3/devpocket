@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/widgets/status_badge.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/widgets/glowing_empty_state.dart';
 import 'models/server_entry.dart';
-import 'services/monitor_service.dart';
 import 'providers/monitor_provider.dart';
 
 class MonitorScreen extends ConsumerStatefulWidget {
@@ -111,7 +108,10 @@ class _MonitorScreenState extends ConsumerState<MonitorScreen> {
               TextField(controller: urlCtrl, decoration: const InputDecoration(labelText: 'URL', hintText: 'https://api.example.com/health')),
               const SizedBox(height: 12),
               Row(children: [
-                const Text('Check every:', style: TextStyle(color: AppColors.textSecondary)),
+                Text(
+                  'Check every:',
+                  style: TextStyle(color: context.adaptiveTextSecondary),
+                ),
                 const SizedBox(width: 8),
                 Expanded(child: Slider(
                   value: interval.toDouble(), min: 1, max: 60, divisions: 59,
@@ -194,16 +194,18 @@ class _ServerCard extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(server.name, style: context.textStyles.body.copyWith(
-                  color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                  color: context.adaptiveTextPrimary,
+                  fontWeight: FontWeight.w600,
+                )),
               ),
               IconButton(icon: const Icon(Icons.refresh_rounded, size: 18), onPressed: onCheck,
-                color: AppColors.textMuted, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                color: context.adaptiveTextSecondary, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
               const SizedBox(width: 8),
               IconButton(icon: const Icon(Icons.delete_outline_rounded, size: 18), onPressed: onDelete,
                 color: AppColors.danger.withOpacity(0.7), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
             ]),
             const SizedBox(height: 6),
-            Text(server.url, style: context.textStyles.codeSmall.copyWith(color: AppColors.textMuted),
+            Text(server.url, style: context.textStyles.codeSmall.copyWith(color: context.adaptiveTextSecondary),
               maxLines: 1, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 12),
             Row(children: [
@@ -244,7 +246,7 @@ class _InfoChip extends StatelessWidget {
       ),
       child: RichText(
         text: TextSpan(children: [
-          TextSpan(text: '$label: ', style: context.textStyles.caption.copyWith(color: AppColors.textMuted)),
+          TextSpan(text: '$label: ', style: context.textStyles.caption.copyWith(color: context.adaptiveTextSecondary)),
           TextSpan(text: value, style: context.textStyles.codeSmall.copyWith(color: color, fontWeight: FontWeight.w700)),
         ]),
       ),

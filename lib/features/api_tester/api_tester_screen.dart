@@ -1,19 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:devpocket/core/theme/app_colors.dart';
 import 'package:devpocket/core/theme/app_text_styles.dart';
-import 'package:devpocket/core/widgets/copy_button.dart';
-import 'package:devpocket/core/widgets/status_badge.dart';
-import 'package:devpocket/core/widgets/section_header.dart';
 import 'package:devpocket/core/utils/formatters.dart';
 import 'package:devpocket/core/widgets/frosted_glass.dart';
 import 'package:devpocket/core/widgets/glowing_empty_state.dart';
 import 'package:devpocket/features/api_tester/providers/api_tester_provider.dart';
 import 'package:devpocket/features/api_tester/models/request_model.dart';
-import 'package:devpocket/features/api_tester/models/response_model.dart';
 import 'package:devpocket/features/api_tester/widgets/method_selector.dart';
 import 'package:devpocket/features/api_tester/widgets/headers_editor.dart';
 import 'package:devpocket/features/api_tester/widgets/body_editor.dart';
@@ -83,8 +78,8 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
               pinned: true,
               backgroundColor: Colors.transparent,
               flexibleSpace: FrostedGlass(
-                blur: 15.0,
-                color: AppColors.background.withOpacity(0.7),
+                blur: context.isDarkMode ? 15.0 : 0,
+                color: context.adaptiveAppBarBackground,
                 child: const SizedBox.expand(),
               ),
               leading: Hero(
@@ -263,7 +258,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
         currentExtent: 1.0,
         child: FrostedGlass(
           blur: 20.0,
-          color: AppColors.surface.withOpacity(0.85),
+          color: context.adaptiveOverlaySurface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           child: DraggableScrollableSheet(
             initialChildSize: 0.6,
@@ -275,7 +270,8 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                 Container(
                   width: 40, height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.textMuted, borderRadius: BorderRadius.circular(2),
+                    color: context.adaptiveTextSecondary.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -486,9 +482,9 @@ class _ExpandableSectionState extends State<_ExpandableSection>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.glassSurface,
+        color: context.adaptiveGlassSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.glassBorder),
+        border: Border.all(color: context.adaptiveGlassBorder),
       ),
       child: Column(
         children: [
@@ -505,7 +501,9 @@ class _ExpandableSectionState extends State<_ExpandableSection>
                   Icon(widget.icon, size: 18, color: AppColors.primary),
                   const SizedBox(width: 10),
                   Text(widget.title, style: context.textStyles.body.copyWith(
-                    color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+                    color: context.adaptiveTextPrimary,
+                    fontWeight: FontWeight.w500,
+                  )),
                   if (widget.badge != null) ...[
                     const SizedBox(width: 8),
                     Container(
@@ -527,8 +525,11 @@ class _ExpandableSectionState extends State<_ExpandableSection>
                   const Spacer(),
                   RotationTransition(
                     turns: Tween(begin: 0.0, end: 0.5).animate(_expandAnim),
-                    child: const Icon(Icons.expand_more_rounded,
-                        size: 20, color: AppColors.textMuted),
+                    child: Icon(
+                      Icons.expand_more_rounded,
+                      size: 20,
+                      color: context.adaptiveTextSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -570,7 +571,10 @@ class _SendButtonState extends State<_SendButton>
   }
 
   @override
-  void dispose() => _pulseController.dispose();
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

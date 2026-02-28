@@ -189,7 +189,9 @@ class SettingsScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Text(
                         'Made by ',
-                        style: context.textStyles.caption.copyWith(color: AppColors.textSecondary),
+                        style: context.textStyles.caption.copyWith(
+                          color: context.adaptiveTextSecondary,
+                        ),
                       ),
                       Text(
                         'HOZAIFA ALI',
@@ -247,6 +249,11 @@ class _ThemeTile extends StatelessWidget {
 class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.divider);
+    return Divider(
+      height: 1,
+      indent: 16,
+      endIndent: 16,
+      color: context.adaptiveCardBorder,
+    );
   }
 }

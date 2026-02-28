@@ -1,5 +1,3 @@
-import 'package:hive_flutter/hive_flutter.dart';
-
 class RequestModel {
   String id;
   String method;

@@ -355,10 +355,14 @@ class _ActionButton extends StatelessWidget {
         HapticFeedback.lightImpact();
         onTap();
       },
-      icon: Icon(icon, size: 16),
-      label: Text(label),
+      icon: Icon(icon, size: 16, color: Colors.white),
+      label: Text(
+        label,
+        style: context.textStyles.button.copyWith(color: Colors.white),
+      ),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       ),
     );
@@ -388,7 +392,7 @@ class _DiffRow extends StatelessWidget {
         prefix = '~';
         break;
       default:
-        color = AppColors.textSecondary;
+        color = context.adaptiveTextSecondary;
         prefix = ' ';
     }
 
@@ -412,7 +416,12 @@ class _DiffRow extends StatelessWidget {
                 Text(entry.key, style: context.textStyles.codeSmall.copyWith(color: color)),
                 if (entry.oldValue != null)
                   Text('- ${entry.oldValue}', style: context.textStyles.codeSmall.copyWith(color: AppColors.danger)),
-                Text('  ${entry.value}', style: context.textStyles.codeSmall.copyWith(color: AppColors.textPrimary)),
+                Text(
+                  '  ${entry.value}',
+                  style: context.textStyles.codeSmall.copyWith(
+                    color: context.adaptiveTextPrimary,
+                  ),
+                ),
               ],
             ),
           ),

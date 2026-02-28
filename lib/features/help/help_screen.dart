@@ -209,7 +209,7 @@ class HelpScreen extends StatelessWidget {
                 Text(
                   description,
                   style: context.textStyles.body.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.adaptiveTextSecondary,
                     height: 1.4,
                   ),
                 ),
@@ -231,13 +231,13 @@ class HelpScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.textMuted, size: 20),
+          Icon(icon, color: context.adaptiveTextSecondary, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
               style: context.textStyles.body.copyWith(
-                color: AppColors.textSecondary,
+                color: context.adaptiveTextSecondary,
                 height: 1.4,
               ),
             ),

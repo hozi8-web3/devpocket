@@ -88,29 +88,42 @@ class _HeadersEditorState extends State<HeadersEditor> {
                     style: context.textStyles.codeSmall.copyWith(color: AppColors.primary),
                     decoration: InputDecoration(
                       hintText: widget.keyHint,
+                      hintStyle: context.textStyles.codeSmall.copyWith(
+                        color: context.adaptiveTextSecondary,
+                      ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(':', style: context.textStyles.codeMedium.copyWith(color: AppColors.textMuted)),
+                  child: Text(
+                    ':',
+                    style: context.textStyles.codeMedium.copyWith(
+                      color: context.adaptiveTextSecondary,
+                    ),
+                  ),
                 ),
                 Expanded(
                   flex: 2,
                   child: TextField(
                     controller: _valControllers[i],
                     onChanged: (_) => _notify(),
-                    style: context.textStyles.codeSmall.copyWith(color: AppColors.textPrimary),
+                    style: context.textStyles.codeSmall.copyWith(
+                      color: context.adaptiveTextPrimary,
+                    ),
                     decoration: InputDecoration(
                       hintText: widget.valueHint,
+                      hintStyle: context.textStyles.codeSmall.copyWith(
+                        color: context.adaptiveTextSecondary,
+                      ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     ),
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
-                  color: AppColors.textMuted,
+                  color: context.adaptiveTextSecondary,
                   onPressed: () => _remove(i),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),

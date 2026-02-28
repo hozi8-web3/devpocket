@@ -26,7 +26,10 @@ class _ReferenceScreenState extends State<ReferenceScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    _tabController.addListener(() => setState(() { _search = ''; _searchController.clear(); }));
+    _tabController.addListener(() => setState(() {
+          _search = '';
+          _searchController.clear();
+        }));
   }
 
   @override
@@ -44,24 +47,32 @@ class _ReferenceScreenState extends State<ReferenceScreen>
           SliverAppBar(
             expandedHeight: 180.0,
             pinned: true,
+            title: Text('Reference', style: context.textStyles.heading2),
+            centerTitle: true,
+            backgroundColor: context.adaptiveSurface,
+            surfaceTintColor: Colors.transparent,
             leading: Hero(
               tag: 'hero-reference',
-              child: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
+              child: IconButton(
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  onPressed: () => context.pop()),
             ),
             flexibleSpace: FlexibleSpaceBar(
-              title: Text('Reference', style: context.textStyles.heading2),
-              centerTitle: true,
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.primary.withOpacity(0.15), Colors.transparent],
+                    colors: [
+                      AppColors.primary.withOpacity(0.15),
+                      Colors.transparent
+                    ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
                 ),
                 child: Align(
                   alignment: const Alignment(0, -0.2),
-                  child: Icon(Icons.library_books_rounded, size: 60, color: AppColors.primary.withOpacity(0.5)),
+                  child: Icon(Icons.library_books_rounded,
+                      size: 60, color: AppColors.primary.withOpacity(0.5)),
                 ),
               ),
             ),
@@ -85,9 +96,13 @@ class _ReferenceScreenState extends State<ReferenceScreen>
               child: TextField(
                 controller: _searchController,
                 onChanged: (v) => setState(() => _search = v),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: context.adaptiveTextSecondary,
+                    size: 20,
+                  ),
                   contentPadding: EdgeInsets.symmetric(vertical: 10),
                 ),
               ),
@@ -118,11 +133,13 @@ class _HttpCodesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = httpStatusCodes.where((c) =>
-        search.isEmpty ||
-        c.code.toString().contains(search) ||
-        c.name.toLowerCase().contains(search.toLowerCase()) ||
-        c.description.toLowerCase().contains(search.toLowerCase())).toList();
+    final filtered = httpStatusCodes
+        .where((c) =>
+            search.isEmpty ||
+            c.code.toString().contains(search) ||
+            c.name.toLowerCase().contains(search.toLowerCase()) ||
+            c.description.toLowerCase().contains(search.toLowerCase()))
+        .toList();
 
     final groups = <String, List<HttpStatusCode>>{};
     for (final c in filtered) {
@@ -132,22 +149,28 @@ class _HttpCodesTab extends StatelessWidget {
 
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: groups.entries.map((e) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8, top: 4),
-            child: Text(e.key, style: context.textStyles.label.copyWith(color: AppColors.primary)),
-          ),
-          ...e.value.map((c) => _RefCard(
-            leading: Text('${c.code}', style: context.textStyles.codeBold.copyWith(color: _httpColor(c.code), fontSize: 18)),
-            title: c.name,
-            subtitle: c.description,
-            copyValue: '${c.code} ${c.name}',
-          )),
-          const SizedBox(height: 8),
-        ],
-      )).toList(),
+      children: groups.entries
+          .map((e) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8, top: 4),
+                    child: Text(e.key,
+                        style: context.textStyles.label
+                            .copyWith(color: AppColors.primary)),
+                  ),
+                  ...e.value.map((c) => _RefCard(
+                        leading: Text('${c.code}',
+                            style: context.textStyles.codeBold.copyWith(
+                                color: _httpColor(c.code), fontSize: 18)),
+                        title: c.name,
+                        subtitle: c.description,
+                        copyValue: '${c.code} ${c.name}',
+                      )),
+                  const SizedBox(height: 8),
+                ],
+              ))
+          .toList(),
     );
   }
 
@@ -180,10 +203,12 @@ class _HeadersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = httpHeaders.where((h) =>
-        search.isEmpty ||
-        h.name.toLowerCase().contains(search.toLowerCase()) ||
-        h.description.toLowerCase().contains(search.toLowerCase())).toList();
+    final filtered = httpHeaders
+        .where((h) =>
+            search.isEmpty ||
+            h.name.toLowerCase().contains(search.toLowerCase()) ||
+            h.description.toLowerCase().contains(search.toLowerCase()))
+        .toList();
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -221,7 +246,8 @@ class _TypeBadge extends StatelessWidget {
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Text(type == 'both' ? 'REQ/RES' : type.toUpperCase(),
-          style: context.textStyles.labelSmall.copyWith(color: color, fontSize: 9)),
+          style: context.textStyles.labelSmall
+              .copyWith(color: color, fontSize: 9)),
     );
   }
 }
@@ -233,11 +259,13 @@ class _PortsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = commonPorts.where((p) =>
-        search.isEmpty ||
-        p.port.toString().contains(search) ||
-        p.service.toLowerCase().contains(search.toLowerCase()) ||
-        p.description.toLowerCase().contains(search.toLowerCase())).toList();
+    final filtered = commonPorts
+        .where((p) =>
+            search.isEmpty ||
+            p.port.toString().contains(search) ||
+            p.service.toLowerCase().contains(search.toLowerCase()) ||
+            p.description.toLowerCase().contains(search.toLowerCase()))
+        .toList();
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -245,7 +273,9 @@ class _PortsTab extends StatelessWidget {
       itemBuilder: (_, i) {
         final p = filtered[i];
         return _RefCard(
-          leading: Text(p.port.toString(), style: context.textStyles.codeBold.copyWith(color: AppColors.secondary, fontSize: 16)),
+          leading: Text(p.port.toString(),
+              style: context.textStyles.codeBold
+                  .copyWith(color: AppColors.secondary, fontSize: 16)),
           title: p.service,
           subtitle: p.description,
           copyValue: p.port.toString(),
@@ -262,33 +292,43 @@ class _GitTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = gitCommands.where((c) =>
-        search.isEmpty ||
-        c.command.toLowerCase().contains(search.toLowerCase()) ||
-        c.description.toLowerCase().contains(search.toLowerCase()) ||
-        c.category.toLowerCase().contains(search.toLowerCase())).toList();
+    final filtered = gitCommands
+        .where((c) =>
+            search.isEmpty ||
+            c.command.toLowerCase().contains(search.toLowerCase()) ||
+            c.description.toLowerCase().contains(search.toLowerCase()) ||
+            c.category.toLowerCase().contains(search.toLowerCase()))
+        .toList();
 
     final groups = <String, List<GitCommandEntry>>{};
     for (final c in filtered) groups.putIfAbsent(c.category, () => []).add(c);
 
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: groups.entries.map((e) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8, top: 4),
-            child: Text(e.key, style: context.textStyles.label.copyWith(color: AppColors.primary)),
-          ),
-          ...e.value.map((c) => _RefCard(
-            leading: const Icon(Icons.terminal_rounded, size: 18, color: AppColors.textMuted),
-            title: c.description,
-            detail: c.command,
-            copyValue: c.command,
-          )),
-          const SizedBox(height: 8),
-        ],
-      )).toList(),
+      children: groups.entries
+          .map((e) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8, top: 4),
+                    child: Text(e.key,
+                        style: context.textStyles.label
+                            .copyWith(color: AppColors.primary)),
+                  ),
+                  ...e.value.map((c) => _RefCard(
+                        leading: Icon(
+                          Icons.terminal_rounded,
+                          size: 18,
+                          color: context.adaptiveTextSecondary,
+                        ),
+                        title: c.description,
+                        detail: c.command,
+                        copyValue: c.command,
+                      )),
+                  const SizedBox(height: 8),
+                ],
+              ))
+          .toList(),
     );
   }
 }
@@ -300,33 +340,44 @@ class _LinuxTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = linuxCommands.where((c) =>
-        search.isEmpty ||
-        c.command.toLowerCase().contains(search.toLowerCase()) ||
-        c.description.toLowerCase().contains(search.toLowerCase()) ||
-        c.category.toLowerCase().contains(search.toLowerCase())).toList();
+    final filtered = linuxCommands
+        .where((c) =>
+            search.isEmpty ||
+            c.command.toLowerCase().contains(search.toLowerCase()) ||
+            c.description.toLowerCase().contains(search.toLowerCase()) ||
+            c.category.toLowerCase().contains(search.toLowerCase()))
+        .toList();
 
     final groups = <String, List<LinuxCommandEntry>>{};
     for (final c in filtered) groups.putIfAbsent(c.category, () => []).add(c);
 
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: groups.entries.map((e) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8, top: 4),
-            child: Text(e.key, style: context.textStyles.label.copyWith(color: AppColors.primary)),
-          ),
-          ...e.value.map((c) => _RefCard(
-            leading: const Icon(Icons.terminal_rounded, size: 18, color: AppColors.textMuted),
-            title: c.description,
-            detail: '${c.command}${c.flags.isNotEmpty ? '\nFlags: ${c.flags}' : ''}',
-            copyValue: c.command,
-          )),
-          const SizedBox(height: 8),
-        ],
-      )).toList(),
+      children: groups.entries
+          .map((e) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8, top: 4),
+                    child: Text(e.key,
+                        style: context.textStyles.label
+                            .copyWith(color: AppColors.primary)),
+                  ),
+                  ...e.value.map((c) => _RefCard(
+                        leading: Icon(
+                          Icons.terminal_rounded,
+                          size: 18,
+                          color: context.adaptiveTextSecondary,
+                        ),
+                        title: c.description,
+                        detail:
+                            '${c.command}${c.flags.isNotEmpty ? '\nFlags: ${c.flags}' : ''}',
+                        copyValue: c.command,
+                      )),
+                  const SizedBox(height: 8),
+                ],
+              ))
+          .toList(),
     );
   }
 }
@@ -368,12 +419,22 @@ class _RefCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: context.textStyles.body.copyWith(color: AppColors.textPrimary)),
+                Text(
+                  title,
+                  style: context.textStyles.body.copyWith(
+                    color: context.adaptiveTextPrimary,
+                  ),
+                ),
                 if (subtitle != null)
                   Text(subtitle!, style: context.textStyles.caption),
                 if (detail != null) ...[
                   const SizedBox(height: 4),
-                  Text(detail!, style: context.textStyles.codeSmall.copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    detail!,
+                    style: context.textStyles.codeSmall.copyWith(
+                      color: context.adaptiveTextSecondary,
+                    ),
+                  ),
                 ],
               ],
             ),

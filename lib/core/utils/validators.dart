@@ -22,7 +22,7 @@ class Validators {
     try {
       // Simple bracket matching
       var depth = 0;
-      for (final c in v!.split('')) {
+      for (final c in v.split('')) {
         if (c == '{' || c == '[') depth++;
         if (c == '}' || c == ']') depth--;
         if (depth < 0) return 'Invalid JSON: unexpected closing bracket';

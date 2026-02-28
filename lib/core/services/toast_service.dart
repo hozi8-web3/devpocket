@@ -128,7 +128,8 @@ class _ToastWidgetState extends State<_ToastWidget>
           child: Center(
             child: FrostedGlass(
               blur: 15,
-              color: AppColors.surface.withOpacity(0.85),
+              color: context.adaptiveOverlaySurface,
+              borderRadius: BorderRadius.circular(30),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
@@ -146,6 +147,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                       child: Text(
                         widget.message,
                         style: context.textStyles.body.copyWith(
+                          color: context.adaptiveTextPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 2,

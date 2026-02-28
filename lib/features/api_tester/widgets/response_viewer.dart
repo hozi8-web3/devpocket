@@ -227,7 +227,7 @@ class _ResponseViewerState extends State<ResponseViewer>
               Expanded(
                 child: Text(entry.value,
                     style: context.textStyles.codeSmall
-                        .copyWith(color: AppColors.textSecondary)),
+                        .copyWith(color: context.adaptiveTextSecondary)),
               ),
             ],
           ),
@@ -269,7 +269,12 @@ class _StatChip extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 4),
-        Text(value, style: context.textStyles.codeSmall.copyWith(color: AppColors.textSecondary)),
+        Text(
+          value,
+          style: context.textStyles.codeSmall.copyWith(
+            color: context.adaptiveTextSecondary,
+          ),
+        ),
       ],
     );
   }

@@ -49,10 +49,10 @@ class MethodSelector extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? color.withOpacity(0.12) : AppColors.glassSurface,
+                color: isSelected ? color.withOpacity(0.12) : context.adaptiveGlassSurface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? color.withOpacity(0.5) : AppColors.glassBorder,
+                  color: isSelected ? color.withOpacity(0.5) : context.adaptiveGlassBorder,
                   width: isSelected ? 1.5 : 1,
                 ),
                 boxShadow: isSelected
@@ -62,7 +62,7 @@ class MethodSelector extends StatelessWidget {
               child: Text(
                 method,
                 style: context.textStyles.buttonSmall.copyWith(
-                  color: isSelected ? color : AppColors.textSecondary,
+                  color: isSelected ? color : context.adaptiveTextSecondary,
                   fontSize: 11,
                 ),
               ),

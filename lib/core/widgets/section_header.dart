@@ -60,9 +60,9 @@ class GlassPanel extends StatelessWidget {
     final container = Container(
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.glassSurface,
+        color: context.adaptiveGlassSurface,
         borderRadius: borderRadius ?? BorderRadius.circular(16),
-        border: Border.all(color: borderColor ?? AppColors.glassBorder),
+        border: Border.all(color: borderColor ?? context.adaptiveGlassBorder),
       ),
       child: child,
     );

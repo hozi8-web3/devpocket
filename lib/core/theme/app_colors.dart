@@ -91,4 +91,19 @@ extension AppThemeContext on BuildContext {
   Color get adaptiveCardBorder => isDarkMode ? AppColors.cardBorder : AppColors.cardBorderLight;
   Color get adaptiveTextPrimary => isDarkMode ? AppColors.textPrimary : AppColors.textPrimaryLight;
   Color get adaptiveTextSecondary => isDarkMode ? AppColors.textSecondary : AppColors.textSecondaryLight;
+
+  // Glass surfaces are tuned for dark UI by default; adapt them for light theme.
+  Color get adaptiveGlassSurface =>
+      isDarkMode ? AppColors.glassSurface : Colors.black.withOpacity(0.04);
+  Color get adaptiveGlassBorder =>
+      isDarkMode ? AppColors.glassBorder : Colors.black.withOpacity(0.08);
+
+  // Common frosted/overlay backgrounds (app bars, sheets, toasts).
+  Color get adaptiveOverlayBackground => adaptiveBackground.withOpacity(0.7);
+  Color get adaptiveOverlaySurface =>
+      adaptiveSurface.withOpacity(isDarkMode ? 0.85 : 0.95);
+
+  // App bar header: solid in light theme (avoids black/washed blur), frosted in dark.
+  Color get adaptiveAppBarBackground =>
+      isDarkMode ? adaptiveBackground.withOpacity(0.85) : AppColors.surfaceLight;
 }

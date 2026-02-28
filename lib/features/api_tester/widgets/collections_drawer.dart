@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/glowing_empty_state.dart';
 import '../../../core/widgets/frosted_glass.dart';
 import '../models/response_model.dart';
@@ -30,7 +29,7 @@ class CollectionsDrawer extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: FrostedGlass(
         blur: 20.0,
-        color: AppColors.surface.withOpacity(0.85),
+        color: context.adaptiveOverlaySurface,
         child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,12 +41,12 @@ class CollectionsDrawer extends StatelessWidget {
                   Text('Collections', style: context.textStyles.heading2),
                   const Spacer(),
                   IconButton(
-                    icon: const Icon(Icons.file_upload_outlined, color: AppColors.textPrimary),
+                    icon: Icon(Icons.file_upload_outlined, color: context.adaptiveTextPrimary),
                     tooltip: 'Export Collections',
                     onPressed: () => CollectionExportService.exportAndShare(context),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.file_download_outlined, color: AppColors.textPrimary),
+                    icon: Icon(Icons.file_download_outlined, color: context.adaptiveTextPrimary),
                     tooltip: 'Import Collections',
                     onPressed: () => CollectionExportService.importFromFile(context),
                   ),
@@ -80,7 +79,7 @@ class CollectionsDrawer extends StatelessWidget {
                       leading: const Icon(Icons.folder_rounded,
                           color: AppColors.primary, size: 20),
                       title: Text(col.name, style: context.textStyles.body.copyWith(
-                        color: AppColors.textPrimary)),
+                        color: context.adaptiveTextPrimary)),
                       subtitle: Text('${requests.length} request${requests.length == 1 ? '' : 's'}',
                           style: context.textStyles.caption),
                       children: requests.map((req) {
@@ -145,7 +144,7 @@ class _MethodBadge extends StatelessWidget {
     'PUT' => AppColors.methodPut,
     'PATCH' => AppColors.methodPatch,
     'DELETE' => AppColors.methodDelete,
-    _ => AppColors.textSecondary,
+    _ => AppColors.primary,
   };
 
   @override

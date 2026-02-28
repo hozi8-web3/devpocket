@@ -283,7 +283,10 @@ class _JwtScreenState extends State<JwtScreen>
 
           Row(
             children: [
-              const Text('Algorithm:', style: TextStyle(color: AppColors.textSecondary)),
+              Text(
+                'Algorithm:',
+                style: TextStyle(color: context.adaptiveTextSecondary),
+              ),
               const SizedBox(width: 12),
               ...['HS256', 'HS384', 'HS512'].map((a) => Padding(
                 padding: const EdgeInsets.only(right: 8),
@@ -303,7 +306,10 @@ class _JwtScreenState extends State<JwtScreen>
 
           Row(
             children: [
-              const Text('Expiry (hours):', style: TextStyle(color: AppColors.textSecondary)),
+              Text(
+                'Expiry (hours):',
+                style: TextStyle(color: context.adaptiveTextSecondary),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Slider(
@@ -400,7 +406,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value,
               style: context.textStyles.codeSmall.copyWith(
-                color: valueColor ?? AppColors.textPrimary,
+                color: valueColor ?? context.adaptiveTextPrimary,
               ),
             ),
           ),

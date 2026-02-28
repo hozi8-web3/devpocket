@@ -87,7 +87,10 @@ class _UuidTabState extends State<_UuidTab> {
         children: [
           Row(
             children: [
-              const Text('Count:', style: TextStyle(color: AppColors.textSecondary)),
+              Text(
+                'Count:',
+                style: TextStyle(color: context.adaptiveTextSecondary),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Slider(
@@ -207,7 +210,10 @@ class _PasswordTabState extends State<_PasswordTab> {
             const SizedBox(height: 16),
           ],
           Row(children: [
-            const Text('Length:', style: TextStyle(color: AppColors.textSecondary)),
+            Text(
+              'Length:',
+              style: TextStyle(color: context.adaptiveTextSecondary),
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Slider(value: _length.toDouble(), min: 8, max: 64, divisions: 56,
@@ -418,7 +424,10 @@ class _RandomStringTabState extends State<_RandomStringTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Text('Length:', style: TextStyle(color: AppColors.textSecondary)),
+            Text(
+              'Length:',
+              style: TextStyle(color: context.adaptiveTextSecondary),
+            ),
             const SizedBox(width: 8),
             Expanded(child: Slider(value: _length.toDouble(), min: 4, max: 128, divisions: 124,
               label: _length.toString(), onChanged: (v) => setState(() => _length = v.round()))),
@@ -437,7 +446,10 @@ class _RandomStringTabState extends State<_RandomStringTab> {
           ],
           const SizedBox(height: 12),
           Row(children: [
-            const Text('Count:', style: TextStyle(color: AppColors.textSecondary)),
+            Text(
+              'Count:',
+              style: TextStyle(color: context.adaptiveTextSecondary),
+            ),
             const SizedBox(width: 8),
             Expanded(child: Slider(value: _count.toDouble(), min: 1, max: 10, divisions: 9,
               label: _count.toString(), onChanged: (v) => setState(() => _count = v.round()))),

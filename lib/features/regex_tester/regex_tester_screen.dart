@@ -69,8 +69,10 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
-            expandedHeight: 180.0,
+            expandedHeight: 140.0,
             pinned: true,
+            backgroundColor: context.adaptiveSurface,
+            surfaceTintColor: Colors.transparent,
             leading: Hero(
               tag: 'hero-regex',
               child: IconButton(
@@ -79,22 +81,43 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
               ),
             ),
             flexibleSpace: FlexibleSpaceBar(
-              title: Text('Regex Tester', style: context.textStyles.heading2),
-              centerTitle: true,
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.primary.withOpacity(0.15), Colors.transparent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                  titlePadding: const EdgeInsets.only(left: 56, bottom: 64),
+                  centerTitle: false,
+                  title: Text(
+                    'Regex Tester',
+                    style: context.textStyles.heading2.copyWith(
+                      color: context.adaptiveTextPrimary,
+                      shadows: [
+                        Shadow(
+                          color: context.adaptiveSurface,
+                          blurRadius: 8,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                  background: Container(
+                    decoration: BoxDecoration(
+                      color: context.adaptiveSurface,
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primary.withOpacity(0.12),
+                          context.adaptiveSurface,
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    child: Align(
+                      alignment: const Alignment(0.8, -0.3),
+                      child: Icon(
+                        Icons.rule_folder_rounded,
+                        size: 48,
+                        color: AppColors.primary.withOpacity(0.4),
+                      ),
+                    ),
                   ),
                 ),
-                child: Align(
-                  alignment: const Alignment(0, -0.2),
-                  child: Icon(Icons.rule_folder_rounded, size: 60, color: AppColors.primary.withOpacity(0.5)),
-                ),
-              ),
-            ),
             bottom: TabBar(
               controller: _tabController,
               tabs: const [Tab(text: 'Tester'), Tab(text: 'Library')],
@@ -335,7 +358,10 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                     Row(children: [
                       Expanded(
                         child: Text(pattern.name,
-                            style: context.textStyles.body.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                            style: context.textStyles.body.copyWith(
+                              color: context.adaptiveTextPrimary,
+                              fontWeight: FontWeight.w600,
+                            )),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

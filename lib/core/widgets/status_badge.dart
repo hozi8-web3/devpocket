@@ -28,7 +28,7 @@ class StatusBadge extends StatelessWidget {
     this.showDot = false,
   });
 
-  Color get _color {
+  Color _resolveColor(BuildContext context) {
     if (customColor != null) return customColor!;
     switch (type) {
       case StatusBadgeType.success:
@@ -40,7 +40,7 @@ class StatusBadge extends StatelessWidget {
       case StatusBadgeType.info:
         return AppColors.info;
       case StatusBadgeType.neutral:
-        return AppColors.textSecondary;
+        return context.adaptiveTextSecondary;
       case StatusBadgeType.custom:
         return AppColors.primary;
     }
@@ -48,7 +48,7 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _color;
+    final color = _resolveColor(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

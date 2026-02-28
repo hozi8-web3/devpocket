@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => FrostedGlass(
         blur: 20,
-        color: AppColors.surface.withOpacity(0.85),
+        color: context.adaptiveOverlaySurface,
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: const BoxDecoration(
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.textMuted.withOpacity(0.5),
+                    color: context.adaptiveTextSecondary.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -203,7 +203,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Release Notes', style: context.textStyles.label.copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      'Release Notes',
+                      style: context.textStyles.label.copyWith(
+                        color: context.adaptiveTextSecondary,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       info.releaseNotes.isEmpty ? 'Performance improvements and bug fixes.' : info.releaseNotes,
@@ -276,8 +281,8 @@ class _HomeScreenState extends State<HomeScreen> {
             pinned: true,
             backgroundColor: Colors.transparent,
             flexibleSpace: FrostedGlass(
-              blur: 15.0,
-              color: AppColors.background.withOpacity(0.7),
+              blur: context.isDarkMode ? 15.0 : 0,
+              color: context.adaptiveAppBarBackground,
               child: const SizedBox.expand(),
             ),
             // No expandedHeight / FlexibleSpaceBar — avoids the
@@ -322,8 +327,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: _searching
                     ? IconButton(
                         key: const ValueKey('close'),
-                        icon: const Icon(Icons.close_rounded,
-                            color: AppColors.textSecondary),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: context.adaptiveTextSecondary,
+                      ),
                         onPressed: () => setState(() {
                           _searching = false;
                           _searchController.clear();
@@ -332,20 +339,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     : IconButton(
                         key: const ValueKey('search'),
-                        icon: const Icon(Icons.search_rounded,
-                            color: AppColors.textSecondary),
+                      icon: Icon(
+                        Icons.search_rounded,
+                        color: context.adaptiveTextSecondary,
+                      ),
                         onPressed: () =>
                             setState(() => _searching = true),
                       ),
               ),
               IconButton(
-                icon: const Icon(Icons.help_outline_rounded,
-                    color: AppColors.textSecondary),
+              icon: Icon(
+                Icons.help_outline_rounded,
+                color: context.adaptiveTextSecondary,
+              ),
                 onPressed: () => context.push('/help'),
               ),
               IconButton(
-                icon: const Icon(Icons.settings_rounded,
-                    color: AppColors.textSecondary),
+              icon: Icon(
+                Icons.settings_rounded,
+                color: context.adaptiveTextSecondary,
+              ),
                 onPressed: () => context.push('/settings'),
               ),
               const SizedBox(width: 4),
@@ -363,13 +376,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   onChanged: (v) => setState(() => _query = v),
                   decoration: InputDecoration(
                     hintText: 'Search tools...',
-                    prefixIcon: const Icon(Icons.search_rounded,
-                        color: AppColors.textMuted, size: 20),
+                    prefixIcon: Icon(Icons.search_rounded,
+                        color: context.adaptiveTextSecondary, size: 20),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12),
                   ),
                   style:
-                      context.textStyles.body.copyWith(color: AppColors.textPrimary),
+                      context.textStyles.body.copyWith(color: context.adaptiveTextPrimary),
                 ),
               ),
             ),
