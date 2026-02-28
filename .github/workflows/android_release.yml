@@ -13,29 +13,29 @@ jobs:
   # JOB 1: NOTIFY BUILD STARTED
   # ─────────────────────────────────────────
   notify_start:
-    name: 🚀 Notify Build Started
+    name: Notify Build Started
     runs-on: ubuntu-latest
     steps:
       - name: Send Telegram — Build Started
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          MSG="🔨 *Build Pipeline Started*%0A%0A📦 *App:* DevPocket%0A🏷️ *Version:* \`${VERSION}\`%0A👤 *Triggered by:* ${ACTOR}%0A🕐 *Time:* $(date '+%Y-%m-%d %H:%M:%S UTC')%0A🔗 [View Workflow](https://github.com/${REPO}/actions/runs/${RUN_ID})%0A%0A_Building your APK\.\.\. hang tight_ ⚙️"
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
             -d parse_mode="Markdown" \
-            -d text="🔨 *Build Pipeline Started*
-
-  📦 *App:* DevPocket
-  🏷️ *Version:* \`${{ github.ref_name }}\`
-  👤 *Triggered by:* ${{ github.actor }}
-  🕐 *Time:* $(date '+%Y-%m-%d %H:%M:%S UTC')
-  🔗 [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-  _Building your APK... hang tight_ ⚙️"
+            -d text="${MSG}"
 
   # ─────────────────────────────────────────
   # JOB 2: BUILD
   # ─────────────────────────────────────────
   build:
-    name: 🔧 Build APK
+    name: Build APK
     runs-on: ubuntu-latest
     needs: notify_start
     outputs:
@@ -92,82 +92,78 @@ jobs:
   # JOB 3: NOTIFY BUILD RESULT
   # ─────────────────────────────────────────
   notify_build_result:
-    name: 📣 Notify Build Result
+    name: Notify Build Result
     runs-on: ubuntu-latest
     needs: build
     if: always()
     steps:
       - name: Send Telegram — Build Success
         if: needs.build.result == 'success'
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ github.ref_name }}
+          SIZE: ${{ needs.build.outputs.apk_size }}
+          BUILD_TIME: ${{ needs.build.outputs.build_time }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          MSG="✅ *Build Successful!*%0A%0A📦 *App:* DevPocket%0A🏷️ *Version:* \`${VERSION}\`%0A📏 *APK Size:* ${SIZE}%0A⏱️ *Build Time:* ${BUILD_TIME}%0A🔗 [View Workflow](https://github.com/${REPO}/actions/runs/${RUN_ID})%0A%0A_Waiting for your approval to publish_ 👇"
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
             -d parse_mode="Markdown" \
-            -d text="✅ *Build Successful!*
-
-  📦 *App:* DevPocket
-  🏷️ *Version:* \`${{ github.ref_name }}\`
-  📏 *APK Size:* ${{ needs.build.outputs.apk_size }}
-  ⏱️ *Build Time:* ${{ needs.build.outputs.build_time }}
-  🔗 [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-  _Waiting for your approval to publish_ 👇"
+            -d text="${MSG}"
 
       - name: Send Telegram — Build Failed
         if: needs.build.result == 'failure'
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          MSG="❌ *Build Failed!*%0A%0A📦 *App:* DevPocket%0A🏷️ *Version:* \`${VERSION}\`%0A👤 *Triggered by:* ${ACTOR}%0A🔗 [View Logs](https://github.com/${REPO}/actions/runs/${RUN_ID})%0A%0A_Fix the errors and push again_ 🔧"
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
             -d parse_mode="Markdown" \
-            -d text="❌ *Build Failed!*
-
-  📦 *App:* DevPocket
-  🏷️ *Version:* \`${{ github.ref_name }}\`
-  👤 *Triggered by:* ${{ github.actor }}
-  🔗 [View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-  _Fix the errors and push again_ 🔧"
+            -d text="${MSG}"
 
   # ─────────────────────────────────────────
   # JOB 4: APPROVAL GATE
   # ─────────────────────────────────────────
   approval_gate:
-    name: 🔐 Awaiting Approval
+    name: Awaiting Approval
     runs-on: ubuntu-latest
     needs: build
     if: needs.build.result == 'success'
     environment: production
     steps:
       - name: Send Telegram — Approval Request with Buttons
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ github.ref_name }}
+          SIZE: ${{ needs.build.outputs.apk_size }}
+          BUILD_TIME: ${{ needs.build.outputs.build_time }}
+          ACTOR: ${{ github.actor }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          MSG="🔐 *Approval Required*%0A%0AA new release is ready and waiting for your go-ahead\.%0A%0A📦 *App:* DevPocket%0A🏷️ *Version:* \`${VERSION}\`%0A📏 *APK Size:* ${SIZE}%0A⏱️ *Built in:* ${BUILD_TIME}%0A👤 *By:* ${ACTOR}%0A%0A_Tap below to approve or reject on GitHub_ 👇"
+          KEYBOARD="{\"inline_keyboard\":[[{\"text\":\"✅ Approve on GitHub\",\"url\":\"https://github.com/${REPO}/actions/runs/${RUN_ID}\"},{\"text\":\"❌ Reject on GitHub\",\"url\":\"https://github.com/${REPO}/actions/runs/${RUN_ID}\"}],[{\"text\":\"🔍 View Full Logs\",\"url\":\"https://github.com/${REPO}/actions/runs/${RUN_ID}\"}]]}"
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
             -d parse_mode="Markdown" \
-            -d text="🔐 *Approval Required*
-
-  A new release is ready and waiting for your go-ahead.
-
-  📦 *App:* DevPocket
-  🏷️ *Version:* \`${{ github.ref_name }}\`
-  📏 *APK Size:* ${{ needs.build.outputs.apk_size }}
-  ⏱️ *Built in:* ${{ needs.build.outputs.build_time }}
-  👤 *By:* ${{ github.actor }}
-
-  _Tap below or approve on GitHub_ 👇" \
-            -d reply_markup="{
-              \"inline_keyboard\": [[
-                {\"text\": \"✅ Approve on GitHub\", \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"},
-                {\"text\": \"❌ Reject on GitHub\", \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}
-              ],[
-                {\"text\": \"🔍 View Full Logs\", \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}
-              ]]
-            }"
+            -d text="${MSG}" \
+            -d reply_markup="${KEYBOARD}"
 
   # ─────────────────────────────────────────
   # JOB 5: RELEASE
   # ─────────────────────────────────────────
   release:
-    name: 🚀 Publish Release
+    name: Publish Release
     runs-on: ubuntu-latest
     needs: approval_gate
     steps:
@@ -187,70 +183,37 @@ jobs:
   # JOB 6: NOTIFY RELEASE PUBLISHED
   # ─────────────────────────────────────────
   notify_released:
-    name: 🎉 Notify Released
+    name: Notify Released
     runs-on: ubuntu-latest
     needs: release
     if: always()
     steps:
       - name: Send Telegram — Released Successfully
         if: needs.release.result == 'success'
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          MSG="🎉 *DevPocket ${VERSION} is LIVE!*%0A%0AYour app has been successfully published to GitHub Releases\.%0A%0A🌍 *Release URL:*%0Ahttps://github.com/${REPO}/releases/tag/${VERSION}%0A%0A_Ship it and forget it_ 😎🚀"
+          KEYBOARD="{\"inline_keyboard\":[[{\"text\":\"📥 Download APK\",\"url\":\"https://github.com/${REPO}/releases/tag/${VERSION}\"}]]}"
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
             -d parse_mode="Markdown" \
-            -d text="🎉 *DevPocket ${{ github.ref_name }} is LIVE!*
-
-  Your app has been successfully published to GitHub Releases.
-
-  📦 *APK Size:* ${{ needs.build.outputs.apk_size }}
-  ⏱️ *Total Pipeline:* check workflow
-  🌍 *Public Release URL:*
-  https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
-
-  _Ship it and forget it_ 😎🚀" \
-            -d reply_markup="{
-              \"inline_keyboard\": [[
-                {\"text\": \"📥 Download APK\", \"url\": \"https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}\"}
-              ]]
-            }"
+            -d text="${MSG}" \
+            -d reply_markup="${KEYBOARD}"
 
       - name: Send Telegram — Release Failed
         if: needs.release.result == 'failure'
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          MSG="💀 *Release Publishing Failed!*%0A%0AThe build was approved but publishing crashed\.%0A%0A🔗 [View Logs](https://github.com/${REPO}/actions/runs/${RUN_ID})%0A%0A_Check the release job for errors_ 🔧"
+          curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+            -d chat_id="${CHAT_ID}" \
             -d parse_mode="Markdown" \
-            -d text="💀 *Release Publishing Failed!*
-
-  The build was approved but publishing crashed.
-
-  🔗 [View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-
-  _Check the release job for errors_ 🔧"
-```
-
----
-
-## Pipeline Flow
-```
-push tag
-   │
-   ▼
-🔨 Telegram: Build Started
-   │
-   ▼
-⚙️  Build APK (tracks size + time)
-   │
-   ├── ❌ FAIL → Telegram: Build Failed
-   │
-   ▼
-✅ Telegram: Build Success + APK info
-   │
-   ▼
-🔐 Telegram: Approve/Reject buttons → you tap → GitHub UI approves
-   │
-   ▼
-🚀 Publish to GitHub Releases
-   │
-   ▼
-🎉 Telegram: Live! with Download APK button
+            -d text="${MSG}"
