@@ -13,7 +13,11 @@ DevPocket is a premium, beautifully crafted multi-tool designed specifically for
 
 Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
 
-### � Changelog v1.2.0 (Ultimate UI & Polish)
+### 📜 Changelog v1.2.5 (Connectivity Fix)
+*   **Android Network Permissions**: Added `ACCESS_WIFI_STATE`, `CHANGE_WIFI_STATE`, `WIFI_LOCK`, and `CHANGE_NETWORK_STATE` to resolve connectivity issues in release builds.
+*   **Background Monitoring Stability**: Improved network state polling resilience for the Server Monitor.
+
+### 📜 Changelog v1.2.0 (Ultimate UI & Polish)
 *   **Ultimate UI Polish**: Z-Axis Transitions, Shimmer Loading Skeletons, and Parallax Scrolling Headers.
 *   **Interactive Haptic Charts**: Touch-controlled sparklines with tooltips in Server Monitor.
 *   **Floating Animated Toasts**: Frosted-glass top notifications replacing standard snackbars.
@@ -82,7 +86,7 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
    ```
 
 ## 📦 Releases & CI/CD
-Whenever a version tag (e.g., `v1.2.0`) is pushed, the GitHub Actions pipeline automatically compiles a clean release APK and attaches it to the Releases page.
+Whenever a version tag (e.g., `v1.2.5`) is pushed, the GitHub Actions pipeline automatically compiles a clean release APK and attaches it to the Releases page.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! 
