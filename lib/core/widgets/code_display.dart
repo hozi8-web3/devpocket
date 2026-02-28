@@ -52,7 +52,7 @@ class CodeDisplay extends StatelessWidget {
                   ),
                   child: Text(
                     language.toUpperCase(),
-                    style: AppTextStyles.codeSmall.copyWith(
+                    style: context.textStyles.codeSmall.copyWith(
                       color: AppColors.primary,
                       fontSize: 10,
                     ),
@@ -68,8 +68,8 @@ class CodeDisplay extends StatelessWidget {
           Flexible(
             child: SingleChildScrollView(
               child: showLineNumbers
-                  ? _buildWithLineNumbers(lines)
-                  : _buildHighlight(),
+                  ? _buildWithLineNumbers(context, lines)
+                  : _buildHighlight(context),
             ),
           ),
         ],
@@ -77,7 +77,7 @@ class CodeDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildWithLineNumbers(List<String> lines) {
+  Widget _buildWithLineNumbers(BuildContext context, List<String> lines) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -95,7 +95,7 @@ class CodeDisplay extends StatelessWidget {
                 height: 20.8, // line height
                 child: Text(
                   '${i + 1}',
-                  style: AppTextStyles.lineNumber,
+                  style: context.textStyles.lineNumber,
                 ),
               ),
             ),
@@ -110,7 +110,7 @@ class CodeDisplay extends StatelessWidget {
               code,
               language: language,
               theme: atomOneDarkTheme,
-              textStyle: AppTextStyles.code,
+              textStyle: context.textStyles.code,
               padding: EdgeInsets.zero,
             ),
           ),
@@ -119,7 +119,7 @@ class CodeDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildHighlight() {
+  Widget _buildHighlight(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.all(16),
@@ -127,7 +127,7 @@ class CodeDisplay extends StatelessWidget {
         code,
         language: language,
         theme: atomOneDarkTheme,
-        textStyle: AppTextStyles.code,
+        textStyle: context.textStyles.code,
         padding: EdgeInsets.zero,
       ),
     );

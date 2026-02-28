@@ -61,7 +61,7 @@ class MethodSelector extends StatelessWidget {
               ),
               child: Text(
                 method,
-                style: AppTextStyles.buttonSmall.copyWith(
+                style: context.textStyles.buttonSmall.copyWith(
                   color: isSelected ? color : AppColors.textSecondary,
                   fontSize: 11,
                 ),

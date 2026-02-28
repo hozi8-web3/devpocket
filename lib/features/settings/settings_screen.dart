@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_theme.dart';
@@ -18,7 +20,7 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
-        title: Text('Settings', style: AppTextStyles.heading2),
+        title: Text('Settings', style: context.textStyles.heading2),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -74,8 +76,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
             padding: const EdgeInsets.all(16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Request Timeout', style: AppTextStyles.body.copyWith(color: AppColors.textPrimary)),
-              Text('${settings.requestTimeoutSeconds} seconds', style: AppTextStyles.caption),
+              Text('Request Timeout', style: context.textStyles.body.copyWith(color: context.adaptiveTextPrimary)),
+              Text('${settings.requestTimeoutSeconds} seconds', style: context.textStyles.caption),
               Slider(
                 value: settings.requestTimeoutSeconds.toDouble(),
                 min: 5,
@@ -99,24 +101,24 @@ class SettingsScreen extends ConsumerWidget {
             ),
             child: Column(children: [
               SwitchListTile(
-                title: Text('Enable Monitoring', style: AppTextStyles.body),
-                subtitle: Text('Run checks in background', style: AppTextStyles.caption),
+                title: Text('Enable Monitoring', style: context.textStyles.body),
+                subtitle: Text('Run checks in background', style: context.textStyles.caption),
                 value: settings.monitoringEnabled,
                 onChanged: notifier.setMonitoringEnabled,
                 secondary: const Icon(Icons.monitor_heart_rounded, color: AppColors.danger),
               ),
               _Divider(),
               SwitchListTile(
-                title: Text('Notify on Down', style: AppTextStyles.body),
-                subtitle: Text('Alert when server goes down', style: AppTextStyles.caption),
+                title: Text('Notify on Down', style: context.textStyles.body),
+                subtitle: Text('Alert when server goes down', style: context.textStyles.caption),
                 value: settings.notifyOnDown,
                 onChanged: settings.monitoringEnabled ? notifier.setNotifyOnDown : null,
                 secondary: const Icon(Icons.notifications_active_rounded, color: AppColors.warning),
               ),
               _Divider(),
               SwitchListTile(
-                title: Text('Notify on Recovery', style: AppTextStyles.body),
-                subtitle: Text('Alert when server comes back', style: AppTextStyles.caption),
+                title: Text('Notify on Recovery', style: context.textStyles.body),
+                subtitle: Text('Alert when server comes back', style: context.textStyles.caption),
                 value: settings.notifyOnRecover,
                 onChanged: settings.monitoringEnabled ? notifier.setNotifyOnRecover : null,
                 secondary: const Icon(Icons.check_circle_rounded, color: AppColors.success),
@@ -144,23 +146,29 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   child: Image.asset('assets/logo.png', width: 22, height: 22, filterQuality: FilterQuality.high),
                 ),
-                title: Text('DevPocket', style: AppTextStyles.body.copyWith(
-                  color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-                subtitle: Text('Developer Toolkit', style: AppTextStyles.caption),
+                title: Text('DevPocket', style: context.textStyles.body.copyWith(
+                  color: context.adaptiveTextPrimary, fontWeight: FontWeight.w600)),
+                subtitle: Text('Developer Toolkit', style: context.textStyles.caption),
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text('v1.0.0', style: AppTextStyles.codeSmall.copyWith(color: AppColors.primary)),
+                  child: FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snap) {
+                      final v = snap.hasData ? 'v${snap.data!.version}' : 'v...';
+                      return Text(v, style: context.textStyles.codeSmall.copyWith(color: AppColors.primary));
+                    },
+                  ),
                 ),
               ),
               _Divider(),
               ListTile(
                 leading: const Icon(Icons.code_rounded, color: AppColors.textMuted),
-                title: Text('All tools work offline', style: AppTextStyles.body),
-                subtitle: Text('Except network-dependent tools', style: AppTextStyles.caption),
+                title: Text('All tools work offline', style: context.textStyles.body),
+                subtitle: Text('Except network-dependent tools', style: context.textStyles.caption),
               ),
             ]),
           ),
@@ -169,29 +177,30 @@ class SettingsScreen extends ConsumerWidget {
           // Made By
           Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+              child: InkWell(
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.code_rounded, size: 18, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Made by ',
-                    style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
+                onTap: () => launchUrl(Uri.parse('https://github.com/Hozaifa-ali')),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.code_rounded, size: 18, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Made by ',
+                        style: context.textStyles.caption.copyWith(color: AppColors.textSecondary),
+                      ),
+                      Text(
+                        'HOZAIFA ALI',
+                        style: context.textStyles.label.copyWith(
+                          color: AppColors.primary,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'HOZAIFA ALI',
-                    style: AppTextStyles.label.copyWith(
-                      color: AppColors.primary,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -225,9 +234,9 @@ class _ThemeTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: Icon(icon, color: selected ? AppColors.primary : AppColors.textMuted),
-      title: Text(label, style: AppTextStyles.body.copyWith(
-        color: selected ? AppColors.primary : AppColors.textPrimary)),
-      subtitle: Text(subtitle, style: AppTextStyles.caption),
+      title: Text(label, style: context.textStyles.body.copyWith(
+        color: selected ? AppColors.primary : context.adaptiveTextPrimary)),
+      subtitle: Text(subtitle, style: context.textStyles.caption),
       trailing: selected
           ? const Icon(Icons.check_circle_rounded, color: AppColors.primary)
           : null,

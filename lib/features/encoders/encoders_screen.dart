@@ -40,7 +40,7 @@ class _EncodersScreenState extends State<EncodersScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('Encoders & Decoders', style: AppTextStyles.heading2),
+        title: Text('Encoders & Decoders', style: context.textStyles.heading2),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -176,7 +176,7 @@ class _EncoderTabState extends State<_EncoderTab> {
                         borderRadius: BorderRadius.circular(11),
                       ),
                       alignment: Alignment.center,
-                      child: Text('Encode', style: AppTextStyles.button.copyWith(
+                      child: Text('Encode', style: context.textStyles.button.copyWith(
                         color: _isEncoding ? Colors.white : AppColors.textMuted,
                         fontSize: 13,
                       )),
@@ -192,7 +192,7 @@ class _EncoderTabState extends State<_EncoderTab> {
                         borderRadius: BorderRadius.circular(11),
                       ),
                       alignment: Alignment.center,
-                      child: Text('Decode', style: AppTextStyles.button.copyWith(
+                      child: Text('Decode', style: context.textStyles.button.copyWith(
                         color: !_isEncoding ? Colors.white : AppColors.textMuted,
                         fontSize: 13,
                       )),
@@ -207,7 +207,7 @@ class _EncoderTabState extends State<_EncoderTab> {
           TextField(
             controller: _inputController,
             maxLines: 5,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             onChanged: (_) => _process(),
             decoration: InputDecoration(
               hintText: _isEncoding ? 'Input text to encode...' : 'Input ${widget.label} to decode...',
@@ -224,7 +224,7 @@ class _EncoderTabState extends State<_EncoderTab> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.danger.withOpacity(0.3)),
               ),
-              child: Text(_error!, style: AppTextStyles.body.copyWith(color: AppColors.danger)),
+              child: Text(_error!, style: context.textStyles.body.copyWith(color: AppColors.danger)),
             )
           else if (_output.isNotEmpty)
             Container(
@@ -240,12 +240,12 @@ class _EncoderTabState extends State<_EncoderTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_isEncoding ? 'Encoded' : 'Decoded', style: AppTextStyles.label),
+                      Text(_isEncoding ? 'Encoded' : 'Decoded', style: context.textStyles.label),
                       CopyButton(text: _output),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  SelectableText(_output, style: AppTextStyles.codeSmall),
+                  SelectableText(_output, style: context.textStyles.codeSmall),
                 ],
               ),
             ),

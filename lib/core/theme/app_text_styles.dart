@@ -2,153 +2,162 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
-/// All text styles are static final — computed ONCE at startup,
-/// never re-allocated on every build() frame.
 class AppTextStyles {
-  AppTextStyles._();
+  final BuildContext context;
+  
+  const AppTextStyles(this.context);
+
+  Color get _primary => context.adaptiveTextPrimary;
+  Color get _secondary => context.adaptiveTextSecondary;
+  Color get _muted => context.isDarkMode ? AppColors.textMuted : AppColors.textSecondaryLight;
+  Color get _onPrimary => AppColors.textOnPrimary;
 
   // --- Display / Heading (Inter) ---
-  static final TextStyle displayLarge = GoogleFonts.inter(
+  TextStyle get displayLarge => GoogleFonts.inter(
     fontSize: 32,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: _primary,
     letterSpacing: -0.5,
   );
 
-  static final TextStyle displayMedium = GoogleFonts.inter(
+  TextStyle get displayMedium => GoogleFonts.inter(
     fontSize: 24,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: _primary,
     letterSpacing: -0.3,
   );
 
-  static final TextStyle heading1 = GoogleFonts.inter(
+  TextStyle get heading1 => GoogleFonts.inter(
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: _primary,
     letterSpacing: -0.2,
   );
 
-  static final TextStyle heading2 = GoogleFonts.inter(
+  TextStyle get heading2 => GoogleFonts.inter(
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: _primary,
   );
 
-  static final TextStyle heading3 = GoogleFonts.inter(
+  TextStyle get heading3 => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: _primary,
   );
 
   // --- Body (Inter) ---
-  static final TextStyle bodyLarge = GoogleFonts.inter(
+  TextStyle get bodyLarge => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: _secondary,
   );
 
-  static final TextStyle body = GoogleFonts.inter(
+  TextStyle get body => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: _secondary,
   );
 
-  static final TextStyle bodySmall = GoogleFonts.inter(
+  TextStyle get bodySmall => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.textMuted,
+    color: _muted,
   );
 
-  static final TextStyle label = GoogleFonts.inter(
+  TextStyle get label => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
+    color: _secondary,
     letterSpacing: 0.1,
   );
 
-  static final TextStyle labelSmall = GoogleFonts.inter(
+  TextStyle get labelSmall => GoogleFonts.inter(
     fontSize: 10,
     fontWeight: FontWeight.w500,
-    color: AppColors.textMuted,
+    color: _muted,
     letterSpacing: 0.5,
   );
 
-  static final TextStyle caption = GoogleFonts.inter(
+  TextStyle get caption => GoogleFonts.inter(
     fontSize: 11,
     fontWeight: FontWeight.w400,
-    color: AppColors.textMuted,
+    color: _muted,
   );
 
-  static final TextStyle button = GoogleFonts.inter(
+  TextStyle get button => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w700,
     letterSpacing: 0.5,
-    color: AppColors.textOnPrimary,
+    color: _onPrimary,
   );
 
-  static final TextStyle buttonSmall = GoogleFonts.inter(
+  TextStyle get buttonSmall => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w700,
     letterSpacing: 0.5,
-    color: AppColors.textOnPrimary,
+    color: _onPrimary,
   );
 
   // --- Code (JetBrains Mono) ---
-  static final TextStyle code = GoogleFonts.jetBrainsMono(
+  TextStyle get code => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
+    color: _primary,
     height: 1.6,
   );
 
-  static final TextStyle codeMedium = GoogleFonts.jetBrainsMono(
+  TextStyle get codeMedium => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
+    color: _primary,
   );
 
-  static final TextStyle codeBold = GoogleFonts.jetBrainsMono(
+  TextStyle get codeBold => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: _primary,
   );
 
-  static final TextStyle codeSmall = GoogleFonts.jetBrainsMono(
+  TextStyle get codeSmall => GoogleFonts.jetBrainsMono(
     fontSize: 11,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: _secondary,
     height: 1.5,
   );
 
-  static final TextStyle lineNumber = GoogleFonts.jetBrainsMono(
+  TextStyle get lineNumber => GoogleFonts.jetBrainsMono(
     fontSize: 11,
     fontWeight: FontWeight.w400,
     color: AppColors.lineNumbers,
   );
 
   // --- Syntax ---
-  static final TextStyle syntaxKey = GoogleFonts.jetBrainsMono(
+  TextStyle get syntaxKey => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     color: AppColors.syntaxKey,
     height: 1.6,
   );
 
-  static final TextStyle syntaxString = GoogleFonts.jetBrainsMono(
+  TextStyle get syntaxString => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     color: AppColors.syntaxString,
     height: 1.6,
   );
 
-  static final TextStyle syntaxNumber = GoogleFonts.jetBrainsMono(
+  TextStyle get syntaxNumber => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     color: AppColors.syntaxNumber,
     height: 1.6,
   );
 
-  static final TextStyle syntaxBool = GoogleFonts.jetBrainsMono(
+  TextStyle get syntaxBool => GoogleFonts.jetBrainsMono(
     fontSize: 13,
     color: AppColors.syntaxBool,
     height: 1.6,
   );
+}
+
+extension AppTextStylesContext on BuildContext {
+  AppTextStyles get textStyles => AppTextStyles(this);
 }

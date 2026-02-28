@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../core/widgets/section_header.dart';
+import '../../core/widgets/shimmer_loader.dart';
 import '../../core/utils/formatters.dart';
 import '../../../core/constants/http_headers.dart' as ref;
 import 'services/network_services.dart';
@@ -43,7 +45,7 @@ class _NetworkToolsScreenState extends State<NetworkToolsScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('Network Tools', style: AppTextStyles.heading2),
+        title: Text('Network Tools', style: context.textStyles.heading2),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -95,10 +97,10 @@ class _PingTabState extends State<_PingTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _HostInput(controller: _controller, hint: 'example.com or 1.2.3.4',
-            onSubmit: _ping, isLoading: _loading),
+          _HostInput(controller: _controller, hint: 'example.com or 1.2.3.4', onSubmit: _ping, isLoading: _loading),
           const SizedBox(height: 16),
-          if (_result != null) ...[
+          if (_loading) const _NetworkSkeleton(),
+          if (_result != null && !_loading) ...[
             // Stats row
             Row(children: [
               _StatCard('Avg', _result!.avgMs != null ? '${_result!.avgMs}ms' : 'N/A', AppColors.primary),
@@ -126,9 +128,9 @@ class _PingTabState extends State<_PingTab> {
                     Icon(t != null ? Icons.check_circle_rounded : Icons.cancel_rounded,
                       size: 16, color: t != null ? AppColors.success : AppColors.danger),
                     const SizedBox(width: 10),
-                    Text('Ping ${i + 1}', style: AppTextStyles.body),
+                    Text('Ping ${i + 1}', style: context.textStyles.body),
                     const Spacer(),
-                    Text(t != null ? '${t}ms' : 'Timeout', style: AppTextStyles.code.copyWith(
+                    Text(t != null ? '${t}ms' : 'Timeout', style: context.textStyles.code.copyWith(
                       color: t != null ? AppColors.textPrimary : AppColors.danger)),
                   ],
                 ),
@@ -158,7 +160,7 @@ class _PingTabState extends State<_PingTab> {
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 20,
-                      getTitlesWidget: (v, _) => Text('${v.toInt() + 1}', style: AppTextStyles.caption))),
+                      getTitlesWidget: (v, _) => Text('${v.toInt() + 1}', style: context.textStyles.caption))),
                   ),
                   gridData: FlGridData(show: false),
                   borderData: FlBorderData(show: false),
@@ -207,12 +209,13 @@ class _DnsTabState extends State<_DnsTab> {
               selected: _selectedTypes[t]!,
               onSelected: (v) => setState(() => _selectedTypes[t] = v),
               selectedColor: AppColors.primary.withOpacity(0.2),
-              labelStyle: AppTextStyles.labelSmall.copyWith(
+              labelStyle: context.textStyles.labelSmall.copyWith(
                 color: _selectedTypes[t]! ? AppColors.primary : AppColors.textMuted),
             )).toList(),
           ),
           const SizedBox(height: 16),
-          if (_result != null)
+          if (_loading) const _NetworkSkeleton(),
+          if (_result != null && !_loading)
             if (_result!.records.isEmpty)
               const _EmptyState(message: 'No DNS records found')
             else
@@ -229,7 +232,7 @@ class _DnsTabState extends State<_DnsTab> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: context.adaptiveCardBorder),
                     ),
-                    child: Text(v, style: AppTextStyles.codeSmall),
+                    child: Text(v, style: context.textStyles.codeSmall),
                   )),
                   const SizedBox(height: 8),
                 ],
@@ -266,7 +269,8 @@ class _SslTabState extends State<_SslTab> {
         children: [
           _HostInput(controller: _controller, hint: 'example.com', onSubmit: _check, isLoading: _loading),
           const SizedBox(height: 16),
-          if (_result != null) ...[
+          if (_loading) const _NetworkSkeleton(),
+          if (_result != null && !_loading) ...[
             Row(children: [
               if (_result!.isExpired)
                 const StatusBadge(label: 'EXPIRED', type: StatusBadgeType.error, showDot: true)
@@ -277,7 +281,7 @@ class _SslTabState extends State<_SslTab> {
             ]),
             if (_result!.errorMessage != null) ...[
               const SizedBox(height: 12),
-              Text(_result!.errorMessage!, style: AppTextStyles.body.copyWith(color: AppColors.textMuted)),
+              Text(_result!.errorMessage!, style: context.textStyles.body.copyWith(color: AppColors.textMuted)),
             ] else ...[
               const SizedBox(height: 16),
               if (_result!.daysRemaining != null)
@@ -322,7 +326,8 @@ class _HeadersTabState extends State<_HeadersTab> {
         children: [
           _HostInput(controller: _controller, hint: 'https://example.com', onSubmit: _fetch, isLoading: _loading),
           const SizedBox(height: 16),
-          if (_result != null) ...[
+          if (_loading) const _NetworkSkeleton(),
+          if (_result != null && !_loading) ...[
             if (_result!.error != null)
               _EmptyState(message: _result!.error!)
             else ...[
@@ -351,7 +356,7 @@ class _HeadersTabState extends State<_HeadersTab> {
                     Icon(present ? Icons.check_circle_rounded : Icons.warning_rounded,
                       size: 16, color: present ? AppColors.success : AppColors.danger),
                     const SizedBox(width: 8),
-                    Text(h, style: AppTextStyles.codeSmall.copyWith(
+                    Text(h, style: context.textStyles.codeSmall.copyWith(
                       color: present ? AppColors.textPrimary : AppColors.textSecondary)),
                   ]),
                 );
@@ -368,9 +373,9 @@ class _HeadersTabState extends State<_HeadersTab> {
                   border: Border.all(color: context.adaptiveCardBorder),
                 ),
                 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  SizedBox(width: 130, child: Text(e.key, style: AppTextStyles.codeSmall.copyWith(color: AppColors.syntaxKey))),
+                  SizedBox(width: 130, child: Text(e.key, style: context.textStyles.codeSmall.copyWith(color: AppColors.syntaxKey))),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(e.value, style: AppTextStyles.codeSmall)),
+                  Expanded(child: Text(e.value, style: context.textStyles.codeSmall)),
                 ]),
               )),
             ],
@@ -411,9 +416,10 @@ class _IpTabState extends State<_IpTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _HostInput(controller: _controller, hint: 'IP address (or leave blank for your IP)', onSubmit: _lookup, isLoading: _loading),
+          _HostInput(controller: _controller, hint: '8.8.8.8 (Leave empty for own IP)', onSubmit: _lookup, isLoading: _loading),
           const SizedBox(height: 16),
-          if (_result != null) ...[
+          if (_loading) const _NetworkSkeleton(),
+          if (_result != null && !_loading) ...[
             if (_result!.error != null)
               _EmptyState(message: _result!.error!)
             else ...[
@@ -452,7 +458,7 @@ class _HostInput extends StatelessWidget {
           controller: controller,
           onSubmitted: (_) => onSubmit(),
           decoration: InputDecoration(hintText: hint),
-          style: AppTextStyles.code,
+          style: context.textStyles.code,
           keyboardType: TextInputType.url,
         ),
       ),
@@ -484,9 +490,9 @@ class _StatCard extends StatelessWidget {
           border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Column(children: [
-          Text(label, style: AppTextStyles.caption.copyWith(color: color)),
+          Text(label, style: context.textStyles.caption.copyWith(color: color)),
           const SizedBox(height: 4),
-          Text(value, style: AppTextStyles.code.copyWith(fontSize: 13, color: AppColors.textPrimary)),
+          Text(value, style: context.textStyles.code.copyWith(fontSize: 13, color: AppColors.textPrimary)),
         ]),
       ),
     );
@@ -510,8 +516,8 @@ class _InfoTile extends StatelessWidget {
           border: Border.all(color: context.adaptiveCardBorder),
         ),
         child: Row(children: [
-          SizedBox(width: 100, child: Text(label, style: AppTextStyles.caption)),
-          Expanded(child: Text(value, style: AppTextStyles.body.copyWith(color: AppColors.textPrimary))),
+          SizedBox(width: 100, child: Text(label, style: context.textStyles.caption)),
+          Expanded(child: Text(value, style: context.textStyles.body.copyWith(color: AppColors.textPrimary))),
         ]),
       ),
     );
@@ -530,9 +536,42 @@ class _EmptyState extends StatelessWidget {
         child: Column(children: [
           const Icon(Icons.info_outline_rounded, color: AppColors.textMuted, size: 40),
           const SizedBox(height: 12),
-          Text(message, style: AppTextStyles.body, textAlign: TextAlign.center),
+          Text(message, style: context.textStyles.body, textAlign: TextAlign.center),
         ]),
       ),
+    );
+  }
+}
+
+class _NetworkSkeleton extends StatelessWidget {
+  const _NetworkSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(child: ShimmerLoader(width: double.infinity, height: 60, borderRadius: BorderRadius.circular(10))),
+            const SizedBox(width: 8),
+            Expanded(child: ShimmerLoader(width: double.infinity, height: 60, borderRadius: BorderRadius.circular(10))),
+            const SizedBox(width: 8),
+            Expanded(child: ShimmerLoader(width: double.infinity, height: 60, borderRadius: BorderRadius.circular(10))),
+          ],
+        ),
+        const SizedBox(height: 24),
+        ShimmerLoader(width: 140, height: 20, borderRadius: BorderRadius.circular(4)),
+        const SizedBox(height: 16),
+        ...List.generate(4, (i) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: ShimmerLoader(
+            width: double.infinity,
+            height: 48,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        )),
+      ],
     );
   }
 }

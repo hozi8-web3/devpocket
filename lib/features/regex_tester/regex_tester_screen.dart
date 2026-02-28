@@ -66,23 +66,45 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Hero(
-          tag: 'hero-regex',
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            onPressed: () => context.pop(),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            expandedHeight: 180.0,
+            pinned: true,
+            leading: Hero(
+              tag: 'hero-regex',
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                onPressed: () => context.pop(),
+              ),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text('Regex Tester', style: context.textStyles.heading2),
+              centerTitle: true,
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary.withOpacity(0.15), Colors.transparent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Align(
+                  alignment: const Alignment(0, -0.2),
+                  child: Icon(Icons.rule_folder_rounded, size: 60, color: AppColors.primary.withOpacity(0.5)),
+                ),
+              ),
+            ),
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const [Tab(text: 'Tester'), Tab(text: 'Library')],
+            ),
           ),
-        ),
-        title: Text('Regex Tester', style: AppTextStyles.heading2),
-        bottom: TabBar(
+        ],
+        body: TabBarView(
           controller: _tabController,
-          tabs: const [Tab(text: 'Tester'), Tab(text: 'Library')],
+          children: [_buildTesterTab(), _buildLibraryTab()],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildTesterTab(), _buildLibraryTab()],
       ),
     );
   }
@@ -100,7 +122,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 child: TextField(
                   controller: _patternController,
                   onChanged: (_) => _test(),
-                  style: AppTextStyles.code.copyWith(color: AppColors.secondary),
+                  style: context.textStyles.code.copyWith(color: AppColors.secondary),
                   decoration: const InputDecoration(
                     prefixText: '/',
                     suffixText: '/gi',
@@ -125,7 +147,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 selected: _caseInsensitive,
                 onSelected: (v) { setState(() => _caseInsensitive = v); _test(); },
                 selectedColor: AppColors.primary.withOpacity(0.2),
-                labelStyle: AppTextStyles.labelSmall.copyWith(
+                labelStyle: context.textStyles.labelSmall.copyWith(
                   color: _caseInsensitive ? AppColors.primary : AppColors.textMuted),
               ),
               FilterChip(
@@ -133,7 +155,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 selected: _multiLine,
                 onSelected: (v) { setState(() => _multiLine = v); _test(); },
                 selectedColor: AppColors.primary.withOpacity(0.2),
-                labelStyle: AppTextStyles.labelSmall.copyWith(
+                labelStyle: context.textStyles.labelSmall.copyWith(
                   color: _multiLine ? AppColors.primary : AppColors.textMuted),
               ),
               FilterChip(
@@ -141,7 +163,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 selected: _dotAll,
                 onSelected: (v) { setState(() => _dotAll = v); _test(); },
                 selectedColor: AppColors.primary.withOpacity(0.2),
-                labelStyle: AppTextStyles.labelSmall.copyWith(
+                labelStyle: context.textStyles.labelSmall.copyWith(
                   color: _dotAll ? AppColors.primary : AppColors.textMuted),
               ),
             ],
@@ -156,7 +178,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 controller: _testController,
                 maxLines: 6,
                 onChanged: (_) => _test(),
-                style: AppTextStyles.code,
+                style: context.textStyles.code,
                 decoration: const InputDecoration(
                   hintText: 'Test string here...',
                   alignLabelWithHint: true,
@@ -175,7 +197,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text('Error: $_error',
-                  style: AppTextStyles.codeSmall.copyWith(color: AppColors.danger)),
+                  style: context.textStyles.codeSmall.copyWith(color: AppColors.danger)),
             ),
 
           // Match stats
@@ -200,7 +222,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                   _matches.isEmpty
                       ? 'No matches found'
                       : '${_matches.length} match${_matches.length == 1 ? '' : 'es'} found',
-                  style: AppTextStyles.body.copyWith(
+                  style: context.textStyles.body.copyWith(
                     color: _matches.isNotEmpty ? AppColors.success : AppColors.textMuted),
                 ),
               ]),
@@ -210,7 +232,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
 
           // Matches list
           if (_matches.isNotEmpty) ...[
-            Text('Matches', style: AppTextStyles.label),
+            Text('Matches', style: context.textStyles.label),
             const SizedBox(height: 8),
             ..._matches.asMap().entries.map((e) {
               final i = e.key;
@@ -231,7 +253,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                       borderRadius: BorderRadius.circular(12),
                     ),
                     alignment: Alignment.center,
-                    child: Text('${i + 1}', style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary)),
+                    child: Text('${i + 1}', style: context.textStyles.labelSmall.copyWith(color: AppColors.primary)),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -239,13 +261,13 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SelectableText('"${match.group(0)}"',
-                            style: AppTextStyles.code.copyWith(color: AppColors.secondary)),
+                            style: context.textStyles.code.copyWith(color: AppColors.secondary)),
                         Text('Position: ${match.start}–${match.end}',
-                            style: AppTextStyles.caption),
+                            style: context.textStyles.caption),
                         if (match.groupCount > 0) ...[
                           ...List.generate(match.groupCount, (gi) => Text(
                             'Group ${gi + 1}: "${match.group(gi + 1)}"',
-                            style: AppTextStyles.codeSmall.copyWith(color: AppColors.textMuted),
+                            style: context.textStyles.codeSmall.copyWith(color: AppColors.textMuted),
                           )),
                         ],
                       ],
@@ -285,7 +307,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                     selected: sel,
                     onSelected: (_) => setState(() => _selectedCategory = cat),
                     selectedColor: AppColors.primary.withOpacity(0.2),
-                    labelStyle: AppTextStyles.labelSmall.copyWith(
+                    labelStyle: context.textStyles.labelSmall.copyWith(
                         color: sel ? AppColors.primary : AppColors.textMuted),
                   ),
                 );
@@ -313,7 +335,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                     Row(children: [
                       Expanded(
                         child: Text(pattern.name,
-                            style: AppTextStyles.body.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                            style: context.textStyles.body.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -321,16 +343,16 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                           color: AppColors.primary.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(pattern.category, style: AppTextStyles.labelSmall.copyWith(color: AppColors.primary)),
+                        child: Text(pattern.category, style: context.textStyles.labelSmall.copyWith(color: AppColors.primary)),
                       ),
                     ]),
                     const SizedBox(height: 4),
-                    Text(pattern.description, style: AppTextStyles.caption),
+                    Text(pattern.description, style: context.textStyles.caption),
                     const SizedBox(height: 8),
                     Row(children: [
                       Expanded(
                         child: Text(pattern.pattern,
-                            style: AppTextStyles.codeSmall.copyWith(color: AppColors.secondary),
+                            style: context.textStyles.codeSmall.copyWith(color: AppColors.secondary),
                             maxLines: 2, overflow: TextOverflow.ellipsis),
                       ),
                       CopyButton(text: pattern.pattern, compact: true),
@@ -339,7 +361,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                     Row(children: [
                       const Icon(Icons.check_rounded, size: 14, color: AppColors.success),
                       const SizedBox(width: 4),
-                      Text(pattern.example, style: AppTextStyles.codeSmall.copyWith(color: AppColors.textMuted)),
+                      Text(pattern.example, style: context.textStyles.codeSmall.copyWith(color: AppColors.textMuted)),
                     ]),
                     const SizedBox(height: 8),
                     TextButton.icon(

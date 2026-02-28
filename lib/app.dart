@@ -19,30 +19,50 @@ import 'features/settings/settings_screen.dart';
 import 'features/help/help_screen.dart';
 import 'features/splash/splash_screen.dart';
 
+CustomTransitionPage _buildPage(Widget child, GoRouterState state) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeIn).animate(animation),
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.96, end: 1.0).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+          ),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 final _router = GoRouter(
   initialLocation: '/splash',
   routes: [
-    GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
-    GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
-    GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
-    GoRoute(path: '/api-tester', builder: (_, __) => const ApiTesterScreen()),
-    GoRoute(path: '/jwt', builder: (_, __) => const JwtScreen()),
-    GoRoute(path: '/json-tools', builder: (_, __) => const JsonToolsScreen()),
-    GoRoute(path: '/generators', builder: (_, __) => const GeneratorsScreen()),
-    GoRoute(path: '/network-tools', builder: (_, __) => const NetworkToolsScreen()),
-    GoRoute(path: '/encoders', builder: (_, __) => const EncodersScreen()),
-    GoRoute(path: '/regex', builder: (_, __) => const RegexTesterScreen()),
-    GoRoute(path: '/cron', builder: (_, __) => const CronScreen()),
-    GoRoute(path: '/monitor', builder: (_, __) => const MonitorScreen()),
+    GoRoute(path: '/splash', pageBuilder: (ctx, state) => _buildPage(const SplashScreen(), state)),
+    GoRoute(path: '/onboarding', pageBuilder: (ctx, state) => _buildPage(const OnboardingScreen(), state)),
+    GoRoute(path: '/home', pageBuilder: (ctx, state) => _buildPage(const HomeScreen(), state)),
+    GoRoute(path: '/api-tester', pageBuilder: (ctx, state) => _buildPage(const ApiTesterScreen(), state)),
+    GoRoute(path: '/jwt', pageBuilder: (ctx, state) => _buildPage(const JwtScreen(), state)),
+    GoRoute(path: '/json-tools', pageBuilder: (ctx, state) => _buildPage(const JsonToolsScreen(), state)),
+    GoRoute(path: '/generators', pageBuilder: (ctx, state) => _buildPage(const GeneratorsScreen(), state)),
+    GoRoute(path: '/network-tools', pageBuilder: (ctx, state) => _buildPage(const NetworkToolsScreen(), state)),
+    GoRoute(path: '/encoders', pageBuilder: (ctx, state) => _buildPage(const EncodersScreen(), state)),
+    GoRoute(path: '/regex', pageBuilder: (ctx, state) => _buildPage(const RegexTesterScreen(), state)),
+    GoRoute(path: '/cron', pageBuilder: (ctx, state) => _buildPage(const CronScreen(), state)),
+    GoRoute(path: '/monitor', pageBuilder: (ctx, state) => _buildPage(const MonitorScreen(), state)),
     GoRoute(
       path: '/monitor/:id',
-      builder: (ctx, state) => MonitorDetailScreen(
-        serverId: state.pathParameters['id'] ?? '',
+      pageBuilder: (ctx, state) => _buildPage(
+        MonitorDetailScreen(serverId: state.pathParameters['id'] ?? ''),
+        state,
       ),
     ),
-    GoRoute(path: '/reference', builder: (_, __) => const ReferenceScreen()),
-    GoRoute(path: '/help', builder: (_, __) => const HelpScreen()),
-    GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+    GoRoute(path: '/reference', pageBuilder: (ctx, state) => _buildPage(const ReferenceScreen(), state)),
+    GoRoute(path: '/help', pageBuilder: (ctx, state) => _buildPage(const HelpScreen(), state)),
+    GoRoute(path: '/settings', pageBuilder: (ctx, state) => _buildPage(const SettingsScreen(), state)),
   ],
 );
 

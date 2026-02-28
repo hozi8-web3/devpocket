@@ -38,7 +38,7 @@ class _MonitorScreenState extends ConsumerState<MonitorScreen> {
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('Server Monitor', style: AppTextStyles.heading2),
+        title: Text('Server Monitor', style: context.textStyles.heading2),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -118,7 +118,7 @@ class _MonitorScreenState extends ConsumerState<MonitorScreen> {
                   label: '${interval}m',
                   onChanged: (v) => setSt(() => interval = v.round()),
                 )),
-                Text('${interval}m', style: AppTextStyles.code),
+                Text('${interval}m', style: context.textStyles.code),
               ]),
             ],
           ),
@@ -193,7 +193,7 @@ class _ServerCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(server.name, style: AppTextStyles.body.copyWith(
+                child: Text(server.name, style: context.textStyles.body.copyWith(
                   color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
               ),
               IconButton(icon: const Icon(Icons.refresh_rounded, size: 18), onPressed: onCheck,
@@ -203,7 +203,7 @@ class _ServerCard extends StatelessWidget {
                 color: AppColors.danger.withOpacity(0.7), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
             ]),
             const SizedBox(height: 6),
-            Text(server.url, style: AppTextStyles.codeSmall.copyWith(color: AppColors.textMuted),
+            Text(server.url, style: context.textStyles.codeSmall.copyWith(color: AppColors.textMuted),
               maxLines: 1, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 12),
             Row(children: [
@@ -244,8 +244,8 @@ class _InfoChip extends StatelessWidget {
       ),
       child: RichText(
         text: TextSpan(children: [
-          TextSpan(text: '$label: ', style: AppTextStyles.caption.copyWith(color: AppColors.textMuted)),
-          TextSpan(text: value, style: AppTextStyles.codeSmall.copyWith(color: color, fontWeight: FontWeight.w700)),
+          TextSpan(text: '$label: ', style: context.textStyles.caption.copyWith(color: AppColors.textMuted)),
+          TextSpan(text: value, style: context.textStyles.codeSmall.copyWith(color: color, fontWeight: FontWeight.w700)),
         ]),
       ),
     );

@@ -19,8 +19,6 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
 *   **Custom Branding**: Completely replaced all generic icons and animations with the official DevPocket logo for a premium app feel!
 
 ## 📸 Screenshots
-<img width="738" height="1600" alt="image" src="https://github.com/user-attachments/assets/498f0e52-c7ed-4a14-8af1-d8be77af3b8f" />
-<img width="738" height="1600" alt="image" src="https://github.com/user-attachments/assets/13857cf0-674a-441b-a939-731e9996a436" />
 
 </div>
 

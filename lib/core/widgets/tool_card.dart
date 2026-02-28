@@ -122,7 +122,7 @@ class _ToolCardState extends State<ToolCard>
                       ),
                       child: Text(
                         'NEW',
-                        style: AppTextStyles.labelSmall.copyWith(
+                        style: context.textStyles.labelSmall.copyWith(
                           color: AppColors.secondary,
                           fontWeight: FontWeight.w700,
                         ),
@@ -133,14 +133,14 @@ class _ToolCardState extends State<ToolCard>
               const SizedBox(height: 12),
               Text(
                 widget.title,
-                style: AppTextStyles.heading3.copyWith(fontSize: 14),
+                style: context.textStyles.heading3.copyWith(fontSize: 14),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Text(
                 widget.subtitle,
-                style: AppTextStyles.caption,
+                style: context.textStyles.caption,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

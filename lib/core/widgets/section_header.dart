@@ -24,10 +24,10 @@ class SectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.heading3),
+                Text(title, style: context.textStyles.heading3),
                 if (subtitle != null) ...[
                   const SizedBox(height: 2),
-                  Text(subtitle!, style: AppTextStyles.caption),
+                  Text(subtitle!, style: context.textStyles.caption),
                 ],
               ],
             ),
@@ -152,7 +152,7 @@ class _GradientButtonState extends State<GradientButton>
                     children: [
                       Text(
                         widget.label,
-                        style: AppTextStyles.button.copyWith(letterSpacing: 1.2),
+                        style: context.textStyles.button.copyWith(letterSpacing: 1.2),
                       ),
                       if (widget.icon != null) ...[
                         const SizedBox(width: 8),

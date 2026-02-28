@@ -62,7 +62,7 @@ class _BodyEditorState extends State<BodyEditor> {
                 selected: sel,
                 onSelected: (_) => widget.onTypeChanged(t),
                 selectedColor: AppColors.primary.withOpacity(0.2),
-                labelStyle: AppTextStyles.labelSmall.copyWith(
+                labelStyle: context.textStyles.labelSmall.copyWith(
                   color: sel ? AppColors.primary : AppColors.textMuted,
                 ),
               ),
@@ -74,7 +74,7 @@ class _BodyEditorState extends State<BodyEditor> {
           controller: _controller,
           onChanged: _onBodyChanged,
           maxLines: 8,
-          style: AppTextStyles.code,
+          style: context.textStyles.code,
           decoration: InputDecoration(
             hintText: widget.bodyType == 'json'
                 ? '{\n  "key": "value"\n}'

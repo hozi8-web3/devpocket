@@ -39,51 +39,73 @@ class _ReferenceScreenState extends State<ReferenceScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Hero(
-          tag: 'hero-reference',
-          child: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
-        ),
-        title: Text('Reference', style: AppTextStyles.heading2),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: const [
-            Tab(text: 'HTTP Codes'),
-            Tab(text: 'Headers'),
-            Tab(text: 'Ports'),
-            Tab(text: 'Git'),
-            Tab(text: 'Linux'),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (v) => setState(() => _search = v),
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
-                contentPadding: EdgeInsets.symmetric(vertical: 10),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            expandedHeight: 180.0,
+            pinned: true,
+            leading: Hero(
+              tag: 'hero-reference',
+              child: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text('Reference', style: context.textStyles.heading2),
+              centerTitle: true,
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary.withOpacity(0.15), Colors.transparent],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Align(
+                  alignment: const Alignment(0, -0.2),
+                  child: Icon(Icons.library_books_rounded, size: 60, color: AppColors.primary.withOpacity(0.5)),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
+            bottom: TabBar(
               controller: _tabController,
-              children: [
-                _HttpCodesTab(search: _search),
-                _HeadersTab(search: _search),
-                _PortsTab(search: _search),
-                _GitTab(search: _search),
-                _LinuxTab(search: _search),
+              isScrollable: true,
+              tabs: const [
+                Tab(text: 'HTTP Codes'),
+                Tab(text: 'Headers'),
+                Tab(text: 'Ports'),
+                Tab(text: 'Git'),
+                Tab(text: 'Linux'),
               ],
             ),
           ),
         ],
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (v) => setState(() => _search = v),
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted, size: 20),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _HttpCodesTab(search: _search),
+                  _HeadersTab(search: _search),
+                  _PortsTab(search: _search),
+                  _GitTab(search: _search),
+                  _LinuxTab(search: _search),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -115,10 +137,10 @@ class _HttpCodesTab extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 8, top: 4),
-            child: Text(e.key, style: AppTextStyles.label.copyWith(color: AppColors.primary)),
+            child: Text(e.key, style: context.textStyles.label.copyWith(color: AppColors.primary)),
           ),
           ...e.value.map((c) => _RefCard(
-            leading: Text('${c.code}', style: AppTextStyles.codeBold.copyWith(color: _httpColor(c.code), fontSize: 18)),
+            leading: Text('${c.code}', style: context.textStyles.codeBold.copyWith(color: _httpColor(c.code), fontSize: 18)),
             title: c.name,
             subtitle: c.description,
             copyValue: '${c.code} ${c.name}',
@@ -199,7 +221,7 @@ class _TypeBadge extends StatelessWidget {
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Text(type == 'both' ? 'REQ/RES' : type.toUpperCase(),
-          style: AppTextStyles.labelSmall.copyWith(color: color, fontSize: 9)),
+          style: context.textStyles.labelSmall.copyWith(color: color, fontSize: 9)),
     );
   }
 }
@@ -223,7 +245,7 @@ class _PortsTab extends StatelessWidget {
       itemBuilder: (_, i) {
         final p = filtered[i];
         return _RefCard(
-          leading: Text(p.port.toString(), style: AppTextStyles.codeBold.copyWith(color: AppColors.secondary, fontSize: 16)),
+          leading: Text(p.port.toString(), style: context.textStyles.codeBold.copyWith(color: AppColors.secondary, fontSize: 16)),
           title: p.service,
           subtitle: p.description,
           copyValue: p.port.toString(),
@@ -256,7 +278,7 @@ class _GitTab extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 8, top: 4),
-            child: Text(e.key, style: AppTextStyles.label.copyWith(color: AppColors.primary)),
+            child: Text(e.key, style: context.textStyles.label.copyWith(color: AppColors.primary)),
           ),
           ...e.value.map((c) => _RefCard(
             leading: const Icon(Icons.terminal_rounded, size: 18, color: AppColors.textMuted),
@@ -294,7 +316,7 @@ class _LinuxTab extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 8, top: 4),
-            child: Text(e.key, style: AppTextStyles.label.copyWith(color: AppColors.primary)),
+            child: Text(e.key, style: context.textStyles.label.copyWith(color: AppColors.primary)),
           ),
           ...e.value.map((c) => _RefCard(
             leading: const Icon(Icons.terminal_rounded, size: 18, color: AppColors.textMuted),
@@ -346,12 +368,12 @@ class _RefCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.body.copyWith(color: AppColors.textPrimary)),
+                Text(title, style: context.textStyles.body.copyWith(color: AppColors.textPrimary)),
                 if (subtitle != null)
-                  Text(subtitle!, style: AppTextStyles.caption),
+                  Text(subtitle!, style: context.textStyles.caption),
                 if (detail != null) ...[
                   const SizedBox(height: 4),
-                  Text(detail!, style: AppTextStyles.codeSmall.copyWith(color: AppColors.textSecondary)),
+                  Text(detail!, style: context.textStyles.codeSmall.copyWith(color: AppColors.textSecondary)),
                 ],
               ],
             ),

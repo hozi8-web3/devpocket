@@ -39,7 +39,7 @@ class CollectionsDrawer extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
               child: Row(
                 children: [
-                  Text('Collections', style: AppTextStyles.heading2),
+                  Text('Collections', style: context.textStyles.heading2),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.file_upload_outlined, color: AppColors.textPrimary),
@@ -79,17 +79,17 @@ class CollectionsDrawer extends StatelessWidget {
                     return ExpansionTile(
                       leading: const Icon(Icons.folder_rounded,
                           color: AppColors.primary, size: 20),
-                      title: Text(col.name, style: AppTextStyles.body.copyWith(
+                      title: Text(col.name, style: context.textStyles.body.copyWith(
                         color: AppColors.textPrimary)),
                       subtitle: Text('${requests.length} request${requests.length == 1 ? '' : 's'}',
-                          style: AppTextStyles.caption),
+                          style: context.textStyles.caption),
                       children: requests.map((req) {
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
                           leading: _MethodBadge(method: req.method),
                           title: Text(
                             req.name ?? req.url,
-                            style: AppTextStyles.codeSmall,
+                            style: context.textStyles.codeSmall,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -157,7 +157,7 @@ class _MethodBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(method.substring(0, method.length > 3 ? 3 : method.length),
-          style: AppTextStyles.labelSmall.copyWith(color: color, fontWeight: FontWeight.w700)),
+          style: context.textStyles.labelSmall.copyWith(color: color, fontWeight: FontWeight.w700)),
     );
   }
 }

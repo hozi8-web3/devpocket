@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../../core/services/toast_service.dart';
 import '../../api_tester/models/request_model.dart';
 import '../../api_tester/models/response_model.dart';
 
@@ -58,8 +59,10 @@ class CollectionExportService {
     } catch (e) {
       debugPrint('Export failing: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to export: $e'), backgroundColor: Colors.red),
+        ToastService.show(
+          context,
+          message: 'Failed to export: $e',
+          type: ToastType.error,
         );
       }
     }
@@ -103,8 +106,10 @@ class CollectionExportService {
         }
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully imported collections!'), backgroundColor: Colors.green),
+          ToastService.show(
+            context,
+            message: 'Successfully imported collections!',
+            type: ToastType.success,
           );
         }
         return true;
@@ -112,8 +117,10 @@ class CollectionExportService {
     } catch (e) {
       debugPrint('Import failing: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to import: $e'), backgroundColor: Colors.red),
+        ToastService.show(
+          context,
+          message: 'Failed to import: $e',
+          type: ToastType.error,
         );
       }
     }

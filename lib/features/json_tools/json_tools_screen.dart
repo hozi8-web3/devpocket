@@ -92,7 +92,7 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
-        title: Text('JSON Tools', style: AppTextStyles.heading2),
+        title: Text('JSON Tools', style: context.textStyles.heading2),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -117,7 +117,7 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
     return TextField(
       controller: ctrl,
       maxLines: 8,
-      style: AppTextStyles.code,
+      style: context.textStyles.code,
       decoration: InputDecoration(hintText: hint, alignLabelWithHint: true),
     );
   }
@@ -166,14 +166,14 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
           TextField(
             controller: _inputController,
             maxLines: 5,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             decoration: const InputDecoration(hintText: 'First JSON...', alignLabelWithHint: true),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _input2Controller,
             maxLines: 5,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             decoration: const InputDecoration(hintText: 'Second JSON...', alignLabelWithHint: true),
           ),
           const SizedBox(height: 12),
@@ -207,7 +207,7 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
           TextField(
             controller: _inputController,
             maxLines: 6,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             decoration: const InputDecoration(hintText: 'Paste JSON here...', alignLabelWithHint: true),
           ),
           const SizedBox(height: 12),
@@ -216,7 +216,7 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
               Expanded(
                 child: TextField(
                   controller: _jsonPathController,
-                  style: AppTextStyles.code,
+                  style: context.textStyles.code,
                   decoration: const InputDecoration(
                     hintText: r'$.users[0].name',
                     prefixText: r'path: ',
@@ -250,7 +250,7 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
                 children: [
                   SelectableText(
                     _jsonPathResult.toString(),
-                    style: AppTextStyles.code,
+                    style: context.textStyles.code,
                   ),
                   const SizedBox(height: 8),
                   CopyButton(text: _jsonPathResult.toString()),
@@ -291,7 +291,7 @@ class _SingleInputTab extends StatelessWidget {
           TextField(
             controller: inputController,
             maxLines: 8,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             decoration: const InputDecoration(
               hintText: 'Paste JSON here...',
               alignLabelWithHint: true,
@@ -308,7 +308,7 @@ class _SingleInputTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.danger.withOpacity(0.3)),
               ),
-              child: Text(error, style: AppTextStyles.codeSmall.copyWith(color: AppColors.danger)),
+              child: Text(error, style: context.textStyles.codeSmall.copyWith(color: AppColors.danger)),
             )
           else if (output.isNotEmpty)
             isValidate
@@ -319,7 +319,7 @@ class _SingleInputTab extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppColors.success.withOpacity(0.3)),
                     ),
-                    child: Text(output, style: AppTextStyles.code.copyWith(color: AppColors.success)),
+                    child: Text(output, style: context.textStyles.code.copyWith(color: AppColors.success)),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,7 +327,7 @@ class _SingleInputTab extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Output', style: AppTextStyles.label),
+                          Text('Output', style: context.textStyles.label),
                           CopyButton(text: output),
                         ],
                       ),
@@ -403,16 +403,16 @@ class _DiffRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(prefix, style: AppTextStyles.codeBold.copyWith(color: color)),
+          Text(prefix, style: context.textStyles.codeBold.copyWith(color: color)),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(entry.key, style: AppTextStyles.codeSmall.copyWith(color: color)),
+                Text(entry.key, style: context.textStyles.codeSmall.copyWith(color: color)),
                 if (entry.oldValue != null)
-                  Text('- ${entry.oldValue}', style: AppTextStyles.codeSmall.copyWith(color: AppColors.danger)),
-                Text('  ${entry.value}', style: AppTextStyles.codeSmall.copyWith(color: AppColors.textPrimary)),
+                  Text('- ${entry.oldValue}', style: context.textStyles.codeSmall.copyWith(color: AppColors.danger)),
+                Text('  ${entry.value}', style: context.textStyles.codeSmall.copyWith(color: AppColors.textPrimary)),
               ],
             ),
           ),

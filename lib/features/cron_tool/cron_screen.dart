@@ -38,7 +38,7 @@ class _CronScreenState extends State<CronScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('Cron Parser', style: AppTextStyles.heading2),
+        title: Text('Cron Parser', style: context.textStyles.heading2),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [Tab(text: 'Parser'), Tab(text: 'Builder')],
@@ -232,7 +232,7 @@ class _CronParserTabState extends State<_CronParserTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('CRON EXPRESSION', style: AppTextStyles.caption.copyWith(color: AppColors.primary, letterSpacing: 1)),
+                    Text('CRON EXPRESSION', style: context.textStyles.caption.copyWith(color: AppColors.primary, letterSpacing: 1)),
                     CopyButton(text: _controller.text),
                   ],
                 ),
@@ -240,7 +240,7 @@ class _CronParserTabState extends State<_CronParserTab> {
                 TextField(
                   controller: _controller,
                   onChanged: _parse,
-                  style: AppTextStyles.codeMedium.copyWith(color: AppColors.secondary, fontSize: 22, letterSpacing: 6),
+                  style: context.textStyles.codeMedium.copyWith(color: AppColors.secondary, fontSize: 22, letterSpacing: 6),
                   decoration: const InputDecoration(border: InputBorder.none, filled: false),
                 ),
                 const Row(
@@ -267,7 +267,7 @@ class _CronParserTabState extends State<_CronParserTab> {
                 color: AppColors.danger.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(_error!, style: AppTextStyles.body.copyWith(color: AppColors.danger)),
+              child: Text(_error!, style: context.textStyles.body.copyWith(color: AppColors.danger)),
             )
           else if (_description.isNotEmpty)
             Container(
@@ -280,7 +280,7 @@ class _CronParserTabState extends State<_CronParserTab> {
               child: Row(children: [
                 const Icon(Icons.translate_rounded, size: 18, color: AppColors.secondary),
                 const SizedBox(width: 10),
-                Expanded(child: Text(_description, style: AppTextStyles.body)),
+                Expanded(child: Text(_description, style: context.textStyles.body)),
               ]),
             ),
 
@@ -288,7 +288,7 @@ class _CronParserTabState extends State<_CronParserTab> {
 
           // Next runs
           if (_nextRuns.isNotEmpty) ...[
-            Text('Next ${_nextRuns.length} Executions', style: AppTextStyles.label),
+            Text('Next ${_nextRuns.length} Executions', style: context.textStyles.label),
             const SizedBox(height: 8),
             ..._nextRuns.map((dt) => Container(
               margin: const EdgeInsets.only(bottom: 6),
@@ -301,7 +301,7 @@ class _CronParserTabState extends State<_CronParserTab> {
               child: Row(children: [
                 const Icon(Icons.schedule_rounded, size: 16, color: AppColors.primary),
                 const SizedBox(width: 10),
-                Text(_formatDateTime(dt), style: AppTextStyles.code),
+                Text(_formatDateTime(dt), style: context.textStyles.code),
               ]),
             )),
           ],
@@ -309,7 +309,7 @@ class _CronParserTabState extends State<_CronParserTab> {
           const SizedBox(height: 24),
 
           // Presets
-          Text('Common Presets', style: AppTextStyles.label),
+          Text('Common Presets', style: context.textStyles.label),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -319,7 +319,7 @@ class _CronParserTabState extends State<_CronParserTab> {
                 _controller.text = p.$2;
                 _parse(p.$2);
               },
-              child: Text(p.$1, style: AppTextStyles.codeSmall),
+              child: Text(p.$1, style: context.textStyles.codeSmall),
             )).toList(),
           ),
         ],
@@ -352,12 +352,12 @@ class _CronBuilderTabState extends State<_CronBuilderTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.caption),
+        Text(label, style: context.textStyles.caption),
         const SizedBox(height: 4),
         TextField(
           controller: TextEditingController(text: value),
           onChanged: onChanged,
-          style: AppTextStyles.code,
+          style: context.textStyles.code,
           decoration: InputDecoration(hintText: hint, contentPadding: const EdgeInsets.all(10)),
         ),
         const SizedBox(height: 10),
@@ -387,7 +387,7 @@ class _CronBuilderTabState extends State<_CronBuilderTab> {
             ),
             child: Row(children: [
               Expanded(
-                child: Text(_expression, style: AppTextStyles.codeMedium.copyWith(
+                child: Text(_expression, style: context.textStyles.codeMedium.copyWith(
                   color: AppColors.secondary, letterSpacing: 4)),
               ),
               CopyButton(text: _expression),

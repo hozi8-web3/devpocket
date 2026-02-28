@@ -73,11 +73,11 @@ class _GlowingEmptyStateState extends State<GlowingEmptyState>
             },
           ),
           const SizedBox(height: 32),
-          Text(widget.title, style: AppTextStyles.heading2),
+          Text(widget.title, style: context.textStyles.heading2),
           const SizedBox(height: 8),
           Text(
             widget.subtitle,
-            style: AppTextStyles.body,
+            style: context.textStyles.body,
             textAlign: TextAlign.center,
           ),
         ],

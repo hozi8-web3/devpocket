@@ -94,7 +94,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                   onPressed: () => context.pop(),
                 ),
               ),
-              title: Text('API Tester', style: AppTextStyles.heading2),
+              title: Text('API Tester', style: context.textStyles.heading2),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.save_rounded),
@@ -283,7 +283,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: [
-                      Text('History', style: AppTextStyles.heading2),
+                      Text('History', style: context.textStyles.heading2),
                       const Spacer(),
                       TextButton(
                         onPressed: () {
@@ -314,13 +314,13 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                           leading: _MethodChip(method: req.method),
                           title: Text(
                             req.url,
-                            style: AppTextStyles.codeSmall,
+                            style: context.textStyles.codeSmall,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           subtitle: Text(
                             AppFormatters.timeAgo(req.createdAt),
-                            style: AppTextStyles.caption,
+                            style: context.textStyles.caption,
                           ),
                           onTap: () {
                             notifier.loadRequest(req);
@@ -407,7 +407,7 @@ class _UrlBar extends StatelessWidget {
             padding: const EdgeInsets.only(left: 14),
             child: Text(
               'https://',
-              style: AppTextStyles.codeSmall
+              style: context.textStyles.codeSmall
                   .copyWith(color: AppColors.textMuted),
             ),
           ),
@@ -415,7 +415,7 @@ class _UrlBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               onChanged: onChanged,
-              style: AppTextStyles.code.copyWith(fontSize: 13),
+              style: context.textStyles.code.copyWith(fontSize: 13),
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 filled: false,
@@ -504,7 +504,7 @@ class _ExpandableSectionState extends State<_ExpandableSection>
                 children: [
                   Icon(widget.icon, size: 18, color: AppColors.primary),
                   const SizedBox(width: 10),
-                  Text(widget.title, style: AppTextStyles.body.copyWith(
+                  Text(widget.title, style: context.textStyles.body.copyWith(
                     color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
                   if (widget.badge != null) ...[
                     const SizedBox(width: 8),
@@ -517,7 +517,7 @@ class _ExpandableSectionState extends State<_ExpandableSection>
                       ),
                       child: Text(
                         widget.badge!,
-                        style: AppTextStyles.labelSmall.copyWith(
+                        style: context.textStyles.labelSmall.copyWith(
                           color: widget.badgeColor ?? AppColors.primary,
                           fontWeight: FontWeight.w700,
                         ),
@@ -601,7 +601,7 @@ class _SendButtonState extends State<_SendButton>
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))]
                   : [
                       Text('SEND REQUEST',
-                          style: AppTextStyles.button.copyWith(letterSpacing: 1.5)),
+                          style: context.textStyles.button.copyWith(letterSpacing: 1.5)),
                       const SizedBox(width: 10),
                       const Icon(Icons.send_rounded, color: Colors.white, size: 18),
                     ],
@@ -657,7 +657,7 @@ class _AuthEditorState extends State<_AuthEditor> {
               selected: selected,
               onSelected: (_) => setState(() => _type = t),
               selectedColor: AppColors.primary.withOpacity(0.2),
-              labelStyle: AppTextStyles.labelSmall.copyWith(
+              labelStyle: context.textStyles.labelSmall.copyWith(
                 color: selected ? AppColors.primary : AppColors.textMuted,
               ),
             );
@@ -669,7 +669,7 @@ class _AuthEditorState extends State<_AuthEditor> {
             decoration: const InputDecoration(hintText: 'Bearer token'),
             onChanged: widget.onBearerChanged,
             controller: TextEditingController(text: widget.request.bearerToken ?? ''),
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
           ),
         if (_type == 'basic') ...[
           TextField(
@@ -727,7 +727,7 @@ class _MethodChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color.withOpacity(0.4)),
       ),
-      child: Text(method, style: AppTextStyles.labelSmall.copyWith(
+      child: Text(method, style: context.textStyles.labelSmall.copyWith(
         color: color, fontWeight: FontWeight.w700)),
     );
   }

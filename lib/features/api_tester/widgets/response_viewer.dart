@@ -6,6 +6,7 @@ import '../../../core/widgets/status_badge.dart';
 import '../../../core/widgets/copy_button.dart';
 import '../../../core/widgets/code_display.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/shimmer_loader.dart';
 import '../models/response_model.dart';
 
 class ResponseViewer extends StatefulWidget {
@@ -65,13 +66,9 @@ class _ResponseViewerState extends State<ResponseViewer>
             child: Row(
               children: [
                 if (widget.isLoading)
-                  const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primary,
-                    ),
+                  const ShimmerLoader(
+                    width: 80,
+                    height: 24,
                   )
                 else if (r != null) ...[
                   if (r.errorMessage != null)
@@ -135,7 +132,20 @@ class _ResponseViewerState extends State<ResponseViewer>
   }
 
   Widget _buildBodyTab(ResponseModel? r) {
-    if (widget.isLoading) return const Center(child: CircularProgressIndicator());
+    if (widget.isLoading) {
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: 8,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: ShimmerLoader(
+            width: index % 2 == 0 ? double.infinity : MediaQuery.of(context).size.width * 0.6,
+            height: 16,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      );
+    }
     if (r == null) return const Center(child: Text('No response yet'));
     if (r.errorMessage != null) {
       return Center(
@@ -147,7 +157,7 @@ class _ResponseViewerState extends State<ResponseViewer>
               const Icon(Icons.error_outline_rounded,
                   color: AppColors.danger, size: 48),
               const SizedBox(height: 12),
-              Text(r.errorMessage!, style: AppTextStyles.body,
+              Text(r.errorMessage!, style: context.textStyles.body,
                   textAlign: TextAlign.center),
             ],
           ),
@@ -210,13 +220,13 @@ class _ResponseViewerState extends State<ResponseViewer>
               SizedBox(
                 width: 140,
                 child: Text(entry.key,
-                    style: AppTextStyles.codeSmall
+                    style: context.textStyles.codeSmall
                         .copyWith(color: AppColors.syntaxKey)),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(entry.value,
-                    style: AppTextStyles.codeSmall
+                    style: context.textStyles.codeSmall
                         .copyWith(color: AppColors.textSecondary)),
               ),
             ],
@@ -233,7 +243,7 @@ class _ResponseViewerState extends State<ResponseViewer>
       children: [
         SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: SelectableText(raw, style: AppTextStyles.codeSmall),
+          child: SelectableText(raw, style: context.textStyles.codeSmall),
         ),
         Positioned(
           top: 8,
@@ -259,7 +269,7 @@ class _StatChip extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 4),
-        Text(value, style: AppTextStyles.codeSmall.copyWith(color: AppColors.textSecondary)),
+        Text(value, style: context.textStyles.codeSmall.copyWith(color: AppColors.textSecondary)),
       ],
     );
   }

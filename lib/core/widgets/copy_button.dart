@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
+import '../services/toast_service.dart';
 
 class CopyButton extends StatefulWidget {
   final String text;
@@ -45,6 +46,16 @@ class _CopyButtonState extends State<CopyButton>
   Future<void> _copy() async {
     HapticFeedback.lightImpact();
     await Clipboard.setData(ClipboardData(text: widget.text));
+    
+    if (mounted) {
+      ToastService.show(
+        context,
+        message: 'Copied to clipboard!',
+        type: ToastType.success,
+        duration: const Duration(seconds: 2),
+      );
+    }
+    
     _controller.forward().then((_) => _controller.reverse());
     if (!mounted) return;
     setState(() => _copied = true);

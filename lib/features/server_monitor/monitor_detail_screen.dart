@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -42,7 +43,7 @@ class MonitorDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
-        title: Text(server.name, style: AppTextStyles.heading2),
+        title: Text(server.name, style: context.textStyles.heading2),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -73,15 +74,15 @@ class MonitorDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(width: 14),
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(server.status.name.toUpperCase(), style: AppTextStyles.heading2.copyWith(color: color)),
+                    Text(server.status.name.toUpperCase(), style: context.textStyles.heading2.copyWith(color: color)),
                     if (server.lastChecked != null)
-                      Text('Checked ${AppFormatters.timeAgo(server.lastChecked!)}', style: AppTextStyles.caption),
+                      Text('Checked ${AppFormatters.timeAgo(server.lastChecked!)}', style: context.textStyles.caption),
                   ]),
                   const Spacer(),
                   if (server.lastResponseMs != null)
                     Column(children: [
-                      Text('${server.lastResponseMs}ms', style: AppTextStyles.codeBold.copyWith(color: AppColors.textPrimary, fontSize: 22)),
-                      Text('Response', style: AppTextStyles.caption),
+                      Text('${server.lastResponseMs}ms', style: context.textStyles.codeBold.copyWith(color: AppColors.textPrimary, fontSize: 22)),
+                      Text('Response', style: context.textStyles.caption),
                     ]),
                 ],
               ),
@@ -108,14 +109,14 @@ class MonitorDetailScreen extends ConsumerWidget {
               child: Row(children: [
                 const Icon(Icons.link_rounded, size: 16, color: AppColors.textMuted),
                 const SizedBox(width: 8),
-                Expanded(child: Text(server.url, style: AppTextStyles.codeSmall, overflow: TextOverflow.ellipsis)),
+                Expanded(child: Text(server.url, style: context.textStyles.codeSmall, overflow: TextOverflow.ellipsis)),
               ]),
             ),
             const SizedBox(height: 16),
 
             // Response time chart
             if (responseTimes.length >= 2) ...[
-              Text('Response Times', style: AppTextStyles.label),
+              Text('Response Times', style: context.textStyles.label),
               const SizedBox(height: 8),
               SizedBox(
                 height: 140,
@@ -135,6 +136,32 @@ class MonitorDetailScreen extends ConsumerWidget {
                       dotData: FlDotData(show: false),
                     ),
                   ],
+                  lineTouchData: LineTouchData(
+                    touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
+                      if (event is FlPanDownEvent || event is FlPanUpdateEvent || event is FlTapDownEvent) {
+                        HapticFeedback.selectionClick();
+                      }
+                    },
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipColor: (touchedSpot) => AppColors.surface.withOpacity(0.95),
+                      tooltipBorder: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                      tooltipRoundedRadius: 8,
+                      getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                        return touchedSpots.map((spot) {
+                          return LineTooltipItem(
+                            '${spot.y.toInt()}ms\n',
+                            context.textStyles.codeBold.copyWith(color: AppColors.primary, fontSize: 16),
+                            children: [
+                              TextSpan(
+                                text: 'Response',
+                                style: context.textStyles.caption.copyWith(color: AppColors.textSecondary),
+                              ),
+                            ],
+                          );
+                        }).toList();
+                      },
+                    ),
+                  ),
                   gridData: FlGridData(
                     show: true,
                     drawHorizontalLine: true,
@@ -145,7 +172,7 @@ class MonitorDetailScreen extends ConsumerWidget {
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(sideTitles: SideTitles(
                       showTitles: true, reservedSize: 40,
-                      getTitlesWidget: (v, _) => Text('${v.toInt()}ms', style: AppTextStyles.caption),
+                      getTitlesWidget: (v, _) => Text('${v.toInt()}ms', style: context.textStyles.caption),
                     )),
                     bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -157,7 +184,7 @@ class MonitorDetailScreen extends ConsumerWidget {
             ],
 
             // Uptime bar
-            Text('Uptime History (recent 30)', style: AppTextStyles.label),
+            Text('Uptime History (recent 30)', style: context.textStyles.label),
             const SizedBox(height: 8),
             SizedBox(
               height: 20,
@@ -179,7 +206,7 @@ class MonitorDetailScreen extends ConsumerWidget {
             const SizedBox(height: 16),
 
             // Recent events
-            Text('Recent Events', style: AppTextStyles.label),
+            Text('Recent Events', style: context.textStyles.label),
             const SizedBox(height: 8),
             ...server.history.reversed.take(20).map((r) => Container(
               margin: const EdgeInsets.only(bottom: 6),
@@ -192,13 +219,13 @@ class MonitorDetailScreen extends ConsumerWidget {
                 Icon(r.isUp ? Icons.check_circle_rounded : Icons.cancel_rounded,
                   size: 16, color: r.isUp ? AppColors.success : AppColors.danger),
                 const SizedBox(width: 10),
-                Text(AppFormatters.dateTime(r.timestamp), style: AppTextStyles.codeSmall),
+                Text(AppFormatters.dateTime(r.timestamp), style: context.textStyles.codeSmall),
                 const Spacer(),
                 if (r.responseMs != null)
-                  Text('${r.responseMs}ms', style: AppTextStyles.codeSmall.copyWith(color: AppColors.primary)),
+                  Text('${r.responseMs}ms', style: context.textStyles.codeSmall.copyWith(color: AppColors.primary)),
                 if (r.statusCode != null) ...[
                   const SizedBox(width: 8),
-                  Text('${r.statusCode}', style: AppTextStyles.codeSmall.copyWith(color: AppColors.textMuted)),
+                  Text('${r.statusCode}', style: context.textStyles.codeSmall.copyWith(color: AppColors.textMuted)),
                 ],
               ]),
             )),
@@ -228,8 +255,8 @@ class _StatBox extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: AppTextStyles.heading2.copyWith(color: color)),
-            Text(label, style: AppTextStyles.caption),
+            Text(value, style: context.textStyles.heading2.copyWith(color: color)),
+            Text(label, style: context.textStyles.caption),
           ],
         ),
       ),

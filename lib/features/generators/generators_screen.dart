@@ -41,7 +41,7 @@ class _GeneratorsScreenState extends State<GeneratorsScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('Generators', style: AppTextStyles.heading2),
+        title: Text('Generators', style: context.textStyles.heading2),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -101,7 +101,7 @@ class _UuidTabState extends State<_UuidTab> {
               ),
               SizedBox(
                 width: 36,
-                child: Text(_count.toString(), style: AppTextStyles.code, textAlign: TextAlign.right),
+                child: Text(_count.toString(), style: context.textStyles.code, textAlign: TextAlign.right),
               ),
             ],
           ),
@@ -130,7 +130,7 @@ class _UuidTabState extends State<_UuidTab> {
             child: Row(
               children: [
                 Expanded(
-                  child: SelectableText(uuid, style: AppTextStyles.code),
+                  child: SelectableText(uuid, style: context.textStyles.code),
                 ),
                 CopyButton(text: uuid, compact: true),
               ],
@@ -194,7 +194,7 @@ class _PasswordTabState extends State<_PasswordTab> {
                   Row(
                     children: [
                       Expanded(
-                        child: SelectableText(_password, style: AppTextStyles.code),
+                        child: SelectableText(_password, style: context.textStyles.code),
                       ),
                       CopyButton(text: _password, compact: true),
                     ],
@@ -213,7 +213,7 @@ class _PasswordTabState extends State<_PasswordTab> {
               child: Slider(value: _length.toDouble(), min: 8, max: 64, divisions: 56,
                 label: _length.toString(), onChanged: (v) { setState(() => _length = v.round()); _generate(); }),
             ),
-            Text('$_length', style: AppTextStyles.code),
+            Text('$_length', style: context.textStyles.code),
           ]),
           _Toggle('Uppercase (A-Z)', _upper, (v) { setState(() => _upper = v); _generate(); }),
           _Toggle('Lowercase (a-z)', _lower, (v) { setState(() => _lower = v); _generate(); }),
@@ -257,7 +257,7 @@ class _StrengthBar extends StatelessWidget {
           ),
         )),
         const SizedBox(width: 8),
-        Text(label, style: AppTextStyles.caption.copyWith(color: color)),
+        Text(label, style: context.textStyles.caption.copyWith(color: color)),
       ],
     );
   }
@@ -271,7 +271,7 @@ class _Toggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SwitchListTile(
-    title: Text(label, style: AppTextStyles.body),
+    title: Text(label, style: context.textStyles.body),
     value: value,
     onChanged: onChanged,
     contentPadding: EdgeInsets.zero,
@@ -319,13 +319,13 @@ class _HashTabState extends State<_HashTab> {
               selected: _algo == a,
               onSelected: (_) { setState(() => _algo = a); _compute(); },
               selectedColor: AppColors.primary.withOpacity(0.2),
-              labelStyle: AppTextStyles.labelSmall.copyWith(
+              labelStyle: context.textStyles.labelSmall.copyWith(
                 color: _algo == a ? AppColors.primary : AppColors.textMuted),
             )).toList(),
           ),
           const SizedBox(height: 8),
           SwitchListTile(
-            title: Text('Uppercase output', style: AppTextStyles.body),
+            title: Text('Uppercase output', style: context.textStyles.body),
             value: _uppercase,
             onChanged: (v) { setState(() => _uppercase = v); _compute(); },
             contentPadding: EdgeInsets.zero,
@@ -377,7 +377,7 @@ class _HmacTabState extends State<_HmacTab> {
             label: Text(a.name.toUpperCase()), selected: _algo == a,
             onSelected: (_) { setState(() => _algo = a); _compute(); },
             selectedColor: AppColors.primary.withOpacity(0.2),
-            labelStyle: AppTextStyles.labelSmall.copyWith(
+            labelStyle: context.textStyles.labelSmall.copyWith(
               color: _algo == a ? AppColors.primary : AppColors.textMuted),
           )).toList()),
           if (_result.isNotEmpty) ...[
@@ -422,13 +422,13 @@ class _RandomStringTabState extends State<_RandomStringTab> {
             const SizedBox(width: 8),
             Expanded(child: Slider(value: _length.toDouble(), min: 4, max: 128, divisions: 124,
               label: _length.toString(), onChanged: (v) => setState(() => _length = v.round()))),
-            Text('$_length', style: AppTextStyles.code),
+            Text('$_length', style: context.textStyles.code),
           ]),
           Wrap(spacing: 8, children: ['alphanumeric', 'alpha', 'numeric', 'hex', 'custom'].map((c) =>
             ChoiceChip(label: Text(c), selected: _charset == c,
               onSelected: (_) => setState(() => _charset = c),
               selectedColor: AppColors.primary.withOpacity(0.2),
-              labelStyle: AppTextStyles.labelSmall.copyWith(
+              labelStyle: context.textStyles.labelSmall.copyWith(
                 color: _charset == c ? AppColors.primary : AppColors.textMuted),
             )).toList()),
           if (_charset == 'custom') ...[
@@ -441,7 +441,7 @@ class _RandomStringTabState extends State<_RandomStringTab> {
             const SizedBox(width: 8),
             Expanded(child: Slider(value: _count.toDouble(), min: 1, max: 10, divisions: 9,
               label: _count.toString(), onChanged: (v) => setState(() => _count = v.round()))),
-            Text('$_count', style: AppTextStyles.code),
+            Text('$_count', style: context.textStyles.code),
           ]),
           ElevatedButton.icon(
             onPressed: _generate,
@@ -476,11 +476,11 @@ class _ResultCard extends StatelessWidget {
         children: [
           if (label.isNotEmpty) Padding(
             padding: const EdgeInsets.only(bottom: 6),
-            child: Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
+            child: Text(label, style: context.textStyles.caption.copyWith(color: AppColors.primary)),
           ),
           Row(
             children: [
-              Expanded(child: SelectableText(value, style: AppTextStyles.codeSmall)),
+              Expanded(child: SelectableText(value, style: context.textStyles.codeSmall)),
               CopyButton(text: value, compact: true),
             ],
           ),

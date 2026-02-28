@@ -85,7 +85,7 @@ class _HeadersEditorState extends State<HeadersEditor> {
                   child: TextField(
                     controller: _keyControllers[i],
                     onChanged: (_) => _notify(),
-                    style: AppTextStyles.codeSmall.copyWith(color: AppColors.primary),
+                    style: context.textStyles.codeSmall.copyWith(color: AppColors.primary),
                     decoration: InputDecoration(
                       hintText: widget.keyHint,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -94,14 +94,14 @@ class _HeadersEditorState extends State<HeadersEditor> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(':', style: AppTextStyles.codeMedium.copyWith(color: AppColors.textMuted)),
+                  child: Text(':', style: context.textStyles.codeMedium.copyWith(color: AppColors.textMuted)),
                 ),
                 Expanded(
                   flex: 2,
                   child: TextField(
                     controller: _valControllers[i],
                     onChanged: (_) => _notify(),
-                    style: AppTextStyles.codeSmall.copyWith(color: AppColors.textPrimary),
+                    style: context.textStyles.codeSmall.copyWith(color: AppColors.textPrimary),
                     decoration: InputDecoration(
                       hintText: widget.valueHint,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -125,7 +125,7 @@ class _HeadersEditorState extends State<HeadersEditor> {
           label: Text('Add ${widget.keyHint}'),
           style: TextButton.styleFrom(
             foregroundColor: AppColors.primary,
-            textStyle: AppTextStyles.label,
+            textStyle: context.textStyles.label,
           ),
         ),
       ],

@@ -168,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ).createShader(bounds),
                             child: Text(
                               'DevPocket',
-                              style: AppTextStyles.displayLarge.copyWith(
+                              style: context.textStyles.displayLarge.copyWith(
                                 letterSpacing: 2.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -185,7 +185,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                             child: Text(
                               'THE ULTIMATE TOOLKIT',
-                              style: AppTextStyles.label.copyWith(
+                              style: context.textStyles.label.copyWith(
                                 color: AppColors.primary,
                                 letterSpacing: 3.0,
                                 fontWeight: FontWeight.bold,
@@ -318,13 +318,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 40),
                         Text(
                           page['title'],
-                          style: AppTextStyles.displayMedium,
+                          style: context.textStyles.displayMedium,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 20),
                         Text(
                           page['subtitle'],
-                          style: AppTextStyles.bodyLarge,
+                          style: context.textStyles.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -378,7 +378,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                       child: Text(
                         _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
-                        style: AppTextStyles.button.copyWith(
+                        style: context.textStyles.button.copyWith(
                           color: _currentPage == _pages.length - 1
                               ? Colors.white
                               : AppColors.textPrimary,

@@ -181,11 +181,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Update Available', style: AppTextStyles.heading2),
+                        Text('Update Available', style: context.textStyles.heading2),
                         const SizedBox(height: 4),
                         Text(
                           'Version ${info.version}',
-                          style: AppTextStyles.body.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
+                          style: context.textStyles.body.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -203,11 +203,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Release Notes', style: AppTextStyles.label.copyWith(color: AppColors.textSecondary)),
+                    Text('Release Notes', style: context.textStyles.label.copyWith(color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     Text(
                       info.releaseNotes.isEmpty ? 'Performance improvements and bug fixes.' : info.releaseNotes,
-                      style: AppTextStyles.body.copyWith(height: 1.5),
+                      style: context.textStyles.body.copyWith(height: 1.5),
                       maxLines: 8,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -303,10 +303,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('DevPocket', style: AppTextStyles.heading2),
+                    Text('DevPocket', style: context.textStyles.heading2),
                     Text(
                       'Developer Toolkit',
-                      style: AppTextStyles.caption.copyWith(
+                      style: context.textStyles.caption.copyWith(
                         color: AppColors.secondary,
                         fontSize: 10,
                       ),
@@ -369,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const EdgeInsets.symmetric(vertical: 12),
                   ),
                   style:
-                      AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+                      context.textStyles.body.copyWith(color: AppColors.textPrimary),
                 ),
               ),
             ),

@@ -8,6 +8,7 @@ import '../../core/widgets/status_badge.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/widgets/code_display.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/services/toast_service.dart';
 import 'services/jwt_service.dart';
 
 class JwtScreen extends StatefulWidget {
@@ -85,8 +86,13 @@ class _JwtScreenState extends State<JwtScreen>
       );
       setState(() => _generatedToken = token);
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Invalid JSON payload: $e')));
+      if (mounted) {
+        ToastService.show(
+          context,
+          message: 'Invalid JSON payload: $e',
+          type: ToastType.error,
+        );
+      }
     }
   }
 
@@ -101,7 +107,7 @@ class _JwtScreenState extends State<JwtScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        title: Text('JWT Decoder', style: AppTextStyles.heading2),
+        title: Text('JWT Decoder', style: context.textStyles.heading2),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [Tab(text: 'Decode'), Tab(text: 'Generate')],
@@ -124,7 +130,7 @@ class _JwtScreenState extends State<JwtScreen>
           TextField(
             controller: _tokenController,
             maxLines: 4,
-            style: AppTextStyles.codeSmall,
+            style: context.textStyles.codeSmall,
             decoration: const InputDecoration(
               hintText: 'Paste JWT token here...',
               alignLabelWithHint: true,
@@ -146,7 +152,7 @@ class _JwtScreenState extends State<JwtScreen>
               child: Row(children: [
                 const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
                 const SizedBox(width: 8),
-                Text(_error!, style: AppTextStyles.body.copyWith(color: AppColors.danger)),
+                Text(_error!, style: context.textStyles.body.copyWith(color: AppColors.danger)),
               ]),
             ),
 
@@ -258,7 +264,7 @@ class _JwtScreenState extends State<JwtScreen>
           TextField(
             controller: _payloadController,
             maxLines: 6,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             decoration: const InputDecoration(
               hintText: '{\n  "sub": "123",\n  "name": "John"\n}',
               alignLabelWithHint: true,
@@ -270,7 +276,7 @@ class _JwtScreenState extends State<JwtScreen>
           const SizedBox(height: 8),
           TextField(
             controller: _genSecretController,
-            style: AppTextStyles.code,
+            style: context.textStyles.code,
             decoration: const InputDecoration(hintText: 'your-secret-key'),
           ),
           const SizedBox(height: 16),
@@ -286,7 +292,7 @@ class _JwtScreenState extends State<JwtScreen>
                   selected: _genAlgo == a,
                   onSelected: (_) => setState(() => _genAlgo = a),
                   selectedColor: AppColors.primary.withOpacity(0.2),
-                  labelStyle: AppTextStyles.labelSmall.copyWith(
+                  labelStyle: context.textStyles.labelSmall.copyWith(
                     color: _genAlgo == a ? AppColors.primary : AppColors.textMuted,
                   ),
                 ),
@@ -312,7 +318,7 @@ class _JwtScreenState extends State<JwtScreen>
               SizedBox(
                 width: 48,
                 child: Text('${_expiryHours}h',
-                    style: AppTextStyles.code, textAlign: TextAlign.right),
+                    style: context.textStyles.code, textAlign: TextAlign.right),
               ),
             ],
           ),
@@ -346,14 +352,14 @@ class _JwtScreenState extends State<JwtScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Generated Token', style: AppTextStyles.label),
+                      Text('Generated Token', style: context.textStyles.label),
                       CopyButton(text: _generatedToken!),
                     ],
                   ),
                   const SizedBox(height: 8),
                   SelectableText(
                     _generatedToken!,
-                    style: AppTextStyles.codeSmall,
+                    style: context.textStyles.codeSmall,
                   ),
                 ],
               ),
@@ -388,12 +394,12 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 90,
-            child: Text(label, style: AppTextStyles.caption),
+            child: Text(label, style: context.textStyles.caption),
           ),
           Expanded(
             child: Text(
               value,
-              style: AppTextStyles.codeSmall.copyWith(
+              style: context.textStyles.codeSmall.copyWith(
                 color: valueColor ?? AppColors.textPrimary,
               ),
             ),
@@ -425,7 +431,7 @@ class _CodeCard extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 16, top: 10),
-                child: Text(label, style: AppTextStyles.label.copyWith(color: AppColors.primary)),
+                child: Text(label, style: context.textStyles.label.copyWith(color: AppColors.primary)),
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 12, top: 8),
