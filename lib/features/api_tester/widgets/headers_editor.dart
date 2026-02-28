@@ -96,6 +96,26 @@ class _HeadersEditorState extends State<HeadersEditor> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Empty state hint
+          if (_entries.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded,
+                      size: 16, color: AppColors.textMuted),
+                  const SizedBox(width: 8),
+                  Text(
+                    'No ${widget.keyHint.toLowerCase()}s yet — tap + to add',
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ...List.generate(_keyControllers.length, (i) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),

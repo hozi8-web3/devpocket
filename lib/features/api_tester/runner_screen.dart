@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/frosted_glass.dart';
 import 'models/runner_models.dart';
+import 'models/request_model.dart';
 import 'providers/runner_provider.dart';
 import 'providers/api_tester_provider.dart';
 
@@ -22,7 +23,18 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startRun();
+      // Only auto-start if no existing summary for this collection
+      final existing = ref.read(runnerProvider).summary;
+      if (existing == null ||
+          existing.collectionName !=
+              ref
+                  .read(apiTesterProvider)
+                  .collections
+                  .firstWhere((c) => c.id == widget.collectionId,
+                      orElse: () => CollectionModel(id: '', name: ''))
+                  .name) {
+        _startRun();
+      }
     });
   }
 
@@ -90,23 +102,35 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
   }
 
   Widget _buildProgressBar(RunSummary summary) {
-    return Container(
-      width: double.infinity,
-      height: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: context.adaptiveCardBorder,
-        borderRadius: BorderRadius.circular(2),
-      ),
-      child: FractionallySizedBox(
-        alignment: Alignment.centerLeft,
-        widthFactor: summary.progress,
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.primary,
+    final done = summary.results
+        .where((r) =>
+            r.status == RunStatus.success || r.status == RunStatus.fail)
+        .length;
+    final total = summary.results.length;
+    final isRunning = ref.watch(runnerProvider).isRunning;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isRunning)
+            Text(
+              '$done / $total requests completed',
+              style: context.textStyles.caption
+                  .copyWith(color: AppColors.primary),
+            ),
+          const SizedBox(height: 4),
+          ClipRRect(
             borderRadius: BorderRadius.circular(2),
+            child: LinearProgressIndicator(
+              value: summary.progress,
+              backgroundColor: context.adaptiveCardBorder,
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              minHeight: 4,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -117,7 +141,7 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
       itemCount: summary.results.length,
       itemBuilder: (context, index) {
         final result = summary.results[index];
-        return _RunnerResultTile(result: result);
+        return _RunnerResultTile(result: result, index: index);
       },
     );
   }
@@ -164,8 +188,9 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
 
 class _RunnerResultTile extends StatefulWidget {
   final RunnerResult result;
+  final int index;
 
-  const _RunnerResultTile({required this.result});
+  const _RunnerResultTile({required this.result, required this.index});
 
   @override
   State<_RunnerResultTile> createState() => _RunnerResultTileState();
@@ -216,11 +241,37 @@ class _RunnerResultTileState extends State<_RunnerResultTile> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Re-run button for failed requests
+                  if (result.status == RunStatus.fail ||
+                      result.status == RunStatus.pending)
+                    Consumer(
+                      builder: (ctx, ref, _) => IconButton(
+                        icon: const Icon(Icons.refresh_rounded,
+                            size: 18, color: AppColors.primary),
+                        tooltip: 'Re-run this request',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: ref.read(runnerProvider).isRunning
+                            ? null
+                            : () {
+                                final idx = widget.index;
+                                ref
+                                    .read(runnerProvider.notifier)
+                                    .runSingle(idx);
+                              },
+                      ),
+                    ),
+                  const SizedBox(width: 4),
                   if (result.status == RunStatus.running)
-                    const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2))
                   else if (hasResponse)
                     Icon(
-                      _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                      _expanded
+                          ? Icons.expand_less_rounded
+                          : Icons.expand_more_rounded,
                       size: 20,
                       color: AppColors.textMuted,
                     ),

@@ -97,16 +97,23 @@ class CollectionsDrawer extends ConsumerWidget {
                         tooltip: 'Run Collection',
                       ),
                       children: requests.map((req) {
-                        return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
-                          leading: _MethodBadge(method: req.method),
-                          title: Text(
-                            req.name ?? req.url,
-                            style: context.textStyles.codeSmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        return GestureDetector(
+                          onLongPress: () =>
+                              _showRequestMenu(context, ref, req),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 0),
+                            leading: _MethodBadge(method: req.method),
+                            title: Text(
+                              req.name ?? req.url,
+                              style: context.textStyles.codeSmall,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: const Icon(Icons.more_vert_rounded,
+                                size: 16, color: AppColors.textMuted),
+                            onTap: () => onSelect(req),
                           ),
-                          onTap: () => onSelect(req),
                         );
                       }).toList(),
                     );
@@ -119,6 +126,71 @@ class CollectionsDrawer extends ConsumerWidget {
     ),
   );
 }
+
+  void _showRequestMenu(
+      BuildContext context, WidgetRef ref, RequestModel req) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(2)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                req.name ?? req.url,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const Divider(height: 24),
+            ListTile(
+              leading: const Icon(Icons.copy_rounded, color: AppColors.primary),
+              title: const Text('Duplicate Request'),
+              onTap: () {
+                Navigator.pop(context);
+                final copy = req.copyWith(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  name: '${req.name ?? 'Request'} (copy)',
+                );
+                ref
+                    .read(apiTesterProvider.notifier)
+                    .saveToCollection(req.collectionId, name: copy.name);
+              },
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
+              title: const Text('Delete Request',
+                  style: TextStyle(color: AppColors.danger)),
+              onTap: () {
+                Navigator.pop(context);
+                ref
+                    .read(apiTesterProvider.notifier)
+                    .deleteRequest(req.id);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _showNewCollectionDialog(BuildContext context) {
     final controller = TextEditingController();

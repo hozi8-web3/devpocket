@@ -10,19 +10,28 @@ import '../../settings/providers/settings_provider.dart';
 class RunnerState {
   final RunSummary? summary;
   final bool isRunning;
+  // Persisted so navigating away doesn't lose results
+  final String? lastCollectionName;
+  final List<RequestModel> lastRequests;
 
   const RunnerState({
     this.summary,
     this.isRunning = false,
+    this.lastCollectionName,
+    this.lastRequests = const [],
   });
 
   RunnerState copyWith({
     RunSummary? summary,
     bool? isRunning,
+    String? lastCollectionName,
+    List<RequestModel>? lastRequests,
   }) {
     return RunnerState(
       summary: summary ?? this.summary,
       isRunning: isRunning ?? this.isRunning,
+      lastCollectionName: lastCollectionName ?? this.lastCollectionName,
+      lastRequests: lastRequests ?? this.lastRequests,
     );
   }
 }
@@ -97,6 +106,8 @@ class RunnerNotifier extends StateNotifier<RunnerState> {
 
     state = state.copyWith(
       isRunning: false,
+      lastCollectionName: name,
+      lastRequests: requests,
       summary: RunSummary(
         collectionName: name,
         results: state.summary!.results,
@@ -104,6 +115,48 @@ class RunnerNotifier extends StateNotifier<RunnerState> {
         finishedAt: DateTime.now(),
       ),
     );
+  }
+
+  /// Re-run a single request (e.g. a failed one) in place.
+  Future<void> runSingle(int index) async {
+    if (state.summary == null || state.isRunning) return;
+
+    final env = _ref.read(environmentProvider).activeEnvironment;
+    final variables = env?.variables ?? {};
+    final timeout = _ref.read(settingsProvider).requestTimeoutSeconds;
+    final req = state.summary!.results[index].request;
+
+    _updateResult(index, state.summary!.results[index].copyWith(status: RunStatus.running));
+    state = state.copyWith(isRunning: true);
+
+    final resolvedUrl = VariableResolver.resolve(req.url, variables);
+    final resolvedHeaders = VariableResolver.resolveMap(req.headers, variables);
+    final resolvedBody = VariableResolver.resolve(req.body, variables);
+    final resolvedReq = req.copyWith(
+      url: resolvedUrl, headers: resolvedHeaders, body: resolvedBody);
+
+    final sw = Stopwatch()..start();
+    try {
+      final response = await ApiService.sendRequest(resolvedReq, timeoutSeconds: timeout);
+      sw.stop();
+      _updateResult(index, state.summary!.results[index].copyWith(
+        status: response.isError ? RunStatus.fail : RunStatus.success,
+        response: response,
+        duration: sw.elapsed,
+      ));
+    } catch (e) {
+      sw.stop();
+      _updateResult(index, state.summary!.results[index].copyWith(
+        status: RunStatus.fail,
+        error: e.toString(),
+        duration: sw.elapsed,
+      ));
+    }
+    state = state.copyWith(isRunning: false);
+  }
+
+  void clearSummary() {
+    state = const RunnerState();
   }
 
   void _updateResult(int index, RunnerResult result) {

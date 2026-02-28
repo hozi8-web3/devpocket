@@ -166,6 +166,17 @@ class SettingsScreen extends ConsumerWidget {
               ),
               _Divider(),
               ListTile(
+                leading: const Icon(Icons.menu_book_rounded, color: AppColors.primary),
+                title: Text('Documentation', style: context.textStyles.body),
+                subtitle: Text('devpocket.gitbook.io', style: context.textStyles.caption),
+                trailing: const Icon(Icons.open_in_new_rounded, size: 16, color: AppColors.textMuted),
+                onTap: () => launchUrl(
+                  Uri.parse('https://devpocket.gitbook.io/devpocket/'),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              _Divider(),
+              ListTile(
                 leading: const Icon(Icons.code_rounded, color: AppColors.textMuted),
                 title: Text('All tools work offline', style: context.textStyles.body),
                 subtitle: Text('Except network-dependent tools', style: context.textStyles.caption),

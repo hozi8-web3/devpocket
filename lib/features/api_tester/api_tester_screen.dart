@@ -92,7 +92,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            // App bar
+            // ── Sticky App Bar with Method + URL + Send ──
             SliverAppBar(
               pinned: true,
               backgroundColor: Colors.transparent,
@@ -133,30 +133,60 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                 ),
                 const SizedBox(width: 4),
               ],
-            ),
-
-            // Method selector
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              sliver: SliverToBoxAdapter(
-                child: MethodSelector(
-                  selected: state.request.method,
-                  onChanged: notifier.updateMethod,
+              // ─ Sticky URL + Send bar lives in the AppBar bottom slot ─
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(110),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Method + URL row
+                      Row(
+                        children: [
+                          MethodSelector(
+                            selected: state.request.method,
+                            onChanged: notifier.updateMethod,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _UrlBar(
+                              controller: _urlController,
+                              method: state.request.method,
+                              onChanged: notifier.updateUrl,
+                              history: state.requestHistory,
+                              onHistorySelect: (url) {
+                                notifier.updateUrl(url);
+                                _urlController.text = url;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Send button — always visible
+                      _SendButton(
+                        isLoading: state.isLoading,
+                        onSend: () {
+                          HapticFeedback.lightImpact();
+                          ref.read(apiTesterProvider.notifier).sendRequest();
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeOut,
+                            );
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
 
-            // URL bar
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              sliver: SliverToBoxAdapter(
-                child: _UrlBar(
-                  controller: _urlController,
-                  method: state.request.method,
-                  onChanged: notifier.updateUrl,
-                ),
-              ),
-            ),
+            // Method selector (removed — now in AppBar)
+            // URL bar (removed — now in AppBar)
 
             // ── Request Editor Tabs (IndexedStack approach) ──
             SliverPadding(
@@ -261,28 +291,6 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                       ),
                     ),
                   ],
-                ),
-              ),
-            ),
-
-            // Send button
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              sliver: SliverToBoxAdapter(
-                child: _SendButton(
-                  isLoading: state.isLoading,
-                  onSend: () {
-                    HapticFeedback.lightImpact();
-                    ref.read(apiTesterProvider.notifier).sendRequest();
-                    // Scroll down to response after a moment
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      _scrollController.animateTo(
-                        _scrollController.position.maxScrollExtent,
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeOut,
-                      );
-                    });
-                  },
                 ),
               ),
             ),
@@ -487,11 +495,15 @@ class _UrlBar extends StatelessWidget {
   final TextEditingController controller;
   final String method;
   final ValueChanged<String> onChanged;
+  final List<String> history;
+  final ValueChanged<String>? onHistorySelect;
 
   const _UrlBar({
     required this.controller,
     required this.method,
     required this.onChanged,
+    this.history = const [],
+    this.onHistorySelect,
   });
 
   @override
@@ -530,6 +542,28 @@ class _UrlBar extends StatelessWidget {
               keyboardType: TextInputType.url,
             ),
           ),
+          // History dropdown button
+          if (history.isNotEmpty)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.history_rounded,
+                  size: 18, color: AppColors.textMuted),
+              tooltip: 'Recent URLs',
+              onSelected: (url) {
+                controller.text = url;
+                onHistorySelect?.call(url);
+              },
+              itemBuilder: (_) => history
+                  .take(10)
+                  .map((url) => PopupMenuItem(
+                        value: url,
+                        child: Text(
+                          url,
+                          style: const TextStyle(fontSize: 12),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ))
+                  .toList(),
+            ),
           if (controller.text.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.close_rounded, size: 18),

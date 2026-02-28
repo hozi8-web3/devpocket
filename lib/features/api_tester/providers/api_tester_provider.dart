@@ -48,6 +48,16 @@ class ApiTesterState {
       activeCollectionId: activeCollectionId ?? this.activeCollectionId,
     );
   }
+
+  /// Last 10 distinct URLs from history for the URL bar dropdown.
+  List<String> get requestHistory {
+    final seen = <String>{};
+    return history
+        .map((r) => r.url)
+        .where((url) => url.isNotEmpty && seen.add(url))
+        .take(10)
+        .toList();
+  }
 }
 
 class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
@@ -187,6 +197,13 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
 
   void loadRequest(RequestModel req) {
     state = state.copyWith(request: req, clearResponse: true);
+  }
+
+  Future<void> deleteRequest(String id) async {
+    final box = await Hive.openBox<String>(_savedReqBoxName);
+    await box.delete(id);
+    state = state.copyWith(
+        savedRequests: state.savedRequests.where((r) => r.id != id).toList());
   }
 
   void newRequest() {
