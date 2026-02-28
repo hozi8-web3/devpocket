@@ -5,6 +5,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.1] – 2026-03-01
+
+### Added
+- **Request History dropdown** on URL bar — tap the 🕒 icon to load any of the last 10 sent URLs instantly.
+- **Sticky URL bar + Send button** — moved into the AppBar's `bottom` slot so they stay visible while scrolling through tabs.
+- **Duplicate Request** — long-press any saved request in Collections to get a context menu with Duplicate and Delete options.
+- **Re-run ↺ button** — each failed or pending request in the Collection Runner now shows a re-run button to retry individually without re-running the whole collection.
+- **X / Y progress counter** — Collection Runner shows "3 / 10 requests completed" while running.
+- **Persist last run summary** — Collection Runner results survive navigation; opening the runner again shows the last result instead of auto-re-running.
+- **Empty state hints** in Params and Headers tabs — shows `ℹ No params yet — tap + to add` when the list is empty.
+- **Documentation link** in Settings → About section — opens `devpocket.gitbook.io` in the browser.
+- **GitBook badge** added to `README.md`.
+
+### Fixed
+- `CollectionModel` type reference error in `runner_screen.dart` initState — replaced with a plain `for` loop lookup.
+- `String?` nullable `collectionId` passed to `saveToCollection(String)` — guarded with early `null` return.
+- `RequestModel.copyWith(id:)` — `id` is not in `copyWith`; switched to full `RequestModel(...)` constructor for duplication.
+
+---
+
 ## [1.4.0] – 2026-03-01
 
 ### Added
