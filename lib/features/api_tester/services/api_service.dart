@@ -50,13 +50,22 @@ class ApiService {
 
     // Content-Type for body requests
     dynamic data;
-    if (['POST', 'PUT', 'PATCH', 'DELETE'].contains(request.method) &&
-        request.body.isNotEmpty) {
-      if (request.bodyType == 'json') {
-        data = request.body;
-        headers['Content-Type'] = 'application/json';
-      } else {
-        data = request.body;
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].contains(request.method.toUpperCase())) {
+      if (request.body.isNotEmpty) {
+        if (request.bodyType == 'json') {
+          data = request.body;
+          // Only set if not already present
+          if (!headers.keys.any((k) => k.toLowerCase() == 'content-type')) {
+            headers['Content-Type'] = 'application/json';
+          }
+        } else if (request.bodyType == 'form') {
+          data = request.body;
+          if (!headers.keys.any((k) => k.toLowerCase() == 'content-type')) {
+            headers['Content-Type'] = 'application/x-www-form-urlencoded';
+          }
+        } else {
+          data = request.body;
+        }
       }
     }
 

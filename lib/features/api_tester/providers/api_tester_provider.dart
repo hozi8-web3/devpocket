@@ -5,6 +5,8 @@ import 'package:uuid/uuid.dart';
 import '../models/request_model.dart';
 import '../models/response_model.dart';
 import '../services/api_service.dart';
+import '../utils/variable_resolver.dart';
+import 'environment_provider.dart';
 import '../../settings/providers/settings_provider.dart';
 
 class ApiTesterState {
@@ -58,10 +60,10 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
       : super(ApiTesterState(
           request: RequestModel(id: const Uuid().v4()),
         )) {
-    _loadData();
+    refreshData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> refreshData() async {
     final historyBox = await Hive.openBox<String>(_historyBoxName);
     final collectionsBox = await Hive.openBox<String>(_collectionsBoxName);
     final savedBox = await Hive.openBox<String>(_savedReqBoxName);
@@ -167,9 +169,19 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
 
     state = state.copyWith(isLoading: true, clearResponse: true);
 
+    final env = _ref.read(environmentProvider).activeEnvironment;
+    final variables = env?.variables ?? {};
+    
+    // Resolve variables for the one-off request
+    final resolvedReq = state.request.copyWith(
+      url: VariableResolver.resolve(state.request.url, variables),
+      headers: VariableResolver.resolveMap(state.request.headers, variables),
+      body: VariableResolver.resolve(state.request.body, variables),
+    );
+
     final timeout = _ref.read(settingsProvider).requestTimeoutSeconds;
     final response = await ApiService.sendRequest(
-      state.request,
+      resolvedReq,
       timeoutSeconds: timeout,
     );
 
@@ -198,14 +210,14 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
       await box.delete(keys.first);
     }
 
-    await _loadData();
+    await refreshData();
   }
 
   Future<void> saveToCollection(String collectionId, {String? name}) async {
     final savedBox = await Hive.openBox<String>(_savedReqBoxName);
     final req = state.request.copyWith(collectionId: collectionId, name: name);
     await savedBox.put(req.id, jsonEncode(req.toJson()));
-    await _loadData();
+    await refreshData();
   }
 
   Future<void> createCollection(String name) async {
@@ -217,13 +229,13 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
       createdAt: DateTime.now(),
     );
     await box.put(col.id, jsonEncode(col.toJson()));
-    await _loadData();
+    await refreshData();
   }
 
   Future<void> clearHistory() async {
     final box = await Hive.openBox<String>(_historyBoxName);
     await box.clear();
-    await _loadData();
+    await refreshData();
   }
 }
 

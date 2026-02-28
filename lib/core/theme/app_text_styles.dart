@@ -59,6 +59,18 @@ class AppTextStyles {
     color: _secondary,
   );
 
+  TextStyle get bodyMedium => GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: _secondary,
+  );
+
+  TextStyle get bodyBold => GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: _secondary,
+  );
+
   TextStyle get bodySmall => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w400,

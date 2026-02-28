@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/glowing_empty_state.dart';
@@ -7,7 +8,10 @@ import '../models/response_model.dart';
 import '../models/request_model.dart';
 import '../services/collection_export_service.dart';
 
-class CollectionsDrawer extends StatelessWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/api_tester_provider.dart';
+
+class CollectionsDrawer extends ConsumerWidget {
   final List<CollectionModel> collections;
   final List<RequestModel> savedRequests;
   final ValueChanged<RequestModel> onSelect;
@@ -24,7 +28,7 @@ class CollectionsDrawer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
       backgroundColor: Colors.transparent,
       child: FrostedGlass(
@@ -48,7 +52,12 @@ class CollectionsDrawer extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.file_download_outlined, color: context.adaptiveTextPrimary),
                     tooltip: 'Import Collections',
-                    onPressed: () => CollectionExportService.importFromFile(context),
+                    onPressed: () async {
+                      final success = await CollectionExportService.importFromFile(context);
+                      if (success) {
+                        ref.read(apiTesterProvider.notifier).refreshData();
+                      }
+                    },
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_rounded, color: AppColors.primary),
@@ -82,6 +91,11 @@ class CollectionsDrawer extends StatelessWidget {
                         color: context.adaptiveTextPrimary)),
                       subtitle: Text('${requests.length} request${requests.length == 1 ? '' : 's'}',
                           style: context.textStyles.caption),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.play_arrow_rounded, color: AppColors.primary),
+                        onPressed: () => context.push('/api-runner/${col.id}'),
+                        tooltip: 'Run Collection',
+                      ),
                       children: requests.map((req) {
                         return ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),

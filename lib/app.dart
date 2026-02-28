@@ -5,6 +5,9 @@ import 'core/theme/app_theme.dart';
 import 'features/settings/providers/settings_provider.dart';
 import 'features/home/home_screen.dart';
 import 'features/api_tester/api_tester_screen.dart';
+import 'features/api_tester/runner_screen.dart';
+import 'features/api_tester/environment_manager_screen.dart';
+import 'features/api_tester/api_tester_help_screen.dart';
 import 'features/jwt/jwt_screen.dart';
 import 'features/json_tools/json_tools_screen.dart';
 import 'features/generators/generators_screen.dart';
@@ -45,6 +48,18 @@ final _router = GoRouter(
     GoRoute(path: '/onboarding', pageBuilder: (ctx, state) => _buildPage(const OnboardingScreen(), state)),
     GoRoute(path: '/home', pageBuilder: (ctx, state) => _buildPage(const HomeScreen(), state)),
     GoRoute(path: '/api-tester', pageBuilder: (ctx, state) => _buildPage(const ApiTesterScreen(), state)),
+    GoRoute(
+      path: '/api-runner/:id',
+      pageBuilder: (ctx, state) => _buildPage(
+        CollectionRunnerScreen(collectionId: state.pathParameters['id'] ?? ''),
+        state,
+      ),
+    ),
+    GoRoute(
+      path: '/api-help',
+      builder: (context, state) => const ApiTesterHelpScreen(),
+    ),
+    GoRoute(path: '/environments', pageBuilder: (ctx, state) => _buildPage(const EnvironmentManagerScreen(), state)),
     GoRoute(path: '/jwt', pageBuilder: (ctx, state) => _buildPage(const JwtScreen(), state)),
     GoRoute(path: '/json-tools', pageBuilder: (ctx, state) => _buildPage(const JsonToolsScreen(), state)),
     GoRoute(path: '/generators', pageBuilder: (ctx, state) => _buildPage(const GeneratorsScreen(), state)),

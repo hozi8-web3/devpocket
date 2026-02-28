@@ -9,15 +9,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/services/toast_service.dart';
 import '../../api_tester/models/request_model.dart';
 import '../../api_tester/models/response_model.dart';
+import '../utils/postman_parser.dart';
 
 class CollectionExportService {
-  static const String _requestsBoxName = 'api_requests';
+  static const String _requestsBoxName = 'api_saved_requests';
   static const String _collectionsBoxName = 'api_collections';
 
   /// Export all collections and requests to a JSON string
-  static String exportToJson() {
-    final requestsBox = Hive.box<String>(_requestsBoxName);
-    final collectionsBox = Hive.box<String>(_collectionsBoxName);
+  static Future<String> exportToJson() async {
+    final requestsBox = await Hive.openBox<String>(_requestsBoxName);
+    final collectionsBox = await Hive.openBox<String>(_collectionsBoxName);
 
     final List<Map<String, dynamic>> requestsList = requestsBox.values
         .map((e) => jsonDecode(e) as Map<String, dynamic>)
@@ -40,7 +41,7 @@ class CollectionExportService {
   /// Trigger the export process: write to temp file and open share dialog
   static Future<void> exportAndShare(BuildContext context) async {
     try {
-      final jsonString = exportToJson();
+      final jsonString = await exportToJson();
       final directory = await getTemporaryDirectory();
       
       final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.').first;
@@ -82,27 +83,37 @@ class CollectionExportService {
         
         final Map<String, dynamic> importData = jsonDecode(jsonString);
         
-        // Basic validation
-        if (!importData.containsKey('collections') || !importData.containsKey('requests')) {
-          throw Exception('Invalid DevPocket backup format');
-        }
+        final requestsBox = await Hive.openBox<String>(_requestsBoxName);
+        final collectionsBox = await Hive.openBox<String>(_collectionsBoxName);
 
-        final requestsBox = Hive.box<String>(_requestsBoxName);
-        final collectionsBox = Hive.box<String>(_collectionsBoxName);
+        // Native DevPocket format check
+        if (importData.containsKey('collections') && importData.containsKey('requests')) {
+          final rawCols = importData['collections'] as List;
+          final rawReqs = importData['requests'] as List;
 
-        final rawCols = importData['collections'] as List;
-        final rawReqs = importData['requests'] as List;
+          for (var rawCol in rawCols) {
+            final col = CollectionModel.fromJson(rawCol);
+            await collectionsBox.put(col.id, jsonEncode(col.toJson()));
+          }
 
-        // Upsert Collections by ID
-        for (var rawCol in rawCols) {
-          final col = CollectionModel.fromJson(rawCol);
+          for (var rawReq in rawReqs) {
+            final req = RequestModel.fromJson(rawReq);
+            await requestsBox.put(req.id, jsonEncode(req.toJson()));
+          }
+        } 
+        // Postman v2.1 format check
+        else if (PostmanCollectionParser.isPostmanCollection(importData)) {
+          final result = PostmanCollectionParser.parse(importData);
+          final col = result['collection'] as CollectionModel;
+          final reqs = result['requests'] as List<RequestModel>;
+
           await collectionsBox.put(col.id, jsonEncode(col.toJson()));
-        }
-
-        // Upsert Requests by ID
-        for (var rawReq in rawReqs) {
-          final req = RequestModel.fromJson(rawReq);
-          await requestsBox.put(req.id, jsonEncode(req.toJson()));
+          for (var req in reqs) {
+            await requestsBox.put(req.id, jsonEncode(req.toJson()));
+          }
+        } 
+        else {
+          throw Exception('Invalid DevPocket backup or Postman collection format');
         }
 
         if (context.mounted) {

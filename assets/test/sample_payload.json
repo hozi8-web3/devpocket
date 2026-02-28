@@ -1,0 +1,11 @@
+{
+  "test_id": "dp-12345",
+  "status": "success",
+  "message": "This is a sample payload for DevPocket API testing.",
+  "metadata": {
+    "version": "1.3.0",
+    "environment": "test",
+    "timestamp": "2026-02-28T23:00:00Z"
+  },
+  "tags": ["testing", "devpocket", "pro-update"]
+}

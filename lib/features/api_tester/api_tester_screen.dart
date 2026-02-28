@@ -14,6 +14,9 @@ import 'package:devpocket/features/api_tester/widgets/headers_editor.dart';
 import 'package:devpocket/features/api_tester/widgets/body_editor.dart';
 import 'package:devpocket/features/api_tester/widgets/response_viewer.dart';
 import 'package:devpocket/features/api_tester/widgets/collections_drawer.dart';
+import 'package:devpocket/features/api_tester/widgets/environment_selector.dart';
+import 'package:devpocket/features/api_tester/runner_screen.dart';
+import 'package:devpocket/features/api_tester/environment_manager_screen.dart';
 
 class ApiTesterScreen extends ConsumerStatefulWidget {
   const ApiTesterScreen({super.key});
@@ -91,6 +94,12 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
               ),
               title: Text('API Tester', style: context.textStyles.heading2),
               actions: [
+                const EnvironmentSelector(),
+                IconButton(
+                  icon: const Icon(Icons.help_outline_rounded),
+                  tooltip: 'How to use',
+                  onPressed: () => context.push('/api-help'),
+                ),
                 IconButton(
                   icon: const Icon(Icons.save_rounded),
                   tooltip: 'Save to Collection',

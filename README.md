@@ -13,6 +13,13 @@ DevPocket is a premium, beautifully crafted multi-tool designed specifically for
 
 Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
 
+### 📜 Changelog v1.3.0 (Postman-Level Pro Update)
+*   **Collection Runner**: Execute entire API collections with a single tap.
+*   **Environment Variables**: Manage dynamic placeholders (`{{baseUrl}}`, `{{apiKey}}`) and switch between Dev/Staging/Prod environments.
+*   **Documentation Pro v2.0**: A comprehensive, GitBook-style manual with real-time search and deep linking. [View Docs](./detailed/index.html)
+*   **Smart Payload Import**: Import individual `.json` or `.txt` payloads directly into the request body with one tap.
+*   **Pro Dashboard**: Real-time batch testing dashboard with pass/fail metrics and latency analysis.
+
 ### 📜 Changelog v1.2.6 (Full HTTP Support)
 *   **Plain HTTP Support**: Explicitly allowed cleartext traffic for both Android and iOS release builds.
 *   **Protocol Flexibility**: Refined API Tester logic to allow intentional `http://` calls (like httpbin or local servers).
