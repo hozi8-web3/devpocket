@@ -179,7 +179,7 @@ class SettingsScreen extends ConsumerWidget {
             child: Container(
               child: InkWell(
                 borderRadius: BorderRadius.circular(30),
-                onTap: () => launchUrl(Uri.parse('https://github.com/Hozaifa-ali')),
+                onTap: () => launchUrl(Uri.parse('https://github.com/hozi8-web3')),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   child: Row(
