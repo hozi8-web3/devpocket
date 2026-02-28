@@ -29,12 +29,28 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
   final _urlController = TextEditingController();
   final _scrollController = ScrollController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _activeTab = 0; // 0=Params, 1=Auth, 2=Headers, 3=Body
 
   @override
   void initState() {
     super.initState();
     final req = ref.read(apiTesterProvider).request;
     _urlController.text = req.url;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Listen to URL changes from provider to update controller
+    ref.listen(apiTesterProvider.select((s) => s.request.url), (prev, next) {
+      if (next != _urlController.text) {
+        // Prevent cursor jumping by only updating if different
+        _urlController.value = _urlController.value.copyWith(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    });
   }
 
   @override
@@ -142,72 +158,108 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
               ),
             ),
 
-            // Expandable sections
+            // ── Request Editor Tabs (IndexedStack approach) ──
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    // Params
-                    _ExpandableSection(
-                      icon: Icons.tune_rounded,
-                      title: 'Params',
-                      badge: state.request.params.isNotEmpty
-                          ? '${state.request.params.length}'
-                          : null,
-                      child: HeadersEditor(
-                        pairs: state.request.params,
-                        onChanged: notifier.updateParams,
-                        keyHint: 'Key',
-                        valueHint: 'Value',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Headers
-                    _ExpandableSection(
-                      icon: Icons.code_rounded,
-                      title: 'Headers',
-                      badge: state.request.headers.isNotEmpty
-                          ? '${state.request.headers.length}'
-                          : null,
-                      child: HeadersEditor(
-                        pairs: state.request.headers,
-                        onChanged: notifier.updateHeaders,
-                        keyHint: 'Header name',
-                        valueHint: 'Value',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Body
-                    if (['POST', 'PUT', 'PATCH', 'DELETE']
-                        .contains(state.request.method))
-                      _ExpandableSection(
-                        icon: Icons.edit_note_rounded,
-                        title: 'Body',
-                        child: BodyEditor(
-                          body: state.request.body,
-                          bodyType: state.request.bodyType,
-                          onBodyChanged: notifier.updateBody,
-                          onTypeChanged: notifier.updateBodyType,
+                    // ── Tab Bar ──────────────────────────────────
+                    Container(
+                      decoration: BoxDecoration(
+                        color: context.adaptiveGlassSurface,
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(16)),
+                        border: Border(
+                          top: BorderSide(color: context.adaptiveGlassBorder),
+                          left: BorderSide(color: context.adaptiveGlassBorder),
+                          right: BorderSide(color: context.adaptiveGlassBorder),
                         ),
                       ),
-                    if (['POST', 'PUT', 'PATCH', 'DELETE']
-                        .contains(state.request.method))
-                      const SizedBox(height: 8),
-                    // Auth
-                    _ExpandableSection(
-                      icon: Icons.lock_outline_rounded,
-                      title: 'Authorization',
-                      badge: _authBadge(state.request),
-                      badgeColor: AppColors.success,
-                      child: _AuthEditor(
-                        request: state.request,
-                        onBearerChanged: notifier.updateBearerToken,
-                        onBasicChanged: notifier.updateBasicAuth,
-                        onApiKeyChanged: notifier.updateApiKey,
+                      child: Row(
+                        children: [
+                          _buildTab('Params', 0),
+                          _buildTab('Auth', 1),
+                          _buildTab('Headers', 2),
+                          if (['POST', 'PUT', 'PATCH', 'DELETE']
+                              .contains(state.request.method))
+                            _buildTab('Body', 3),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    // ── Tab Content ──────────────────────────────
+                    Container(
+                      height: 270,
+                      decoration: BoxDecoration(
+                        color: context.adaptiveGlassSurface,
+                        borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(16)),
+                        border: Border(
+                          bottom: BorderSide(color: context.adaptiveGlassBorder),
+                          left: BorderSide(color: context.adaptiveGlassBorder),
+                          right: BorderSide(color: context.adaptiveGlassBorder),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(16)),
+                        child: IndexedStack(
+                          index: _activeTab.clamp(
+                            0,
+                            ['POST', 'PUT', 'PATCH', 'DELETE']
+                                    .contains(state.request.method)
+                                ? 3
+                                : 2,
+                          ),
+                          children: [
+                            // 0 — Params
+                            SingleChildScrollView(
+                              padding: const EdgeInsets.all(12),
+                              child: HeadersEditor(
+                                pairs: state.request.params,
+                                onChanged: notifier.updateParams,
+                                keyHint: 'Param',
+                                valueHint: 'Value',
+                              ),
+                            ),
+                            // 1 — Auth
+                            SingleChildScrollView(
+                              padding: const EdgeInsets.all(12),
+                              child: _AuthEditor(
+                                request: state.request,
+                                onBearerChanged: notifier.updateBearerToken,
+                                onBasicChanged: notifier.updateBasicAuth,
+                                onApiKeyChanged: notifier.updateApiKey,
+                              ),
+                            ),
+                            // 2 — Headers
+                            SingleChildScrollView(
+                              padding: const EdgeInsets.all(12),
+                              child: HeadersEditor(
+                                pairs: state.request.headers,
+                                onChanged: notifier.updateHeaders,
+                                keyHint: 'Header',
+                                valueHint: 'Value',
+                              ),
+                            ),
+                            // 3 — Body
+                            if (['POST', 'PUT', 'PATCH', 'DELETE']
+                                .contains(state.request.method))
+                              SingleChildScrollView(
+                                padding: const EdgeInsets.all(12),
+                                child: BodyEditor(
+                                  body: state.request.body,
+                                  bodyType: state.request.bodyType,
+                                  onBodyChanged: notifier.updateBody,
+                                  onTypeChanged: notifier.updateBodyType,
+                                ),
+                              )
+                            else
+                              const SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -344,6 +396,36 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
     );
   }
 
+  Widget _buildTab(String label, int index) {
+    final isActive = _activeTab == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _activeTab = index),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? AppColors.primary : Colors.transparent,
+                width: 2,
+              ),
+            ),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+              color: isActive ? AppColors.primary : AppColors.textMuted,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showSaveDialog(
       BuildContext context, ApiTesterNotifier notifier, ApiTesterState state) {
     final nameController = TextEditingController();
@@ -378,6 +460,23 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
             child: const Text('Save'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ------ Tab Content (transparent background) ------
+class _TabContent extends StatelessWidget {
+  final Widget child;
+  const _TabContent({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.transparent,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: child,
       ),
     );
   }
@@ -440,117 +539,6 @@ class _UrlBar extends StatelessWidget {
                 onChanged('');
               },
             ),
-        ],
-      ),
-    );
-  }
-}
-
-// ------ Expandable Section ------
-class _ExpandableSection extends StatefulWidget {
-  final IconData icon;
-  final String title;
-  final String? badge;
-  final Color? badgeColor;
-  final Widget child;
-
-  const _ExpandableSection({
-    required this.icon,
-    required this.title,
-    this.badge,
-    this.badgeColor,
-    required this.child,
-  });
-
-  @override
-  State<_ExpandableSection> createState() => _ExpandableSectionState();
-}
-
-class _ExpandableSectionState extends State<_ExpandableSection>
-    with SingleTickerProviderStateMixin {
-  bool _expanded = false;
-  late AnimationController _controller;
-  late Animation<double> _expandAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
-    _expandAnim = CurvedAnimation(
-        parent: _controller, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.adaptiveGlassSurface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.adaptiveGlassBorder),
-      ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () {
-              setState(() => _expanded = !_expanded);
-              _expanded ? _controller.forward() : _controller.reverse();
-            },
-            borderRadius: BorderRadius.circular(14),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  Icon(widget.icon, size: 18, color: AppColors.primary),
-                  const SizedBox(width: 10),
-                  Text(widget.title, style: context.textStyles.body.copyWith(
-                    color: context.adaptiveTextPrimary,
-                    fontWeight: FontWeight.w500,
-                  )),
-                  if (widget.badge != null) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: (widget.badgeColor ?? AppColors.primary).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: (widget.badgeColor ?? AppColors.primary).withOpacity(0.3)),
-                      ),
-                      child: Text(
-                        widget.badge!,
-                        style: context.textStyles.labelSmall.copyWith(
-                          color: widget.badgeColor ?? AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const Spacer(),
-                  RotationTransition(
-                    turns: Tween(begin: 0.0, end: 0.5).animate(_expandAnim),
-                    child: Icon(
-                      Icons.expand_more_rounded,
-                      size: 20,
-                      color: context.adaptiveTextSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizeTransition(
-            sizeFactor: _expandAnim,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
-              child: widget.child,
-            ),
-          ),
         ],
       ),
     );

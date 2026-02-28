@@ -8,38 +8,11 @@
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white)
+![Version](https://img.shields.io/badge/version-1.4.0-brightgreen?style=for-the-badge)
 
-DevPocket is a premium, beautifully crafted multi-tool designed specifically for developers. It brings essential utilities like API testing, JWT decoding, server monitoring, and data encoding directly to your mobile device, ensuring you have the tools you need even when you're offline.
+DevPocket is a premium, beautifully crafted multi-tool designed specifically for developers. It brings essential utilities like API testing, JWT decoding, server monitoring, and a real Linux-like terminal directly to your mobile device — fully functional offline.
 
-Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
-
-### 📜 Changelog v1.3.0 (Postman-Level Pro Update)
-*   **Collection Runner**: Execute entire API collections with a single tap.
-*   **Environment Variables**: Manage dynamic placeholders (`{{baseUrl}}`, `{{apiKey}}`) and switch between Dev/Staging/Prod environments.
-*   **Documentation Pro v2.0**: A comprehensive, GitBook-style manual with real-time search and deep linking. [View Docs](./detailed/index.html)
-*   **Smart Payload Import**: Import individual `.json` or `.txt` payloads directly into the request body with one tap.
-*   **Pro Dashboard**: Real-time batch testing dashboard with pass/fail metrics and latency analysis.
-
-### 📜 Changelog v1.2.6 (Full HTTP Support)
-*   **Plain HTTP Support**: Explicitly allowed cleartext traffic for both Android and iOS release builds.
-*   **Protocol Flexibility**: Refined API Tester logic to allow intentional `http://` calls (like httpbin or local servers).
-
-### 📜 Changelog v1.2.5 (Connectivity Fix)
-*   **Android Network Permissions**: Added `ACCESS_WIFI_STATE`, `CHANGE_WIFI_STATE`, `WIFI_LOCK`, and `CHANGE_NETWORK_STATE` to resolve connectivity issues in release builds.
-*   **Background Monitoring Stability**: Improved network state polling resilience for the Server Monitor.
-
-### 📜 Changelog v1.2.0 (Ultimate UI & Polish)
-*   **Ultimate UI Polish**: Z-Axis Transitions, Shimmer Loading Skeletons, and Parallax Scrolling Headers.
-*   **Interactive Haptic Charts**: Touch-controlled sparklines with tooltips in Server Monitor.
-*   **Floating Animated Toasts**: Frosted-glass top notifications replacing standard snackbars.
-*   **Light Mode Optimization**: Refactored theme engine for perfect text contrast in Light Mode.
-*   **Dynamic Versioning**: Settings screen now displays real-time version info.
-*   **Developer Connect**: Added tap-to-open GitHub profile link in Settings.
-
-### 📜 Changelog v1.1.0 (Advanced Pro Update)
-*   **In-App Updates**: Automatic secure version checks via GitHub API.
-*   **API Collections Import / Export**: Backup and share your entire workspace as JSON.
-*   **Custom Branding**: Official logo integration and premium asset updates.
+� **[View Full Changelog →](./CHANGELOG.md)**
 
 ## 📸 Screenshots
 <p align="center">
@@ -53,7 +26,8 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
 
 ## ✨ Features
 
-- **🌐 API Tester**: A fully-featured REST client supporting HTTP methods, headers, and bodies. Save requests to Collections for later use.
+- **🌐 API Tester**: Postman-level REST client — tabbed editor (Params, Auth, Headers, Body), collection runner, environment variables, Bearer/Basic/API-Key auth, HTML response preview.
+- **💻 Terminal**: Real Termux-like Linux shell. Execute actual Android shell commands, stream live output, track working directory, multi-session tabs, Ctrl+C process kill.
 - **🔒 JWT Decoder & Generator**: Decode JSON Web Tokens to inspect payloads, verify signatures, or instantly generate new tokens with custom secrets.
 - **📊 Server Monitor**: Keep tabs on your infrastructure. Ping servers, track response times, and view uptime history in beautiful sparkline charts.
 - **🛠 JSON Tools**: Format, minify, and validate JSON payloads. Compare differences between objects or isolate nodes using JSONPath.
@@ -63,9 +37,9 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
 - **⏳ Cron Parser**: Transform complex crontab strings into human-readable schedules, and view up to the next 5 execution times.
 - **📚 Reference Cheatsheets**: Quick access to HTTP Status Codes, Git Commands, common Linux network tools, and TCP/UDP ports.
 
-## 🎨 Premium UI/X
+## 🎨 Premium UI/UX
 - **Glassmorphism Design**: Frosted glass AppBars and bottom sheets for a modern aesthetic.
-- **Interactive Animations**: Delightful micro-animations and Lottie onboarding.
+- **Interactive Animations**: Delightful micro-animations and shimmer skeleton loading.
 - **Dynamic Themes**: Choose between Light, Dark, and AMOLED Dark modes.
 - **Haptic Feedback**: Subtle physical responses on key actions for a tactile experience.
 
@@ -97,7 +71,7 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
    ```
 
 ## 📦 Releases & CI/CD
-Whenever a version tag (e.g., `v1.2.5`) is pushed, the GitHub Actions pipeline automatically compiles a clean release APK and attaches it to the Releases page.
+Whenever a version tag (e.g., `v1.4.0`) is pushed, the GitHub Actions pipeline automatically compiles a clean release APK and attaches it to the Releases page.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! 

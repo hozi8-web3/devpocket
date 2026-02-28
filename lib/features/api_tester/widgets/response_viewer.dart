@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/status_badge.dart';
@@ -26,7 +27,7 @@ class ResponseViewer extends StatefulWidget {
 class _ResponseViewerState extends State<ResponseViewer>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  static const _tabs = ['Body', 'Headers', 'Raw'];
+  static const _tabs = ['Body', 'Headers', 'Preview', 'Raw'];
 
   @override
   void initState() {
@@ -121,6 +122,8 @@ class _ResponseViewerState extends State<ResponseViewer>
                 _buildBodyTab(r),
                 // Headers tab
                 _buildHeadersTab(r),
+                // Preview tab
+                _buildPreviewTab(r),
                 // Raw tab
                 _buildRawTab(r),
               ],
@@ -250,6 +253,74 @@ class _ResponseViewerState extends State<ResponseViewer>
           right: 8,
           child: CopyButton(text: raw),
         ),
+      ],
+    );
+  }
+
+  Widget _buildPreviewTab(ResponseModel? r) {
+    if (r == null || r.body.isEmpty) {
+      return const Center(child: Text('No response to preview'));
+    }
+
+    final contentType = r.headers['content-type'] ?? '';
+    final isHtml = contentType.contains('text/html') ||
+        r.body.trimLeft().startsWith('<');
+
+    if (isHtml) {
+      // Real HTML rendering via flutter_widget_from_html_core
+      return Container(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: HtmlWidget(
+            r.body,
+            textStyle: const TextStyle(
+              fontSize: 13,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // For JSON / plain text — show a formatted preview
+    final isJson = contentType.contains('json') ||
+        r.body.trimLeft().startsWith('{') ||
+        r.body.trimLeft().startsWith('[');
+
+    if (isJson) {
+      String pretty = r.body;
+      try {
+        final decoded = json.decode(r.body);
+        pretty = const JsonEncoder.withIndent('  ').convert(decoded);
+      } catch (_) {}
+      return Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: SelectableText(
+              pretty,
+              style: context.textStyles.codeSmall.copyWith(
+                color: const Color(0xFF98C379), // green for JSON
+              ),
+            ),
+          ),
+          Positioned(top: 8, right: 8, child: CopyButton(text: pretty)),
+        ],
+      );
+    }
+
+    // Fallback for plain text / XML
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: SelectableText(
+            r.body,
+            style: context.textStyles.codeSmall,
+          ),
+        ),
+        Positioned(top: 8, right: 8, child: CopyButton(text: r.body)),
       ],
     );
   }

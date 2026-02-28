@@ -22,8 +22,9 @@ class HeadersEditor extends StatefulWidget {
 
 class _HeadersEditorState extends State<HeadersEditor> {
   late List<MapEntry<String, String>> _entries;
-  late List<TextEditingController> _keyControllers;
-  late List<TextEditingController> _valControllers;
+  List<TextEditingController> _keyControllers = [];
+  List<TextEditingController> _valControllers = [];
+  bool _controllersInitialized = false;
 
   @override
   void initState() {
@@ -32,9 +33,26 @@ class _HeadersEditorState extends State<HeadersEditor> {
     _initControllers();
   }
 
+  @override
+  void didUpdateWidget(HeadersEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.pairs != oldWidget.pairs) {
+      _entries = widget.pairs.entries.toList();
+      _initControllers();
+    }
+  }
+
   void _initControllers() {
-    _keyControllers = _entries.map((e) => TextEditingController(text: e.key)).toList();
-    _valControllers = _entries.map((e) => TextEditingController(text: e.value)).toList();
+    // Dispose old controllers before creating new ones
+    if (_controllersInitialized) {
+      for (final c in _keyControllers) c.dispose();
+      for (final c in _valControllers) c.dispose();
+    }
+    _keyControllers =
+        _entries.map((e) => TextEditingController(text: e.key)).toList();
+    _valControllers =
+        _entries.map((e) => TextEditingController(text: e.value)).toList();
+    _controllersInitialized = true;
   }
 
   void _notify() {
@@ -73,75 +91,78 @@ class _HeadersEditorState extends State<HeadersEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ...List.generate(_keyControllers.length, (i) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _keyControllers[i],
-                    onChanged: (_) => _notify(),
-                    style: context.textStyles.codeSmall.copyWith(color: AppColors.primary),
-                    decoration: InputDecoration(
-                      hintText: widget.keyHint,
-                      hintStyle: context.textStyles.codeSmall.copyWith(
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ...List.generate(_keyControllers.length, (i) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _keyControllers[i],
+                      onChanged: (_) => _notify(),
+                      style: context.textStyles.codeSmall.copyWith(color: AppColors.primary),
+                      decoration: InputDecoration(
+                        hintText: widget.keyHint,
+                        hintStyle: context.textStyles.codeSmall.copyWith(
+                          color: context.adaptiveTextSecondary,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: Text(
+                      ':',
+                      style: context.textStyles.codeMedium.copyWith(
                         color: context.adaptiveTextSecondary,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    ':',
-                    style: context.textStyles.codeMedium.copyWith(
-                      color: context.adaptiveTextSecondary,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _valControllers[i],
-                    onChanged: (_) => _notify(),
-                    style: context.textStyles.codeSmall.copyWith(
-                      color: context.adaptiveTextPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: widget.valueHint,
-                      hintStyle: context.textStyles.codeSmall.copyWith(
-                        color: context.adaptiveTextSecondary,
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      controller: _valControllers[i],
+                      onChanged: (_) => _notify(),
+                      style: context.textStyles.codeSmall.copyWith(
+                        color: context.adaptiveTextPrimary,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: InputDecoration(
+                        hintText: widget.valueHint,
+                        hintStyle: context.textStyles.codeSmall.copyWith(
+                          color: context.adaptiveTextSecondary,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
-                  color: context.adaptiveTextSecondary,
-                  onPressed: () => _remove(i),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
+                    color: context.adaptiveTextSecondary,
+                    onPressed: () => _remove(i),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            );
+          }),
+          TextButton.icon(
+            onPressed: _add,
+            icon: const Icon(Icons.add_rounded, size: 16),
+            label: Text('Add ${widget.keyHint}'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primary,
+              textStyle: context.textStyles.label,
             ),
-          );
-        }),
-        TextButton.icon(
-          onPressed: _add,
-          icon: const Icon(Icons.add_rounded, size: 16),
-          label: Text('Add ${widget.keyHint}'),
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.primary,
-            textStyle: context.textStyles.label,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

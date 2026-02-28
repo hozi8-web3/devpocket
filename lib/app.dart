@@ -21,6 +21,7 @@ import 'features/reference/reference_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/help/help_screen.dart';
 import 'features/splash/splash_screen.dart';
+import 'features/terminal/terminal_screen.dart';
 
 CustomTransitionPage _buildPage(Widget child, GoRouterState state) {
   return CustomTransitionPage(
@@ -78,6 +79,7 @@ final _router = GoRouter(
     GoRoute(path: '/reference', pageBuilder: (ctx, state) => _buildPage(const ReferenceScreen(), state)),
     GoRoute(path: '/help', pageBuilder: (ctx, state) => _buildPage(const HelpScreen(), state)),
     GoRoute(path: '/settings', pageBuilder: (ctx, state) => _buildPage(const SettingsScreen(), state)),
+    GoRoute(path: '/terminal', pageBuilder: (ctx, state) => _buildPage(const TerminalScreen(), state)),
   ],
 );
 

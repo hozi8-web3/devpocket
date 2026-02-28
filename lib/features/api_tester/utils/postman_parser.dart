@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:uuid/uuid.dart';
 import '../models/request_model.dart';
 import '../models/response_model.dart';
@@ -92,6 +93,28 @@ class PostmanCollectionParser {
           if (options is Map && options.containsKey('raw')) {
             final language = options['raw']['language'];
             if (language == 'json') bodyType = 'json';
+          }
+        }
+      }
+
+      // Auth (Directly convert to headers)
+      final auth = req['auth'];
+      if (auth is Map) {
+        final type = auth['type'];
+        if (type == 'bearer') {
+          final bearer = auth['bearer'];
+          if (bearer is List && bearer.isNotEmpty) {
+            final token = bearer.firstWhere((e) => e['key'] == 'token', orElse: () => {'value': ''})['value'];
+            headers['Authorization'] = 'Bearer $token';
+          }
+        } else if (type == 'basic') {
+          final basic = auth['basic'];
+          if (basic is List && basic.length >= 2) {
+            final user = basic.firstWhere((e) => e['key'] == 'username', orElse: () => {'value': ''})['value'];
+            final pass = basic.firstWhere((e) => e['key'] == 'password', orElse: () => {'value': ''})['value'];
+            final bytes = utf8.encode('$user:$pass');
+            final base64Str = base64.encode(bytes);
+            headers['Authorization'] = 'Basic $base64Str';
           }
         }
       }

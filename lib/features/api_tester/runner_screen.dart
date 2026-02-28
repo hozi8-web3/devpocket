@@ -117,51 +117,9 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
       itemCount: summary.results.length,
       itemBuilder: (context, index) {
         final result = summary.results[index];
-        return Card(
-          elevation: 0,
-          margin: const EdgeInsets.only(bottom: 8),
-          color: context.adaptiveCard,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: context.adaptiveCardBorder),
-          ),
-          child: ListTile(
-            dense: true,
-            leading: _buildStatusIcon(result.status),
-            title: Text(
-              result.request.name ?? result.request.url,
-              style: context.textStyles.body,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              result.status == RunStatus.success
-                  ? '${result.response?.statusCode} OK • ${result.duration?.inMilliseconds}ms'
-                  : result.status == RunStatus.fail
-                      ? (result.error ?? 'Failed with status ${result.response?.statusCode}')
-                      : 'Pending',
-              style: context.textStyles.caption,
-            ),
-            trailing: result.status == RunStatus.running
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                : null,
-          ),
-        );
+        return _RunnerResultTile(result: result);
       },
     );
-  }
-
-  Widget _buildStatusIcon(RunStatus status) {
-    switch (status) {
-      case RunStatus.success:
-        return const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20);
-      case RunStatus.fail:
-        return const Icon(Icons.error_rounded, color: AppColors.danger, size: 20);
-      case RunStatus.running:
-        return const Icon(Icons.play_circle_filled_rounded, color: AppColors.primary, size: 20);
-      case RunStatus.pending:
-        return const Icon(Icons.circle_outlined, color: Colors.grey, size: 20);
-    }
   }
 
   Widget _buildSummaryFooter(RunSummary summary) {
@@ -201,5 +159,158 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
         Text(label, style: context.textStyles.caption),
       ],
     );
+  }
+}
+
+class _RunnerResultTile extends StatefulWidget {
+  final RunnerResult result;
+
+  const _RunnerResultTile({required this.result});
+
+  @override
+  State<_RunnerResultTile> createState() => _RunnerResultTileState();
+}
+
+class _RunnerResultTileState extends State<_RunnerResultTile> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final result = widget.result;
+    final response = result.response;
+    final hasResponse = response != null;
+
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 8),
+      color: context.adaptiveCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: _expanded ? AppColors.primary.withOpacity(0.5) : context.adaptiveCardBorder,
+          width: _expanded ? 1.5 : 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: hasResponse ? () => setState(() => _expanded = !_expanded) : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          children: [
+            ListTile(
+              dense: true,
+              leading: _buildStatusIcon(result.status),
+              title: Text(
+                result.request.name ?? result.request.url,
+                style: context.textStyles.body.copyWith(fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                result.status == RunStatus.success
+                    ? '${response?.statusCode} ${response?.reasonPhrase} • ${result.duration?.inMilliseconds}ms'
+                    : result.status == RunStatus.fail
+                        ? (result.error ?? 'Failed with status ${response?.statusCode}')
+                        : 'Pending',
+                style: context.textStyles.caption,
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (result.status == RunStatus.running)
+                    const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  else if (hasResponse)
+                    Icon(
+                      _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                      size: 20,
+                      color: AppColors.textMuted,
+                    ),
+                ],
+              ),
+            ),
+            if (_expanded && hasResponse)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Divider(height: 1),
+                    const SizedBox(height: 12),
+                    _buildSectionTitle('Headers'),
+                    const SizedBox(height: 4),
+                    _buildHeadersView(response!.headers),
+                    const SizedBox(height: 12),
+                    _buildSectionTitle('Body'),
+                    const SizedBox(height: 4),
+                    _buildBodyView(response.body),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title.toUpperCase(),
+      style: context.textStyles.labelSmall.copyWith(
+        color: AppColors.primary,
+        letterSpacing: 1.2,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+
+  Widget _buildHeadersView(Map<String, String> headers) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: context.adaptiveCardBorder.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: headers.entries.map((e) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${e.key}: ', style: context.textStyles.caption.copyWith(fontWeight: FontWeight.bold)),
+              Expanded(child: Text(e.value, style: context.textStyles.caption)),
+            ],
+          ),
+        )).toList(),
+      ),
+    );
+  }
+
+  Widget _buildBodyView(String body) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.adaptiveCardBorder.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        body.isEmpty ? 'Empty response body' : body,
+        style: context.textStyles.codeSmall.copyWith(fontSize: 11),
+        maxLines: 15,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildStatusIcon(RunStatus status) {
+    switch (status) {
+      case RunStatus.success:
+        return const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20);
+      case RunStatus.fail:
+        return const Icon(Icons.error_rounded, color: AppColors.danger, size: 20);
+      case RunStatus.running:
+        return const Icon(Icons.play_circle_filled_rounded, color: AppColors.primary, size: 20);
+      case RunStatus.pending:
+        return const Icon(Icons.circle_outlined, color: Colors.grey, size: 20);
+    }
   }
 }

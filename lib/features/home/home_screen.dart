@@ -109,6 +109,15 @@ const List<_ToolItem> _tools = [
     route: '/reference',
     heroTag: 'hero-reference',
   ),
+  _ToolItem(
+    title: 'Terminal',
+    subtitle: 'Termux-like dev shell',
+    icon: Icons.terminal_rounded,
+    color: Color(0xFF22C55E),
+    route: '/terminal',
+    isNew: true,
+    heroTag: 'hero-terminal',
+  ),
 ];
 
 class HomeScreen extends StatefulWidget {

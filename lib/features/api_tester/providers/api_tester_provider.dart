@@ -116,7 +116,23 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
   }
 
   void updateUrl(String url) {
-    state = state.copyWith(request: state.request.copyWith(url: url));
+    // Parse query params from URL
+    final uri = Uri.tryParse(url);
+    Map<String, String> newParams = Map.from(state.request.params);
+    
+    if (uri != null && uri.hasQuery) {
+      newParams = uri.queryParameters;
+    } else if (uri != null && !url.contains('?')) {
+      // If URL was cleared of params, clear the map
+      newParams = {};
+    }
+
+    state = state.copyWith(
+      request: state.request.copyWith(
+        url: url,
+        params: newParams,
+      ),
+    );
   }
 
   void updateHeaders(Map<String, String> headers) {
@@ -124,7 +140,25 @@ class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
   }
 
   void updateParams(Map<String, String> params) {
-    state = state.copyWith(request: state.request.copyWith(params: params));
+    // Update URL with new params
+    String url = state.request.url;
+    final uri = Uri.tryParse(url);
+    
+    if (uri != null) {
+      final newUri = uri.replace(queryParameters: params.isEmpty ? null : params);
+      url = newUri.toString();
+      // Remove trailing '?' if query is empty and it wasn't there before
+      if (params.isEmpty && url.endsWith('?')) {
+        url = url.substring(0, url.length - 1);
+      }
+    }
+
+    state = state.copyWith(
+      request: state.request.copyWith(
+        params: params,
+        url: url,
+      ),
+    );
   }
 
   void updateBody(String body) {
