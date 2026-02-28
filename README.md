@@ -13,13 +13,27 @@ DevPocket is a premium, beautifully crafted multi-tool designed specifically for
 
 Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
 
+### � Changelog v1.2.0 (Ultimate UI & Polish)
+*   **Ultimate UI Polish**: Z-Axis Transitions, Shimmer Loading Skeletons, and Parallax Scrolling Headers.
+*   **Interactive Haptic Charts**: Touch-controlled sparklines with tooltips in Server Monitor.
+*   **Floating Animated Toasts**: Frosted-glass top notifications replacing standard snackbars.
+*   **Light Mode Optimization**: Refactored theme engine for perfect text contrast in Light Mode.
+*   **Dynamic Versioning**: Settings screen now displays real-time version info.
+*   **Developer Connect**: Added tap-to-open GitHub profile link in Settings.
+
+### 📜 Changelog v1.1.0 (Advanced Pro Update)
+*   **In-App Updates**: Automatic secure version checks via GitHub API.
+*   **API Collections Import / Export**: Backup and share your entire workspace as JSON.
+*   **Custom Branding**: Official logo integration and premium asset updates.
+
 ## 📸 Screenshots
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/498f0e52-c7ed-4a14-8af1-d8be77af3b8f" width="280" style="border-radius: 12px; margin: 5px;">
+  <img src="https://github.com/user-attachments/assets/13857cf0-674a-441b-a939-731e9996a436" width="280" style="border-radius: 12px; margin: 5px;">
+</p>
 
 </div>
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-    <img width="100%" height="auto" alt="image" src="https://github.com/user-attachments/assets/498f0e52-c7ed-4a14-8af1-d8be77af3b8f" />
-    <img width="100%" height="auto" alt="image" src="https://github.com/user-attachments/assets/13857cf0-674a-441b-a939-731e9996a436" />
-</div>
+
 ---
 
 ## ✨ Features
@@ -38,7 +52,7 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
 - **Glassmorphism Design**: Frosted glass AppBars and bottom sheets for a modern aesthetic.
 - **Interactive Animations**: Delightful micro-animations and Lottie onboarding.
 - **Dynamic Themes**: Choose between Light, Dark, and AMOLED Dark modes.
-- **Haptic Feedback**: Subtle physical responses on key actions (like copying to clipboard or sending requests) for a tactile experience.
+- **Haptic Feedback**: Subtle physical responses on key actions for a tactile experience.
 
 ---
 
@@ -68,14 +82,14 @@ Explore the full feature list below to see why DevPocket is the ultimate compani
    ```
 
 ## 📦 Releases & CI/CD
-This project features an integrated GitHub Actions workflow. Whenever a version tag (e.g., `v1.0.0`) is pushed to the repository, the pipeline automatically compiles a clean release APK and attaches it to the GitHub Releases page.
+Whenever a version tag (e.g., `v1.2.0`) is pushed, the GitHub Actions pipeline automatically compiles a clean release APK and attaches it to the Releases page.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! 
 Feel free to check the [issues page](../../issues).
 
 ## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 <div align="center">
