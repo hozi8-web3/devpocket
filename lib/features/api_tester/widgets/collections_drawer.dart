@@ -6,6 +6,7 @@ import '../../../core/widgets/glowing_empty_state.dart';
 import '../../../core/widgets/frosted_glass.dart';
 import '../models/response_model.dart';
 import '../models/request_model.dart';
+import '../services/collection_export_service.dart';
 
 class CollectionsDrawer extends StatelessWidget {
   final List<CollectionModel> collections;
@@ -41,7 +42,18 @@ class CollectionsDrawer extends StatelessWidget {
                   Text('Collections', style: AppTextStyles.heading2),
                   const Spacer(),
                   IconButton(
+                    icon: const Icon(Icons.file_upload_outlined, color: AppColors.textPrimary),
+                    tooltip: 'Export Collections',
+                    onPressed: () => CollectionExportService.exportAndShare(context),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.file_download_outlined, color: AppColors.textPrimary),
+                    tooltip: 'Import Collections',
+                    onPressed: () => CollectionExportService.importFromFile(context),
+                  ),
+                  IconButton(
                     icon: const Icon(Icons.add_rounded, color: AppColors.primary),
+                    tooltip: 'New Collection',
                     onPressed: () => _showNewCollectionDialog(context),
                   ),
                 ],

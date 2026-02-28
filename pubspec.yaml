@@ -1,7 +1,7 @@
 name: devpocket
 description: "DevPocket - Your pocket-sized developer toolkit"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -52,14 +52,17 @@ dependencies:
   google_fonts: ^6.2.1
 
   # URL Launcher
-  url_launcher: ^6.2.4
+  url_launcher: ^6.3.2
 
   # Cupertino Icons
   cupertino_icons: ^1.0.6
 
   # Path provider
-  path_provider: ^2.1.2
+  path_provider: ^2.1.5
   lottie: ^3.3.2
+  package_info_plus: ^9.0.0
+  share_plus: ^12.0.1
+  file_picker: ^10.3.10
 
 dev_dependencies:
   flutter_test:

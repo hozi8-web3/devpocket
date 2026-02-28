@@ -11,6 +11,15 @@
 
 DevPocket is a premium, beautifully crafted multi-tool designed specifically for developers. It brings essential utilities like API testing, JWT decoding, server monitoring, and data encoding directly to your mobile device, ensuring you have the tools you need even when you're offline.
 
+Explore the full feature list below to see why DevPocket is the ultimate companion for developers on the go.
+
+### Changelog v1.1.0 (Advanced Pro Update)
+*   **In-App Updates**: DevPocket now automatically checks for updates securely through the official GitHub API and prompts you with a direct download link when a new release is available!
+*   **Export & Import API Collections**: You can now backup your entire workspace! Export your saved REST requests as a JSON file to share with your team or import them to a new device directly from the Collections drawer.
+*   **Custom Branding**: Completely replaced all generic icons and animations with the official DevPocket logo for a premium app feel!
+
+## 📸 Screenshots
+
 </div>
 
 ---
@@ -45,7 +54,7 @@ DevPocket is a premium, beautifully crafted multi-tool designed specifically for
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/devpocket.git
+   git clone https://github.com/hozi8-web3/devpocket
    ```
 2. Navigate to the project directory:
    ```bash
