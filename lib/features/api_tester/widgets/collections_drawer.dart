@@ -165,13 +165,29 @@ class CollectionsDrawer extends ConsumerWidget {
               title: const Text('Duplicate Request'),
               onTap: () {
                 Navigator.pop(context);
-                final copy = req.copyWith(
+                final colId = req.collectionId;
+                if (colId == null) return; // no collection to duplicate into
+                // Build a brand-new request with a new ID
+                final copyName = '${req.name ?? 'Request'} (copy)';
+                final copy = RequestModel(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  name: '${req.name ?? 'Request'} (copy)',
+                  name: copyName,
+                  method: req.method,
+                  url: req.url,
+                  headers: req.headers,
+                  params: req.params,
+                  body: req.body,
+                  bodyType: req.bodyType,
+                  bearerToken: req.bearerToken,
+                  basicAuthUser: req.basicAuthUser,
+                  basicAuthPassword: req.basicAuthPassword,
+                  apiKey: req.apiKey,
+                  apiKeyHeader: req.apiKeyHeader,
+                  collectionId: colId,
                 );
                 ref
                     .read(apiTesterProvider.notifier)
-                    .saveToCollection(req.collectionId, name: copy.name);
+                    .saveToCollection(colId, name: copyName);
               },
             ),
             ListTile(

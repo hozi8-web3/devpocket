@@ -25,14 +25,16 @@ class _CollectionRunnerScreenState extends ConsumerState<CollectionRunnerScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Only auto-start if no existing summary for this collection
       final existing = ref.read(runnerProvider).summary;
-      if (existing == null ||
-          existing.collectionName !=
-              ref
-                  .read(apiTesterProvider)
-                  .collections
-                  .firstWhere((c) => c.id == widget.collectionId,
-                      orElse: () => CollectionModel(id: '', name: ''))
-                  .name) {
+      final collections = ref.read(apiTesterProvider).collections;
+      // Find collection name by ID without needing the type in orElse
+      String? colName;
+      for (final c in collections) {
+        if (c.id == widget.collectionId) {
+          colName = c.name;
+          break;
+        }
+      }
+      if (existing == null || existing.collectionName != colName) {
         _startRun();
       }
     });
