@@ -39,21 +39,6 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Listen to URL changes from provider to update controller
-    ref.listen(apiTesterProvider.select((s) => s.request.url), (prev, next) {
-      if (next != _urlController.text) {
-        // Prevent cursor jumping by only updating if different
-        _urlController.value = _urlController.value.copyWith(
-          text: next,
-          selection: TextSelection.collapsed(offset: next.length),
-        );
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _urlController.dispose();
     _scrollController.dispose();
@@ -62,6 +47,16 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ── URL sync listener (must be inside build for Riverpod) ──
+    ref.listen(apiTesterProvider.select((s) => s.request.url), (prev, next) {
+      if (next != _urlController.text) {
+        _urlController.value = _urlController.value.copyWith(
+          text: next,
+          selection: TextSelection.collapsed(offset: next.length),
+        );
+      }
+    });
+
     final state = ref.watch(apiTesterProvider);
     final notifier = ref.read(apiTesterProvider.notifier);
 
@@ -78,6 +73,27 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
         onCreate: (name) => notifier.createCollection(name),
         onSave: (colId, name) => notifier.saveToCollection(colId, name: name),
       ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: _SendButton(
+            isLoading: state.isLoading,
+            onSend: () {
+              HapticFeedback.lightImpact();
+              ref.read(apiTesterProvider.notifier).sendRequest();
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (_scrollController.hasClients) {
+                  _scrollController.animateTo(
+                    _scrollController.position.maxScrollExtent,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeOut,
+                  );
+                }
+              });
+            },
+          ),
+        ),
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: RadialGradient(
@@ -89,13 +105,15 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
             ],
           ),
         ),
-         child: CustomScrollView(
+        child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            // ── App Bar (title only) ──
+            // ── App Bar ──
             SliverAppBar(
               pinned: true,
               backgroundColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
               flexibleSpace: FrostedGlass(
                 blur: context.isDarkMode ? 15.0 : 0,
                 color: context.adaptiveAppBarBackground,
@@ -135,10 +153,10 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
               ],
             ),
 
-            // ── Method + URL + Send (compact card, scrolls with content) ──
+            // ── Request Card: Method + URL + Send ──
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: context.adaptiveCard,
@@ -147,65 +165,110 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.primary.withOpacity(0.08),
-                        blurRadius: 12,
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.all(12),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // ── Method badge + URL input row ──
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          MethodSelector(
-                            selected: state.request.method,
-                            onChanged: notifier.updateMethod,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _UrlBar(
-                              controller: _urlController,
-                              method: state.request.method,
-                              onChanged: notifier.updateUrl,
-                              history: state.requestHistory,
-                              onHistorySelect: (url) {
-                                notifier.updateUrl(url);
-                                _urlController.text = url;
-                              },
+                          // Method selector
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12),
+                            child: MethodSelector(
+                              selected: state.request.method,
+                              onChanged: notifier.updateMethod,
                             ),
                           ),
+                          // Divider
+                          Container(
+                            width: 1,
+                            height: 28,
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            color: context.adaptiveCardBorder,
+                          ),
+                          // URL text field
+                          Expanded(
+                            child: TextField(
+                              controller: _urlController,
+                              onChanged: (val) {
+                                setState(() {});
+                                notifier.updateUrl(val);
+                              },
+                              style: context.textStyles.code
+                                  .copyWith(fontSize: 13),
+                              keyboardType: TextInputType.url,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                filled: false,
+                                hintText: 'https://api.example.com/v1/endpoint',
+                                hintStyle: TextStyle(
+                                  color: AppColors.textMuted,
+                                  fontSize: 13,
+                                ),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                            ),
+                          ),
+                          // History button
+                          if (state.requestHistory.isNotEmpty)
+                            PopupMenuButton<String>(
+                              icon: const Icon(Icons.history_rounded,
+                                  size: 18, color: AppColors.textMuted),
+                              tooltip: 'Recent URLs',
+                              onSelected: (url) {
+                                setState(() {
+                                  _urlController.text = url;
+                                });
+                                notifier.updateUrl(url);
+                              },
+                              itemBuilder: (_) => state.requestHistory
+                                  .take(10)
+                                  .map((url) => PopupMenuItem(
+                                        value: url,
+                                        child: Text(url,
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                            overflow: TextOverflow.ellipsis),
+                                      ))
+                                  .toList(),
+                            ),
+                          // Clear button
+                          if (_urlController.text.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.close_rounded, size: 18),
+                              color: AppColors.textMuted,
+                              onPressed: () {
+                                setState(() {
+                                  _urlController.clear();
+                                });
+                                notifier.updateUrl('');
+                              },
+                            )
+                          else
+                            const SizedBox(width: 8),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      _SendButton(
-                        isLoading: state.isLoading,
-                        onSend: () {
-                          HapticFeedback.lightImpact();
-                          ref.read(apiTesterProvider.notifier).sendRequest();
-                          Future.delayed(const Duration(milliseconds: 300), () {
-                            if (_scrollController.hasClients) {
-                              _scrollController.animateTo(
-                                _scrollController.position.maxScrollExtent,
-                                duration: const Duration(milliseconds: 400),
-                                curve: Curves.easeOut,
-                              );
-                            }
-                          });
-                        },
-                      ),
+                      const SizedBox(height: 4),
                     ],
                   ),
                 ),
               ),
             ),
 
-            // ── Request Editor Tabs (IndexedStack approach) ──
+            // ── Request Editor Tabs ──
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    // ── Tab Bar ──────────────────────────────────
+                    // ── Tab Bar ──
                     Container(
                       decoration: BoxDecoration(
                         color: context.adaptiveGlassSurface,
@@ -228,7 +291,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                         ],
                       ),
                     ),
-                    // ── Tab Content ──────────────────────────────
+                    // ── Tab Content ──
                     Container(
                       height: 270,
                       decoration: BoxDecoration(
@@ -236,7 +299,8 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                         borderRadius: const BorderRadius.vertical(
                             bottom: Radius.circular(16)),
                         border: Border(
-                          bottom: BorderSide(color: context.adaptiveGlassBorder),
+                          bottom:
+                              BorderSide(color: context.adaptiveGlassBorder),
                           left: BorderSide(color: context.adaptiveGlassBorder),
                           right: BorderSide(color: context.adaptiveGlassBorder),
                         ),
@@ -306,12 +370,15 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
               ),
             ),
 
-            // Response
+            // ── Response ──
             if (state.response != null || state.isLoading)
               SliverToBoxAdapter(
-                child: ResponseViewer(
-                  response: state.response,
-                  isLoading: state.isLoading,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: ResponseViewer(
+                    response: state.response,
+                    isLoading: state.isLoading,
+                  ),
                 ),
               ),
 
@@ -322,93 +389,86 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
     );
   }
 
-  String? _authBadge(RequestModel req) {
-    if (req.bearerToken?.isNotEmpty == true) return 'Bearer';
-    if (req.basicAuthUser?.isNotEmpty == true) return 'Basic';
-    if (req.apiKey?.isNotEmpty == true) return 'API Key';
-    return null;
-  }
-
   void _showHistorySheet(
       BuildContext context, ApiTesterState state, ApiTesterNotifier notifier) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => FlexibleSpaceBar.createSettings(
-        currentExtent: 1.0,
-        child: FrostedGlass(
-          blur: 20.0,
-          color: context.adaptiveOverlaySurface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: DraggableScrollableSheet(
-            initialChildSize: 0.6,
-            maxChildSize: 0.9,
-            expand: false,
-            builder: (_, sc) => Column(
-              children: [
-                const SizedBox(height: 12),
-                Container(
-                  width: 40, height: 4,
-                  decoration: BoxDecoration(
-                    color: context.adaptiveTextSecondary.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+      builder: (_) => FrostedGlass(
+        blur: 20.0,
+        color: context.adaptiveOverlaySurface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (_, sc) => Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.adaptiveTextSecondary.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Text('History', style: context.textStyles.heading2),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {
-                          notifier.clearHistory();
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Text('History', style: context.textStyles.heading2),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        notifier.clearHistory();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Clear All'),
+                    ),
+                  ],
+                ),
+              ),
+              if (state.history.isEmpty)
+                const Expanded(
+                  child: GlowingEmptyState(
+                    icon: Icons.history_rounded,
+                    title: 'No history',
+                    subtitle: 'Run requests to see them here.',
+                  ),
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    controller: sc,
+                    itemCount: state.history.length,
+                    itemBuilder: (_, i) {
+                      final req = state.history[i];
+                      return ListTile(
+                        leading: _MethodChip(method: req.method),
+                        title: Text(
+                          req.url,
+                          style: context.textStyles.codeSmall,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          AppFormatters.timeAgo(req.createdAt),
+                          style: context.textStyles.caption,
+                        ),
+                        onTap: () {
+                          notifier.loadRequest(req);
+                          setState(() {
+                            _urlController.text = req.url;
+                          });
                           Navigator.pop(context);
                         },
-                        child: const Text('Clear All'),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
-                if (state.history.isEmpty)
-                  const Expanded(
-                    child: GlowingEmptyState(
-                      icon: Icons.history_rounded,
-                      title: 'No history',
-                      subtitle: 'Run requests to see them here.',
-                    ),
-                  )
-                else
-                  Expanded(
-                    child: ListView.builder(
-                      controller: sc,
-                      itemCount: state.history.length,
-                      itemBuilder: (_, i) {
-                        final req = state.history[i];
-                        return ListTile(
-                          leading: _MethodChip(method: req.method),
-                          title: Text(
-                            req.url,
-                            style: context.textStyles.codeSmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            AppFormatters.timeAgo(req.createdAt),
-                            style: context.textStyles.caption,
-                          ),
-                          onTap: () {
-                            notifier.loadRequest(req);
-                            _urlController.text = req.url;
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),
@@ -465,7 +525,9 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () async {
               if (state.collections.isNotEmpty) {
@@ -478,132 +540,6 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
             },
             child: const Text('Save'),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-// ------ Tab Content (transparent background) ------
-class _TabContent extends StatelessWidget {
-  final Widget child;
-  const _TabContent({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: child,
-      ),
-    );
-  }
-}
-
-// ------ URL Bar Sticky Header Delegate ------
-class _UrlBarDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-  const _UrlBarDelegate({required this.child});
-
-  @override
-  double get minExtent => 112;
-  @override
-  double get maxExtent => 112;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
-  }
-
-  @override
-  bool shouldRebuild(_UrlBarDelegate oldDelegate) => true;
-}
-
-// ------ URL Bar ------
-class _UrlBar extends StatelessWidget {
-  final TextEditingController controller;
-  final String method;
-  final ValueChanged<String> onChanged;
-  final List<String> history;
-  final ValueChanged<String>? onHistorySelect;
-
-  const _UrlBar({
-    required this.controller,
-    required this.method,
-    required this.onChanged,
-    this.history = const [],
-    this.onHistorySelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.adaptiveCard,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary, width: 1.5),
-        boxShadow: [
-          BoxShadow(color: AppColors.primary.withOpacity(0.15), blurRadius: 12),
-        ],
-      ),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 14),
-            child: Text(
-              'https://',
-              style: context.textStyles.codeSmall
-                  .copyWith(color: AppColors.textMuted),
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              style: context.textStyles.code.copyWith(fontSize: 13),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                filled: false,
-                hintText: 'api.example.com/v1/users',
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 4, vertical: 16),
-              ),
-              keyboardType: TextInputType.url,
-            ),
-          ),
-          // History dropdown button
-          if (history.isNotEmpty)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.history_rounded,
-                  size: 18, color: AppColors.textMuted),
-              tooltip: 'Recent URLs',
-              onSelected: (url) {
-                controller.text = url;
-                onHistorySelect?.call(url);
-              },
-              itemBuilder: (_) => history
-                  .take(10)
-                  .map((url) => PopupMenuItem(
-                        value: url,
-                        child: Text(
-                          url,
-                          style: const TextStyle(fontSize: 12),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ))
-                  .toList(),
-            ),
-          if (controller.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.close_rounded, size: 18),
-              color: AppColors.textMuted,
-              onPressed: () {
-                controller.clear();
-                onChanged('');
-              },
-            ),
         ],
       ),
     );
@@ -629,7 +565,8 @@ class _SendButtonState extends State<_SendButton>
   void initState() {
     super.initState();
     _pulseController = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 2000))..repeat(reverse: true);
+        vsync: this, duration: const Duration(milliseconds: 2000))
+      ..repeat(reverse: true);
   }
 
   @override
@@ -643,7 +580,8 @@ class _SendButtonState extends State<_SendButton>
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (_, __) {
-        final glow = Tween<double>(begin: 0.25, end: 0.55).evaluate(_pulseController);
+        final glow =
+            Tween<double>(begin: 0.25, end: 0.55).evaluate(_pulseController);
         return GestureDetector(
           onTap: widget.isLoading ? null : widget.onSend,
           child: Container(
@@ -656,20 +594,28 @@ class _SendButtonState extends State<_SendButton>
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primary.withOpacity(glow),
-                  blurRadius: 18, offset: const Offset(0, 3),
+                  blurRadius: 18,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: widget.isLoading
-                  ? [const SizedBox(width: 22, height: 22,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))]
+                  ? [
+                      const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2.5))
+                    ]
                   : [
                       Text('SEND REQUEST',
-                          style: context.textStyles.button.copyWith(letterSpacing: 1.5)),
+                          style: context.textStyles.button
+                              .copyWith(letterSpacing: 1.5)),
                       const SizedBox(width: 10),
-                      const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                      const Icon(Icons.send_rounded,
+                          color: Colors.white, size: 18),
                     ],
             ),
           ),
@@ -703,9 +649,13 @@ class _AuthEditorState extends State<_AuthEditor> {
   @override
   void initState() {
     super.initState();
-    if (widget.request.bearerToken?.isNotEmpty == true) _type = 'bearer';
-    else if (widget.request.basicAuthUser?.isNotEmpty == true) _type = 'basic';
-    else if (widget.request.apiKey?.isNotEmpty == true) _type = 'apikey';
+    if (widget.request.bearerToken?.isNotEmpty == true) {
+      _type = 'bearer';
+    } else if (widget.request.basicAuthUser?.isNotEmpty == true) {
+      _type = 'basic';
+    } else if (widget.request.apiKey?.isNotEmpty == true) {
+      _type = 'apikey';
+    }
   }
 
   @override
@@ -734,33 +684,42 @@ class _AuthEditorState extends State<_AuthEditor> {
           TextField(
             decoration: const InputDecoration(hintText: 'Bearer token'),
             onChanged: widget.onBearerChanged,
-            controller: TextEditingController(text: widget.request.bearerToken ?? ''),
+            controller:
+                TextEditingController(text: widget.request.bearerToken ?? ''),
             style: context.textStyles.code,
           ),
         if (_type == 'basic') ...[
           TextField(
             decoration: const InputDecoration(hintText: 'Username'),
-            onChanged: (v) => widget.onBasicChanged(v, widget.request.basicAuthPassword ?? ''),
-            controller: TextEditingController(text: widget.request.basicAuthUser ?? ''),
+            onChanged: (v) => widget.onBasicChanged(
+                v, widget.request.basicAuthPassword ?? ''),
+            controller:
+                TextEditingController(text: widget.request.basicAuthUser ?? ''),
           ),
           const SizedBox(height: 8),
           TextField(
             decoration: const InputDecoration(hintText: 'Password'),
             obscureText: true,
-            onChanged: (v) => widget.onBasicChanged(widget.request.basicAuthUser ?? '', v),
+            onChanged: (v) =>
+                widget.onBasicChanged(widget.request.basicAuthUser ?? '', v),
           ),
         ],
         if (_type == 'apikey') ...[
           TextField(
-            decoration: const InputDecoration(hintText: 'Header name (e.g. X-API-Key)'),
-            onChanged: (v) => widget.onApiKeyChanged(widget.request.apiKey ?? '', v),
-            controller: TextEditingController(text: widget.request.apiKeyHeader ?? ''),
+            decoration:
+                const InputDecoration(hintText: 'Header name (e.g. X-API-Key)'),
+            onChanged: (v) =>
+                widget.onApiKeyChanged(widget.request.apiKey ?? '', v),
+            controller:
+                TextEditingController(text: widget.request.apiKeyHeader ?? ''),
           ),
           const SizedBox(height: 8),
           TextField(
             decoration: const InputDecoration(hintText: 'API Key value'),
-            onChanged: (v) => widget.onApiKeyChanged(v, widget.request.apiKeyHeader ?? ''),
-            controller: TextEditingController(text: widget.request.apiKey ?? ''),
+            onChanged: (v) =>
+                widget.onApiKeyChanged(v, widget.request.apiKeyHeader ?? ''),
+            controller:
+                TextEditingController(text: widget.request.apiKey ?? ''),
           ),
         ],
       ],
@@ -768,6 +727,7 @@ class _AuthEditorState extends State<_AuthEditor> {
   }
 }
 
+// ------ Method Chip ------
 class _MethodChip extends StatelessWidget {
   final String method;
   const _MethodChip({required this.method});
@@ -793,8 +753,9 @@ class _MethodChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color.withOpacity(0.4)),
       ),
-      child: Text(method, style: context.textStyles.labelSmall.copyWith(
-        color: color, fontWeight: FontWeight.w700)),
+      child: Text(method,
+          style: context.textStyles.labelSmall
+              .copyWith(color: color, fontWeight: FontWeight.w700)),
     );
   }
 }

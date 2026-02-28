@@ -5,7 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.4.3] – 2026-03-01
+## [1.4.4] – 2026-03-01
+
+### Fixed
+- **URL input invisible** — inlined `TextField` directly into the request card (removed nested `_UrlBar` Container which collapsed inside the outer card). Method selector now separated from URL field with a vertical divider. Send button separated by a horizontal divider. All colors theme-consistent via `AppColors`/`adaptiveCard`.
+
+---
+
 
 ### Fixed
 - **URL bar & Method selector** — reverted sticky/pinned approach; now rendered as a compact premium scrollable card below the AppBar with no overlap or layout issues.

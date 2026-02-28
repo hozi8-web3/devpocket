@@ -13,7 +13,15 @@ class MethodSelector extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
+  static const methods = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'HEAD',
+    'OPTIONS'
+  ];
 
   Color _colorFor(String method) {
     return switch (method) {
@@ -29,46 +37,56 @@ class MethodSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: methods.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (_, i) {
-          final method = methods[i];
-          final isSelected = selected == method;
-          final color = _colorFor(method);
-
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              onChanged(method);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected ? color.withOpacity(0.12) : context.adaptiveGlassSurface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected ? color.withOpacity(0.5) : context.adaptiveGlassBorder,
-                  width: isSelected ? 1.5 : 1,
-                ),
-                boxShadow: isSelected
-                    ? [BoxShadow(color: color.withOpacity(0.25), blurRadius: 10)]
-                    : null,
-              ),
-              child: Text(
-                method,
-                style: context.textStyles.buttonSmall.copyWith(
-                  color: isSelected ? color : context.adaptiveTextSecondary,
-                  fontSize: 11,
-                ),
+    final color = _colorFor(selected);
+    return PopupMenuButton<String>(
+      initialValue: selected,
+      tooltip: 'Change Method',
+      offset: const Offset(0, 40),
+      color: context.adaptiveSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: context.adaptiveGlassBorder),
+      ),
+      onSelected: (method) {
+        HapticFeedback.lightImpact();
+        onChanged(method);
+      },
+      itemBuilder: (context) {
+        return methods.map((method) {
+          final mColor = _colorFor(method);
+          return PopupMenuItem<String>(
+            value: method,
+            child: Text(
+              method,
+              style: context.textStyles.buttonSmall.copyWith(
+                color: mColor,
+                fontSize: 12,
               ),
             ),
           );
-        },
+        }).toList();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.5)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              selected,
+              style: context.textStyles.buttonSmall.copyWith(
+                color: color,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.arrow_drop_down_rounded, color: color, size: 18),
+          ],
+        ),
       ),
     );
   }
