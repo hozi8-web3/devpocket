@@ -1,0 +1,233 @@
+import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
+import '../models/request_model.dart';
+import '../models/response_model.dart';
+import '../services/api_service.dart';
+import '../../settings/providers/settings_provider.dart';
+
+class ApiTesterState {
+  final RequestModel request;
+  final ResponseModel? response;
+  final bool isLoading;
+  final List<RequestModel> history;
+  final List<CollectionModel> collections;
+  final List<RequestModel> savedRequests;
+  final String? activeCollectionId;
+
+  const ApiTesterState({
+    required this.request,
+    this.response,
+    this.isLoading = false,
+    this.history = const [],
+    this.collections = const [],
+    this.savedRequests = const [],
+    this.activeCollectionId,
+  });
+
+  ApiTesterState copyWith({
+    RequestModel? request,
+    ResponseModel? response,
+    bool? isLoading,
+    List<RequestModel>? history,
+    List<CollectionModel>? collections,
+    List<RequestModel>? savedRequests,
+    String? activeCollectionId,
+    bool clearResponse = false,
+  }) {
+    return ApiTesterState(
+      request: request ?? this.request,
+      response: clearResponse ? null : (response ?? this.response),
+      isLoading: isLoading ?? this.isLoading,
+      history: history ?? this.history,
+      collections: collections ?? this.collections,
+      savedRequests: savedRequests ?? this.savedRequests,
+      activeCollectionId: activeCollectionId ?? this.activeCollectionId,
+    );
+  }
+}
+
+class ApiTesterNotifier extends StateNotifier<ApiTesterState> {
+  final Ref _ref;
+  static const _historyBoxName = 'api_history';
+  static const _collectionsBoxName = 'api_collections';
+  static const _savedReqBoxName = 'api_saved_requests';
+
+  ApiTesterNotifier(this._ref)
+      : super(ApiTesterState(
+          request: RequestModel(id: const Uuid().v4()),
+        )) {
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final historyBox = await Hive.openBox<String>(_historyBoxName);
+    final collectionsBox = await Hive.openBox<String>(_collectionsBoxName);
+    final savedBox = await Hive.openBox<String>(_savedReqBoxName);
+
+    final history = historyBox.values
+        .map((v) {
+          try {
+            return RequestModel.fromJson(jsonDecode(v));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<RequestModel>()
+        .toList()
+        .reversed
+        .toList();
+
+    final collections = collectionsBox.values
+        .map((v) {
+          try {
+            return CollectionModel.fromJson(jsonDecode(v));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<CollectionModel>()
+        .toList();
+
+    final saved = savedBox.values
+        .map((v) {
+          try {
+            return RequestModel.fromJson(jsonDecode(v));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<RequestModel>()
+        .toList();
+
+    state = state.copyWith(
+      history: history.take(20).toList(),
+      collections: collections,
+      savedRequests: saved,
+    );
+  }
+
+  void updateMethod(String method) {
+    state = state.copyWith(
+        request: state.request.copyWith(method: method), clearResponse: true);
+  }
+
+  void updateUrl(String url) {
+    state = state.copyWith(request: state.request.copyWith(url: url));
+  }
+
+  void updateHeaders(Map<String, String> headers) {
+    state = state.copyWith(request: state.request.copyWith(headers: headers));
+  }
+
+  void updateParams(Map<String, String> params) {
+    state = state.copyWith(request: state.request.copyWith(params: params));
+  }
+
+  void updateBody(String body) {
+    state = state.copyWith(request: state.request.copyWith(body: body));
+  }
+
+  void updateBodyType(String type) {
+    state = state.copyWith(request: state.request.copyWith(bodyType: type));
+  }
+
+  void updateBearerToken(String token) {
+    state = state.copyWith(
+        request: state.request.copyWith(bearerToken: token));
+  }
+
+  void updateBasicAuth(String user, String pass) {
+    state = state.copyWith(
+        request:
+            state.request.copyWith(basicAuthUser: user, basicAuthPassword: pass));
+  }
+
+  void updateApiKey(String key, String header) {
+    state = state.copyWith(
+        request: state.request.copyWith(apiKey: key, apiKeyHeader: header));
+  }
+
+  void loadRequest(RequestModel req) {
+    state = state.copyWith(request: req, clearResponse: true);
+  }
+
+  void newRequest() {
+    state = ApiTesterState(
+      request: RequestModel(id: const Uuid().v4()),
+      history: state.history,
+      collections: state.collections,
+      savedRequests: state.savedRequests,
+    );
+  }
+
+  Future<void> sendRequest() async {
+    if (state.request.url.trim().isEmpty) return;
+
+    state = state.copyWith(isLoading: true, clearResponse: true);
+
+    final timeout = _ref.read(settingsProvider).requestTimeoutSeconds;
+    final response = await ApiService.sendRequest(
+      state.request,
+      timeoutSeconds: timeout,
+    );
+
+    // Save to history
+    await _addToHistory(state.request);
+
+    state = state.copyWith(isLoading: false, response: response);
+  }
+
+  Future<void> _addToHistory(RequestModel req) async {
+    final box = await Hive.openBox<String>(_historyBoxName);
+    // Remove older entries with same URL+method
+    for (final key in box.keys.toList()) {
+      try {
+        final m = RequestModel.fromJson(jsonDecode(box.get(key)!));
+        if (m.url == req.url && m.method == req.method) {
+          await box.delete(key);
+        }
+      } catch (_) {}
+    }
+    await box.put(req.id, jsonEncode(req.toJson()));
+
+    // Keep only last 20
+    if (box.length > 20) {
+      final keys = box.keys.toList();
+      await box.delete(keys.first);
+    }
+
+    await _loadData();
+  }
+
+  Future<void> saveToCollection(String collectionId, {String? name}) async {
+    final savedBox = await Hive.openBox<String>(_savedReqBoxName);
+    final req = state.request.copyWith(collectionId: collectionId, name: name);
+    await savedBox.put(req.id, jsonEncode(req.toJson()));
+    await _loadData();
+  }
+
+  Future<void> createCollection(String name) async {
+    final box = await Hive.openBox<String>(_collectionsBoxName);
+    final col = CollectionModel(
+      id: const Uuid().v4(),
+      name: name,
+      requestIds: [],
+      createdAt: DateTime.now(),
+    );
+    await box.put(col.id, jsonEncode(col.toJson()));
+    await _loadData();
+  }
+
+  Future<void> clearHistory() async {
+    final box = await Hive.openBox<String>(_historyBoxName);
+    await box.clear();
+    await _loadData();
+  }
+}
+
+final apiTesterProvider =
+    StateNotifierProvider<ApiTesterNotifier, ApiTesterState>(
+  (ref) => ApiTesterNotifier(ref),
+);
