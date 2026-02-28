@@ -1,5 +1,4 @@
-name: Android Release
-
+name: Android Release Pipeline
 on:
   push:
     tags:
@@ -10,10 +9,39 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build & Release build
+  # ─────────────────────────────────────────
+  # JOB 1: NOTIFY BUILD STARTED
+  # ─────────────────────────────────────────
+  notify_start:
+    name: 🚀 Notify Build Started
     runs-on: ubuntu-latest
-    
+    steps:
+      - name: Send Telegram — Build Started
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="🔨 *Build Pipeline Started*
+
+  📦 *App:* DevPocket
+  🏷️ *Version:* \`${{ github.ref_name }}\`
+  👤 *Triggered by:* ${{ github.actor }}
+  🕐 *Time:* $(date '+%Y-%m-%d %H:%M:%S UTC')
+  🔗 [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+  _Building your APK... hang tight_ ⚙️"
+
+  # ─────────────────────────────────────────
+  # JOB 2: BUILD
+  # ─────────────────────────────────────────
+  build:
+    name: 🔧 Build APK
+    runs-on: ubuntu-latest
+    needs: notify_start
+    outputs:
+      apk_size: ${{ steps.apk_info.outputs.apk_size }}
+      build_time: ${{ steps.apk_info.outputs.build_time }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -32,15 +60,197 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Start Build Timer
+        id: timer
+        run: echo "start=$(date +%s)" >> $GITHUB_OUTPUT
+
       - name: Build APK
         run: flutter build apk --release
 
       - name: Rename APK
         run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/DevPocket-Release.apk
 
+      - name: Get APK Info
+        id: apk_info
+        run: |
+          SIZE=$(du -sh build/app/outputs/flutter-apk/DevPocket-Release.apk | cut -f1)
+          END=$(date +%s)
+          ELAPSED=$(( END - ${{ steps.timer.outputs.start }} ))
+          MINUTES=$(( ELAPSED / 60 ))
+          SECONDS=$(( ELAPSED % 60 ))
+          echo "apk_size=$SIZE" >> $GITHUB_OUTPUT
+          echo "build_time=${MINUTES}m ${SECONDS}s" >> $GITHUB_OUTPUT
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/DevPocket-Release.apk
+          retention-days: 7
+
+  # ─────────────────────────────────────────
+  # JOB 3: NOTIFY BUILD RESULT
+  # ─────────────────────────────────────────
+  notify_build_result:
+    name: 📣 Notify Build Result
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    steps:
+      - name: Send Telegram — Build Success
+        if: needs.build.result == 'success'
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="✅ *Build Successful!*
+
+  📦 *App:* DevPocket
+  🏷️ *Version:* \`${{ github.ref_name }}\`
+  📏 *APK Size:* ${{ needs.build.outputs.apk_size }}
+  ⏱️ *Build Time:* ${{ needs.build.outputs.build_time }}
+  🔗 [View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+  _Waiting for your approval to publish_ 👇"
+
+      - name: Send Telegram — Build Failed
+        if: needs.build.result == 'failure'
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="❌ *Build Failed!*
+
+  📦 *App:* DevPocket
+  🏷️ *Version:* \`${{ github.ref_name }}\`
+  👤 *Triggered by:* ${{ github.actor }}
+  🔗 [View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+  _Fix the errors and push again_ 🔧"
+
+  # ─────────────────────────────────────────
+  # JOB 4: APPROVAL GATE
+  # ─────────────────────────────────────────
+  approval_gate:
+    name: 🔐 Awaiting Approval
+    runs-on: ubuntu-latest
+    needs: build
+    if: needs.build.result == 'success'
+    environment: production
+    steps:
+      - name: Send Telegram — Approval Request with Buttons
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="🔐 *Approval Required*
+
+  A new release is ready and waiting for your go-ahead.
+
+  📦 *App:* DevPocket
+  🏷️ *Version:* \`${{ github.ref_name }}\`
+  📏 *APK Size:* ${{ needs.build.outputs.apk_size }}
+  ⏱️ *Built in:* ${{ needs.build.outputs.build_time }}
+  👤 *By:* ${{ github.actor }}
+
+  _Tap below or approve on GitHub_ 👇" \
+            -d reply_markup="{
+              \"inline_keyboard\": [[
+                {\"text\": \"✅ Approve on GitHub\", \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"},
+                {\"text\": \"❌ Reject on GitHub\", \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}
+              ],[
+                {\"text\": \"🔍 View Full Logs\", \"url\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}
+              ]]
+            }"
+
+  # ─────────────────────────────────────────
+  # JOB 5: RELEASE
+  # ─────────────────────────────────────────
+  release:
+    name: 🚀 Publish Release
+    runs-on: ubuntu-latest
+    needs: approval_gate
+    steps:
+      - name: Download APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: build/app/outputs/flutter-apk/DevPocket-Release.apk
+          files: DevPocket-Release.apk
           generate_release_notes: true
+
+  # ─────────────────────────────────────────
+  # JOB 6: NOTIFY RELEASE PUBLISHED
+  # ─────────────────────────────────────────
+  notify_released:
+    name: 🎉 Notify Released
+    runs-on: ubuntu-latest
+    needs: release
+    if: always()
+    steps:
+      - name: Send Telegram — Released Successfully
+        if: needs.release.result == 'success'
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="🎉 *DevPocket ${{ github.ref_name }} is LIVE!*
+
+  Your app has been successfully published to GitHub Releases.
+
+  📦 *APK Size:* ${{ needs.build.outputs.apk_size }}
+  ⏱️ *Total Pipeline:* check workflow
+  🌍 *Public Release URL:*
+  https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+
+  _Ship it and forget it_ 😎🚀" \
+            -d reply_markup="{
+              \"inline_keyboard\": [[
+                {\"text\": \"📥 Download APK\", \"url\": \"https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}\"}
+              ]]
+            }"
+
+      - name: Send Telegram — Release Failed
+        if: needs.release.result == 'failure'
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode="Markdown" \
+            -d text="💀 *Release Publishing Failed!*
+
+  The build was approved but publishing crashed.
+
+  🔗 [View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+  _Check the release job for errors_ 🔧"
+```
+
+---
+
+## Pipeline Flow
+```
+push tag
+   │
+   ▼
+🔨 Telegram: Build Started
+   │
+   ▼
+⚙️  Build APK (tracks size + time)
+   │
+   ├── ❌ FAIL → Telegram: Build Failed
+   │
+   ▼
+✅ Telegram: Build Success + APK info
+   │
+   ▼
+🔐 Telegram: Approve/Reject buttons → you tap → GitHub UI approves
+   │
+   ▼
+🚀 Publish to GitHub Releases
+   │
+   ▼
+🎉 Telegram: Live! with Download APK button
