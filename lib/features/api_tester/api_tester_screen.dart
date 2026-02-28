@@ -135,56 +135,65 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
               ],
             ),
 
-            // ── Sticky Method + URL + Send bar (pinned below AppBar) ──
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _UrlBarDelegate(
-                child: FrostedGlass(
-                  blur: context.isDarkMode ? 15.0 : 0,
-                  color: context.adaptiveAppBarBackground,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            MethodSelector(
-                              selected: state.request.method,
-                              onChanged: notifier.updateMethod,
+            // ── Method + URL + Send (compact card, scrolls with content) ──
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.adaptiveCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: context.adaptiveCardBorder),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.08),
+                        blurRadius: 12,
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          MethodSelector(
+                            selected: state.request.method,
+                            onChanged: notifier.updateMethod,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _UrlBar(
+                              controller: _urlController,
+                              method: state.request.method,
+                              onChanged: notifier.updateUrl,
+                              history: state.requestHistory,
+                              onHistorySelect: (url) {
+                                notifier.updateUrl(url);
+                                _urlController.text = url;
+                              },
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: _UrlBar(
-                                controller: _urlController,
-                                method: state.request.method,
-                                onChanged: notifier.updateUrl,
-                                history: state.requestHistory,
-                                onHistorySelect: (url) {
-                                  notifier.updateUrl(url);
-                                  _urlController.text = url;
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        _SendButton(
-                          isLoading: state.isLoading,
-                          onSend: () {
-                            HapticFeedback.lightImpact();
-                            ref.read(apiTesterProvider.notifier).sendRequest();
-                            Future.delayed(const Duration(milliseconds: 300), () {
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _SendButton(
+                        isLoading: state.isLoading,
+                        onSend: () {
+                          HapticFeedback.lightImpact();
+                          ref.read(apiTesterProvider.notifier).sendRequest();
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            if (_scrollController.hasClients) {
                               _scrollController.animateTo(
                                 _scrollController.position.maxScrollExtent,
                                 duration: const Duration(milliseconds: 400),
                                 curve: Curves.easeOut,
                               );
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+                            }
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
