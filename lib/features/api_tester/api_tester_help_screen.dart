@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/widgets/frosted_glass.dart';
 import '../../core/widgets/section_header.dart';
 
 class ApiTesterHelpScreen extends StatelessWidget {
@@ -27,7 +26,7 @@ class ApiTesterHelpScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.2),
+                      AppColors.primary.withValues(alpha: 0.2),
                       Colors.transparent,
                     ],
                     begin: Alignment.topCenter,
@@ -38,7 +37,7 @@ class ApiTesterHelpScreen extends StatelessWidget {
                   child: Icon(
                     Icons.api_rounded,
                     size: 64,
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                   ),
                 ),
               ),
@@ -133,7 +132,7 @@ class ApiTesterHelpScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 22),
@@ -162,10 +161,10 @@ class ApiTesterHelpScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary.withOpacity(0.1), AppColors.secondary.withOpacity(0.05)],
+          colors: [AppColors.primary.withValues(alpha: 0.1), AppColors.secondary.withValues(alpha: 0.05)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [

@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/copy_button.dart';
-import '../../core/widgets/section_header.dart';
 import 'services/generator_service.dart';
 
 class GeneratorsScreen extends StatefulWidget {
@@ -324,7 +322,7 @@ class _HashTabState extends State<_HashTab> {
               label: Text(a.name.toUpperCase()),
               selected: _algo == a,
               onSelected: (_) { setState(() => _algo = a); _compute(); },
-              selectedColor: AppColors.primary.withOpacity(0.2),
+              selectedColor: AppColors.primary.withValues(alpha: 0.2),
               labelStyle: context.textStyles.labelSmall.copyWith(
                 color: _algo == a ? AppColors.primary : AppColors.textMuted),
             )).toList(),
@@ -382,7 +380,7 @@ class _HmacTabState extends State<_HmacTab> {
           Wrap(spacing: 8, children: HashAlgorithm.values.map((a) => ChoiceChip(
             label: Text(a.name.toUpperCase()), selected: _algo == a,
             onSelected: (_) { setState(() => _algo = a); _compute(); },
-            selectedColor: AppColors.primary.withOpacity(0.2),
+            selectedColor: AppColors.primary.withValues(alpha: 0.2),
             labelStyle: context.textStyles.labelSmall.copyWith(
               color: _algo == a ? AppColors.primary : AppColors.textMuted),
           )).toList()),
@@ -436,7 +434,7 @@ class _RandomStringTabState extends State<_RandomStringTab> {
           Wrap(spacing: 8, children: ['alphanumeric', 'alpha', 'numeric', 'hex', 'custom'].map((c) =>
             ChoiceChip(label: Text(c), selected: _charset == c,
               onSelected: (_) => setState(() => _charset = c),
-              selectedColor: AppColors.primary.withOpacity(0.2),
+              selectedColor: AppColors.primary.withValues(alpha: 0.2),
               labelStyle: context.textStyles.labelSmall.copyWith(
                 color: _charset == c ? AppColors.primary : AppColors.textMuted),
             )).toList()),

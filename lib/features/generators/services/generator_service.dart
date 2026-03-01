@@ -18,7 +18,6 @@ class GeneratorService {
   static const _lower = 'abcdefghjkmnpqrstuvwxyz';
   static const _digits = '23456789';
   static const _symbols = r'!@#$%^&*()-_=+[]{}|;:,.<>?';
-  static const _ambiguous = r'lO0oI1';
 
   static String generatePassword({
     required int length,
@@ -29,9 +28,9 @@ class GeneratorService {
     bool excludeAmbiguous = false,
   }) {
     var charset = '';
-    if (useLower) charset += excludeAmbiguous ? _lower : _lower + 'lio';
-    if (useUpper) charset += excludeAmbiguous ? _upper : _upper + 'IO';
-    if (useDigits) charset += excludeAmbiguous ? _digits : _digits + '01';
+    if (useLower) charset += excludeAmbiguous ? _lower : '${_lower}lio';
+    if (useUpper) charset += excludeAmbiguous ? _upper : '${_upper}IO';
+    if (useDigits) charset += excludeAmbiguous ? _digits : '${_digits}01';
     if (useSymbols) charset += _symbols;
     if (charset.isEmpty) charset = _lower;
 
@@ -56,7 +55,8 @@ class GeneratorService {
   }
 
   // --- Hash ---
-  static String hash(String input, HashAlgorithm algorithm, {bool uppercase = false}) {
+  static String hash(String input, HashAlgorithm algorithm,
+      {bool uppercase = false}) {
     final bytes = utf8.encode(input);
     String result;
     switch (algorithm) {
@@ -106,17 +106,21 @@ class GeneratorService {
 
   // --- Random String ---
   static const _charsets = {
-    'alphanumeric': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+    'alphanumeric':
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
     'alpha': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
     'numeric': '0123456789',
     'hex': '0123456789abcdef',
   };
 
   static String randomString(int length, String charset, [String? custom]) {
-    final cs = charset == 'custom' ? (custom ?? 'abc') : (_charsets[charset] ?? _charsets['alphanumeric']!);
+    final cs = charset == 'custom'
+        ? (custom ?? 'abc')
+        : (_charsets[charset] ?? _charsets['alphanumeric']!);
     return List.generate(length, (_) => cs[_random.nextInt(cs.length)]).join();
   }
 }
 
 enum PasswordStrength { weak, fair, strong, veryStrong }
+
 enum HashAlgorithm { md5, sha1, sha256, sha384, sha512 }

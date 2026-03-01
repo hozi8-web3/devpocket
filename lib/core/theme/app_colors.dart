@@ -71,8 +71,8 @@ class AppColors {
   static const Color syntaxPunctuation = Color(0xFFD4D4D4);
 
   // Glass panel
-  static Color get glassSurface => Colors.white.withOpacity(0.04);
-  static Color get glassBorder => Colors.white.withOpacity(0.08);
+  static Color get glassSurface => Colors.white.withValues(alpha: 0.04);
+  static Color get glassBorder => Colors.white.withValues(alpha: 0.08);
 
   static const Color backgroundLight = Color(0xFFF8FAFC);
   static const Color surfaceLight = Color(0xFFFFFFFF);
@@ -94,16 +94,16 @@ extension AppThemeContext on BuildContext {
 
   // Glass surfaces are tuned for dark UI by default; adapt them for light theme.
   Color get adaptiveGlassSurface =>
-      isDarkMode ? AppColors.glassSurface : Colors.black.withOpacity(0.04);
+      isDarkMode ? AppColors.glassSurface : Colors.black.withValues(alpha: 0.04);
   Color get adaptiveGlassBorder =>
-      isDarkMode ? AppColors.glassBorder : Colors.black.withOpacity(0.08);
+      isDarkMode ? AppColors.glassBorder : Colors.black.withValues(alpha: 0.08);
 
   // Common frosted/overlay backgrounds (app bars, sheets, toasts).
-  Color get adaptiveOverlayBackground => adaptiveBackground.withOpacity(0.7);
+  Color get adaptiveOverlayBackground => adaptiveBackground.withValues(alpha: 0.7);
   Color get adaptiveOverlaySurface =>
-      adaptiveSurface.withOpacity(isDarkMode ? 0.85 : 0.95);
+      adaptiveSurface.withValues(alpha: isDarkMode ? 0.85 : 0.95);
 
   // App bar header: solid in light theme (avoids black/washed blur), frosted in dark.
   Color get adaptiveAppBarBackground =>
-      isDarkMode ? adaptiveBackground.withOpacity(0.85) : AppColors.surfaceLight;
+      isDarkMode ? adaptiveBackground.withValues(alpha: 0.85) : AppColors.surfaceLight;
 }

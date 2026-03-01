@@ -68,8 +68,8 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
           });
           break;
         case 'diff':
-          setState(() => _diffs = JsonService.diff(
-              _inputController.text, _input2Controller.text));
+          setState(() => _diffs =
+              JsonService.diff(_inputController.text, _input2Controller.text));
           break;
         case 'path':
           final result = JsonService.jsonPathQuery(
@@ -112,24 +112,20 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
     );
   }
 
-  Widget _buildInputArea({String hint = 'Paste JSON here...', TextEditingController? controller}) {
-    final ctrl = controller ?? _inputController;
-    return TextField(
-      controller: ctrl,
-      maxLines: 8,
-      style: context.textStyles.code,
-      decoration: InputDecoration(hintText: hint, alignLabelWithHint: true),
-    );
-  }
-
   Widget _buildFormatTab() {
     return _SingleInputTab(
       inputController: _inputController,
       output: _output,
       error: _error,
       actions: [
-        _ActionButton(label: 'Format', icon: Icons.format_align_left_rounded, onTap: () => _process('format')),
-        _ActionButton(label: 'To YAML', icon: Icons.transform_rounded, onTap: () => _process('yaml')),
+        _ActionButton(
+            label: 'Format',
+            icon: Icons.format_align_left_rounded,
+            onTap: () => _process('format')),
+        _ActionButton(
+            label: 'To YAML',
+            icon: Icons.transform_rounded,
+            onTap: () => _process('yaml')),
       ],
       outputLang: _tabController.index == 0 ? 'json' : 'yaml',
     );
@@ -141,7 +137,10 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
       output: _output,
       error: _error,
       actions: [
-        _ActionButton(label: 'Minify', icon: Icons.compress_rounded, onTap: () => _process('minify')),
+        _ActionButton(
+            label: 'Minify',
+            icon: Icons.compress_rounded,
+            onTap: () => _process('minify')),
       ],
     );
   }
@@ -153,7 +152,10 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
       error: _error,
       isValidate: true,
       actions: [
-        _ActionButton(label: 'Validate', icon: Icons.check_circle_outline_rounded, onTap: () => _process('validate')),
+        _ActionButton(
+            label: 'Validate',
+            icon: Icons.check_circle_outline_rounded,
+            onTap: () => _process('validate')),
       ],
     );
   }
@@ -167,14 +169,16 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
             controller: _inputController,
             maxLines: 5,
             style: context.textStyles.code,
-            decoration: const InputDecoration(hintText: 'First JSON...', alignLabelWithHint: true),
+            decoration: const InputDecoration(
+                hintText: 'First JSON...', alignLabelWithHint: true),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _input2Controller,
             maxLines: 5,
             style: context.textStyles.code,
-            decoration: const InputDecoration(hintText: 'Second JSON...', alignLabelWithHint: true),
+            decoration: const InputDecoration(
+                hintText: 'Second JSON...', alignLabelWithHint: true),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -208,7 +212,8 @@ class _JsonToolsScreenState extends State<JsonToolsScreen>
             controller: _inputController,
             maxLines: 6,
             style: context.textStyles.code,
-            decoration: const InputDecoration(hintText: 'Paste JSON here...', alignLabelWithHint: true),
+            decoration: const InputDecoration(
+                hintText: 'Paste JSON here...', alignLabelWithHint: true),
           ),
           const SizedBox(height: 12),
           Row(
@@ -298,28 +303,38 @@ class _SingleInputTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Row(children: actions.map((a) => Padding(padding: const EdgeInsets.only(right: 8), child: a)).toList()),
+          Row(
+              children: actions
+                  .map((a) => Padding(
+                      padding: const EdgeInsets.only(right: 8), child: a))
+                  .toList()),
           const SizedBox(height: 16),
           if (error.isNotEmpty)
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.1),
+                color: AppColors.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.danger.withOpacity(0.3)),
+                border:
+                    Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
               ),
-              child: Text(error, style: context.textStyles.codeSmall.copyWith(color: AppColors.danger)),
+              child: Text(error,
+                  style: context.textStyles.codeSmall
+                      .copyWith(color: AppColors.danger)),
             )
           else if (output.isNotEmpty)
             isValidate
                 ? Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.1),
+                      color: AppColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                      border: Border.all(
+                          color: AppColors.success.withValues(alpha: 0.3)),
                     ),
-                    child: Text(output, style: context.textStyles.code.copyWith(color: AppColors.success)),
+                    child: Text(output,
+                        style: context.textStyles.code
+                            .copyWith(color: AppColors.success)),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,7 +361,8 @@ class _ActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _ActionButton({required this.label, required this.icon, required this.onTap});
+  const _ActionButton(
+      {required this.label, required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -400,22 +416,26 @@ class _DiffRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(prefix, style: context.textStyles.codeBold.copyWith(color: color)),
+          Text(prefix,
+              style: context.textStyles.codeBold.copyWith(color: color)),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(entry.key, style: context.textStyles.codeSmall.copyWith(color: color)),
+                Text(entry.key,
+                    style: context.textStyles.codeSmall.copyWith(color: color)),
                 if (entry.oldValue != null)
-                  Text('- ${entry.oldValue}', style: context.textStyles.codeSmall.copyWith(color: AppColors.danger)),
+                  Text('- ${entry.oldValue}',
+                      style: context.textStyles.codeSmall
+                          .copyWith(color: AppColors.danger)),
                 Text(
                   '  ${entry.value}',
                   style: context.textStyles.codeSmall.copyWith(

@@ -45,8 +45,12 @@ class _HeadersEditorState extends State<HeadersEditor> {
   void _initControllers() {
     // Dispose old controllers before creating new ones
     if (_controllersInitialized) {
-      for (final c in _keyControllers) c.dispose();
-      for (final c in _valControllers) c.dispose();
+      for (final c in _keyControllers) {
+        c.dispose();
+      }
+      for (final c in _valControllers) {
+        c.dispose();
+      }
     }
     _keyControllers =
         _entries.map((e) => TextEditingController(text: e.key)).toList();
@@ -84,8 +88,12 @@ class _HeadersEditorState extends State<HeadersEditor> {
 
   @override
   void dispose() {
-    for (final c in _keyControllers) c.dispose();
-    for (final c in _valControllers) c.dispose();
+    for (final c in _keyControllers) {
+      c.dispose();
+    }
+    for (final c in _valControllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -107,7 +115,7 @@ class _HeadersEditorState extends State<HeadersEditor> {
                   const SizedBox(width: 8),
                   Text(
                     'No ${widget.keyHint.toLowerCase()}s yet — tap + to add',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 13,
                       fontStyle: FontStyle.italic,

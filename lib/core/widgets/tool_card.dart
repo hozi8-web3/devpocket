@@ -77,13 +77,13 @@ class _ToolCardState extends State<ToolCard>
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: _pressed
-                  ? widget.color.withOpacity(0.4)
+                  ? widget.color.withValues(alpha: 0.4)
                   : context.adaptiveCardBorder,
             ),
             boxShadow: _pressed
                 ? [
                     BoxShadow(
-                      color: widget.color.withOpacity(0.2),
+                      color: widget.color.withValues(alpha: 0.2),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     )
@@ -100,9 +100,9 @@ class _ToolCardState extends State<ToolCard>
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: widget.color.withOpacity(0.12),
+                      color: widget.color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: widget.color.withOpacity(0.25)),
+                      border: Border.all(color: widget.color.withValues(alpha: 0.25)),
                     ),
                     child: Hero(
                       tag: widget.heroTag,
@@ -114,10 +114,10 @@ class _ToolCardState extends State<ToolCard>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.secondary.withOpacity(0.15),
+                        color: AppColors.secondary.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(
-                          color: AppColors.secondary.withOpacity(0.4),
+                          color: AppColors.secondary.withValues(alpha: 0.4),
                         ),
                       ),
                       child: Text(

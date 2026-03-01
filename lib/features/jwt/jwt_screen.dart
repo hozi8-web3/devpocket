@@ -145,9 +145,9 @@ class _JwtScreenState extends State<JwtScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.1),
+                color: AppColors.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.danger.withOpacity(0.3)),
+                border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
               ),
               child: Row(children: [
                 const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
@@ -294,7 +294,7 @@ class _JwtScreenState extends State<JwtScreen>
                   label: Text(a),
                   selected: _genAlgo == a,
                   onSelected: (_) => setState(() => _genAlgo = a),
-                  selectedColor: AppColors.primary.withOpacity(0.2),
+                  selectedColor: AppColors.primary.withValues(alpha: 0.2),
                   labelStyle: context.textStyles.labelSmall.copyWith(
                     color: _genAlgo == a ? AppColors.primary : AppColors.textMuted,
                   ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:yaml/yaml.dart';
 
 class JsonService {
   JsonService._();
@@ -17,7 +16,7 @@ class JsonService {
   static JsonValidationResult validate(String input) {
     try {
       jsonDecode(input);
-      return JsonValidationResult(isValid: true);
+      return const JsonValidationResult(isValid: true);
     } on FormatException catch (e) {
       // Parse position from error message
       int? line, column;
@@ -86,7 +85,7 @@ class JsonService {
       _diffObjects(a, b, '', result);
       return result;
     } catch (_) {
-      return [JsonDiffEntry(key: 'error', type: DiffType.unchanged, value: 'Invalid JSON')];
+      return [const JsonDiffEntry(key: 'error', type: DiffType.unchanged, value: 'Invalid JSON')];
     }
   }
 

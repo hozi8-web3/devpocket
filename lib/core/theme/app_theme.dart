@@ -18,7 +18,7 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: bg,
       primaryColor: AppColors.primary,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surface,
@@ -154,7 +154,7 @@ class AppTheme {
           return AppColors.textMuted;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return AppColors.primary.withOpacity(0.3);
+          if (states.contains(WidgetState.selected)) return AppColors.primary.withValues(alpha: 0.3);
           return AppColors.surface;
         }),
       ),
@@ -162,7 +162,7 @@ class AppTheme {
         activeTrackColor: AppColors.primary,
         inactiveTrackColor: AppColors.surface,
         thumbColor: AppColors.primary,
-        overlayColor: AppColors.primary.withOpacity(0.2),
+        overlayColor: AppColors.primary.withValues(alpha: 0.2),
         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
         trackHeight: 4,
       ),
@@ -195,7 +195,7 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.transparent,
-        indicatorColor: AppColors.primary.withOpacity(0.15),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.15),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return GoogleFonts.inter(
@@ -226,7 +226,7 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.backgroundLight,
       primaryColor: AppColors.primary,
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surfaceLight,
@@ -266,11 +266,11 @@ class AppTheme {
         fillColor: AppColors.surfaceLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.black.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.black.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

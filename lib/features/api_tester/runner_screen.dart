@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../core/widgets/frosted_glass.dart';
 import 'models/runner_models.dart';
-import 'models/request_model.dart';
 import 'providers/runner_provider.dart';
 import 'providers/api_tester_provider.dart';
 
@@ -214,7 +212,7 @@ class _RunnerResultTileState extends State<_RunnerResultTile> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: _expanded ? AppColors.primary.withOpacity(0.5) : context.adaptiveCardBorder,
+          color: _expanded ? AppColors.primary.withValues(alpha: 0.5) : context.adaptiveCardBorder,
           width: _expanded ? 1.5 : 1,
         ),
       ),
@@ -290,7 +288,7 @@ class _RunnerResultTileState extends State<_RunnerResultTile> {
                     const SizedBox(height: 12),
                     _buildSectionTitle('Headers'),
                     const SizedBox(height: 4),
-                    _buildHeadersView(response!.headers),
+                    _buildHeadersView(response.headers),
                     const SizedBox(height: 12),
                     _buildSectionTitle('Body'),
                     const SizedBox(height: 4),
@@ -319,7 +317,7 @@ class _RunnerResultTileState extends State<_RunnerResultTile> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: context.adaptiveCardBorder.withOpacity(0.1),
+        color: context.adaptiveCardBorder.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -342,7 +340,7 @@ class _RunnerResultTileState extends State<_RunnerResultTile> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.adaptiveCardBorder.withOpacity(0.1),
+        color: context.adaptiveCardBorder.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

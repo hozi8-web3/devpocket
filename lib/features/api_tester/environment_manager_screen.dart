@@ -59,7 +59,7 @@ class EnvironmentManagerScreen extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.12),
+                              color: AppColors.primary.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text('Active', style: context.textStyles.labelSmall.copyWith(color: AppColors.primary)),
@@ -96,7 +96,7 @@ class EnvironmentManagerScreen extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.hub_outlined, size: 64, color: AppColors.primary.withOpacity(0.2)),
+          Icon(Icons.hub_outlined, size: 64, color: AppColors.primary.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
           Text('No Environments', style: context.textStyles.heading3),
           const SizedBox(height: 8),

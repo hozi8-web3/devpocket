@@ -73,7 +73,7 @@ class _ResponseViewerState extends State<ResponseViewer>
                   )
                 else if (r != null) ...[
                   if (r.errorMessage != null)
-                    StatusBadge(
+                    const StatusBadge(
                       label: 'Error',
                       type: StatusBadgeType.error,
                       showDot: true,

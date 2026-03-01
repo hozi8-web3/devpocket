@@ -56,9 +56,9 @@ class _ShimmerLoaderState extends State<ShimmerLoader>
               end: Alignment.bottomRight,
               stops: const [0.0, 0.5, 1.0],
               colors: [
-                AppColors.cardBorder.withOpacity(0.4),
-                AppColors.cardBorder.withOpacity(0.8),
-                AppColors.cardBorder.withOpacity(0.4),
+                AppColors.cardBorder.withValues(alpha: 0.4),
+                AppColors.cardBorder.withValues(alpha: 0.8),
+                AppColors.cardBorder.withValues(alpha: 0.4),
               ],
               transform: _SlidingGradientTransform(slidePercent: _animation.value),
             ),

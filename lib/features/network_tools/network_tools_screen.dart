@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -121,7 +120,7 @@ class _PingTabState extends State<_PingTab> {
                 decoration: BoxDecoration(
                   color: context.adaptiveCard,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: t != null ? AppColors.success.withOpacity(0.3) : AppColors.danger.withOpacity(0.3)),
+                  border: Border.all(color: t != null ? AppColors.success.withValues(alpha: 0.3) : AppColors.danger.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -139,7 +138,7 @@ class _PingTabState extends State<_PingTab> {
             // Bar chart
             if (_result!.responseTimes.any((t) => t != null)) ...[
               const SizedBox(height: 16),
-              SectionHeader(title: 'Response Times'),
+              const SectionHeader(title: 'Response Times'),
               const SizedBox(height: 8),
               SizedBox(
                 height: 120,
@@ -149,20 +148,20 @@ class _PingTabState extends State<_PingTab> {
                     return BarChartGroupData(x: i, barRods: [
                       BarChartRodData(
                         toY: t?.toDouble() ?? 0,
-                        color: t != null ? AppColors.primary : AppColors.danger.withOpacity(0.5),
+                        color: t != null ? AppColors.primary : AppColors.danger.withValues(alpha: 0.5),
                         width: 20,
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ]);
                   }),
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 20,
                       getTitlesWidget: (v, _) => Text('${v.toInt() + 1}', style: context.textStyles.caption))),
                   ),
-                  gridData: FlGridData(show: false),
+                  gridData: const FlGridData(show: false),
                   borderData: FlBorderData(show: false),
                 )),
               ),
@@ -208,7 +207,7 @@ class _DnsTabState extends State<_DnsTab> {
               label: Text(t),
               selected: _selectedTypes[t]!,
               onSelected: (v) => setState(() => _selectedTypes[t] = v),
-              selectedColor: AppColors.primary.withOpacity(0.2),
+              selectedColor: AppColors.primary.withValues(alpha: 0.2),
               labelStyle: context.textStyles.labelSmall.copyWith(
                 color: _selectedTypes[t]! ? AppColors.primary : AppColors.textMuted),
             )).toList(),
@@ -340,7 +339,7 @@ class _HeadersTabState extends State<_HeadersTab> {
               ]),
               const SizedBox(height: 16),
               // Security headers analysis
-              SectionHeader(title: 'Security Analysis'),
+              const SectionHeader(title: 'Security Analysis'),
               const SizedBox(height: 8),
               ...ref.securityHeaders.map((h) {
                 final present = _result!.headers.keys.any((k) => k.toLowerCase() == h.toLowerCase());
@@ -348,9 +347,9 @@ class _HeadersTabState extends State<_HeadersTab> {
                   margin: const EdgeInsets.only(bottom: 6),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: (present ? AppColors.success : AppColors.danger).withOpacity(0.08),
+                    color: (present ? AppColors.success : AppColors.danger).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: (present ? AppColors.success : AppColors.danger).withOpacity(0.25)),
+                    border: Border.all(color: (present ? AppColors.success : AppColors.danger).withValues(alpha: 0.25)),
                   ),
                   child: Row(children: [
                     Icon(present ? Icons.check_circle_rounded : Icons.warning_rounded,
@@ -362,7 +361,7 @@ class _HeadersTabState extends State<_HeadersTab> {
                 );
               }),
               const SizedBox(height: 16),
-              SectionHeader(title: 'All Headers'),
+              const SectionHeader(title: 'All Headers'),
               const SizedBox(height: 8),
               ..._result!.headers.entries.map((e) => Container(
                 margin: const EdgeInsets.only(bottom: 6),
@@ -485,9 +484,9 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(children: [
           Text(label, style: context.textStyles.caption.copyWith(color: color)),

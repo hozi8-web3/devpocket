@@ -176,8 +176,8 @@ class _ServerCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.adaptiveCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: statusColor.withOpacity(0.3)),
-          boxShadow: [BoxShadow(color: statusColor.withOpacity(0.1), blurRadius: 12, offset: const Offset(0, 2))],
+          border: Border.all(color: statusColor.withValues(alpha: 0.3)),
+          boxShadow: [BoxShadow(color: statusColor.withValues(alpha: 0.1), blurRadius: 12, offset: const Offset(0, 2))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +188,7 @@ class _ServerCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: statusColor,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: statusColor.withOpacity(0.5), blurRadius: 6)],
+                  boxShadow: [BoxShadow(color: statusColor.withValues(alpha: 0.5), blurRadius: 6)],
                 ),
               ),
               const SizedBox(width: 10),
@@ -202,7 +202,7 @@ class _ServerCard extends StatelessWidget {
                 color: context.adaptiveTextSecondary, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
               const SizedBox(width: 8),
               IconButton(icon: const Icon(Icons.delete_outline_rounded, size: 18), onPressed: onDelete,
-                color: AppColors.danger.withOpacity(0.7), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                color: AppColors.danger.withValues(alpha: 0.7), padding: EdgeInsets.zero, constraints: const BoxConstraints()),
             ]),
             const SizedBox(height: 6),
             Text(server.url, style: context.textStyles.codeSmall.copyWith(color: context.adaptiveTextSecondary),
@@ -240,9 +240,9 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: RichText(
         text: TextSpan(children: [

@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: context.adaptiveTextSecondary.withOpacity(0.5),
+                    color: context.adaptiveTextSecondary.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.2),
+                      color: AppColors.primary.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.system_update_rounded, color: AppColors.primary, size: 28),

@@ -76,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen>
             center: const Alignment(0, -0.2),
             radius: 1.5,
             colors: [
-              AppColors.primary.withOpacity(0.15),
+              AppColors.primary.withValues(alpha: 0.15),
               AppColors.background,
             ],
           ),
@@ -101,12 +101,12 @@ class _SplashScreenState extends State<SplashScreen>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.4),
+                              color: AppColors.primary.withValues(alpha: 0.4),
                               blurRadius: 100,
                               spreadRadius: 20,
                             ),
                             BoxShadow(
-                              color: AppColors.secondary.withOpacity(0.2),
+                              color: AppColors.secondary.withValues(alpha: 0.2),
                               blurRadius: 150,
                               spreadRadius: 50,
                             ),
@@ -138,14 +138,14 @@ class _SplashScreenState extends State<SplashScreen>
                                   shape: BoxShape.circle,
                                   gradient: LinearGradient(
                                     colors: [
-                                      AppColors.primary.withOpacity(0.3),
+                                      AppColors.primary.withValues(alpha: 0.3),
                                       Colors.transparent,
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   border: Border.all(
-                                    color: AppColors.primary.withOpacity(0.5),
+                                    color: AppColors.primary.withValues(alpha: 0.5),
                                     width: 1.5,
                                   ),
                                 ),
@@ -179,9 +179,9 @@ class _SplashScreenState extends State<SplashScreen>
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                              border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
                             ),
                             child: Text(
                               'THE ULTIMATE TOOLKIT',
@@ -287,7 +287,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 250,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: page['color'].withOpacity(0.05),
+                            color: page['color'].withValues(alpha: 0.05),
                             shape: BoxShape.circle,
                           ),
                           child: Stack(
@@ -297,7 +297,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 width: 150,
                                 height: 150,
                                 decoration: BoxDecoration(
-                                  color: page['color'].withOpacity(0.15),
+                                  color: page['color'].withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                               ),

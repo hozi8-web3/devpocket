@@ -15,8 +15,6 @@ import 'package:devpocket/features/api_tester/widgets/body_editor.dart';
 import 'package:devpocket/features/api_tester/widgets/response_viewer.dart';
 import 'package:devpocket/features/api_tester/widgets/collections_drawer.dart';
 import 'package:devpocket/features/api_tester/widgets/environment_selector.dart';
-import 'package:devpocket/features/api_tester/runner_screen.dart';
-import 'package:devpocket/features/api_tester/environment_manager_screen.dart';
 
 class ApiTesterScreen extends ConsumerStatefulWidget {
   const ApiTesterScreen({super.key});
@@ -100,7 +98,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
             center: Alignment.topLeft,
             radius: 1.5,
             colors: [
-              AppColors.primary.withOpacity(0.05),
+              AppColors.primary.withValues(alpha: 0.05),
               Colors.transparent,
             ],
           ),
@@ -164,7 +162,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                     border: Border.all(color: context.adaptiveCardBorder),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.08),
+                        color: AppColors.primary.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 4),
                       ),
@@ -203,7 +201,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                               style: context.textStyles.code
                                   .copyWith(fontSize: 13),
                               keyboardType: TextInputType.url,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 filled: false,
                                 hintText: 'https://api.example.com/v1/endpoint',
@@ -212,7 +210,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                                   fontSize: 13,
                                 ),
                                 contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 14),
+                                    EdgeInsets.symmetric(vertical: 14),
                               ),
                             ),
                           ),
@@ -409,7 +407,7 @@ class _ApiTesterScreenState extends ConsumerState<ApiTesterScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.adaptiveTextSecondary.withOpacity(0.6),
+                  color: context.adaptiveTextSecondary.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -593,7 +591,7 @@ class _SendButtonState extends State<_SendButton>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(glow),
+                  color: AppColors.primary.withValues(alpha: glow),
                   blurRadius: 18,
                   offset: const Offset(0, 3),
                 ),
@@ -672,7 +670,7 @@ class _AuthEditorState extends State<_AuthEditor> {
               label: Text(t.toUpperCase()),
               selected: selected,
               onSelected: (_) => setState(() => _type = t),
-              selectedColor: AppColors.primary.withOpacity(0.2),
+              selectedColor: AppColors.primary.withValues(alpha: 0.2),
               labelStyle: context.textStyles.labelSmall.copyWith(
                 color: selected ? AppColors.primary : AppColors.textMuted,
               ),
@@ -749,9 +747,9 @@ class _MethodChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(method,
           style: context.textStyles.labelSmall

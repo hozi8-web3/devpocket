@@ -95,7 +95,7 @@ class NetworkServices {
             notAfter = DateTime.parse(cert['not_after'].toString().replaceAll(' ', 'T'));
           } catch (_) {}
 
-          final daysLeft = notAfter != null ? notAfter.difference(now).inDays : null;
+          final daysLeft = notAfter?.difference(now).inDays;
           return SslResult(
             host: cleanHost,
             isValid: daysLeft != null && daysLeft > 0,

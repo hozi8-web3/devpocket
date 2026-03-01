@@ -28,7 +28,7 @@ class AppFormatters {
   static String date(DateTime dt) => DateFormat('MMM d, yyyy').format(dt);
 
   static String utcDateTime(DateTime dt) =>
-      DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toUtc()) + ' UTC';
+      '${DateFormat('yyyy-MM-dd HH:mm:ss').format(dt.toUtc())} UTC';
 
   static String percentage(double v) => '${(v * 100).toStringAsFixed(1)}%';
 

@@ -1,20 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter/foundation.dart';
 
 class UpdateService {
-  static const String _repoReleasesUrl = 'https://api.github.com/repos/hozi8-web3/devpocket/releases/latest';
+  static const String _repoReleasesUrl =
+      'https://api.github.com/repos/hozi8-web3/devpocket/releases/latest';
 
   static Future<UpdateInfo?> checkForUpdates() async {
     try {
       final dio = Dio();
       final response = await dio.get(_repoReleasesUrl);
-      
+
       if (response.statusCode == 200) {
         final data = response.data;
         final latestTag = data['tag_name'] as String;
         final releaseNotes = data['body'] as String?;
         final assets = data['assets'] as List;
-        
+
         String? downloadUrl;
         if (assets.isNotEmpty) {
           // Find the APK asset
@@ -30,8 +32,11 @@ class UpdateService {
         final currentVersion = packageInfo.version;
 
         // Strip 'v' prefix for comparison if present
-        final cleanLatest = latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
-        final cleanCurrent = currentVersion.startsWith('v') ? currentVersion.substring(1) : currentVersion;
+        final cleanLatest =
+            latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
+        final cleanCurrent = currentVersion.startsWith('v')
+            ? currentVersion.substring(1)
+            : currentVersion;
 
         if (_isNewerVersion(cleanLatest, cleanCurrent)) {
           return UpdateInfo(
@@ -43,7 +48,7 @@ class UpdateService {
       }
     } catch (e) {
       // Silently fail on network/parsing errors so we don't disrupt the user experience
-      print('Update check failed: $e');
+      debugPrint('Update check failed: $e');
     }
     return null;
   }

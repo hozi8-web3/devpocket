@@ -20,7 +20,7 @@ class MonitorDetailScreen extends ConsumerWidget {
 
     if (serverMaybe.isEmpty) {
       return Scaffold(
-        appBar: AppBar(leading: BackButton()),
+        appBar: AppBar(leading: const BackButton()),
         body: const Center(child: Text('Server not found')),
       );
     }
@@ -41,12 +41,15 @@ class MonitorDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded),
+            onPressed: () => context.pop()),
         title: Text(server.name, style: context.textStyles.heading2),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => ref.read(monitorProvider.notifier).checkServer(serverId),
+            onPressed: () =>
+                ref.read(monitorProvider.notifier).checkServer(serverId),
           ),
         ],
       ),
@@ -59,24 +62,42 @@ class MonitorDetailScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.08),
+                color: color.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: color.withOpacity(0.3)),
-                boxShadow: [BoxShadow(color: color.withOpacity(0.15), blurRadius: 20, offset: const Offset(0, 4))],
+                border: Border.all(color: color.withValues(alpha: 0.3)),
+                boxShadow: [
+                  BoxShadow(
+                      color: color.withValues(alpha: 0.15),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4))
+                ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: 16, height: 16,
-                    decoration: BoxDecoration(color: color, shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: color.withOpacity(0.6), blurRadius: 8)]),
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                              color: color.withValues(alpha: 0.6),
+                              blurRadius: 8)
+                        ]),
                   ),
                   const SizedBox(width: 14),
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(server.status.name.toUpperCase(), style: context.textStyles.heading2.copyWith(color: color)),
-                    if (server.lastChecked != null)
-                      Text('Checked ${AppFormatters.timeAgo(server.lastChecked!)}', style: context.textStyles.caption),
-                  ]),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(server.status.name.toUpperCase(),
+                            style: context.textStyles.heading2
+                                .copyWith(color: color)),
+                        if (server.lastChecked != null)
+                          Text(
+                              'Checked ${AppFormatters.timeAgo(server.lastChecked!)}',
+                              style: context.textStyles.caption),
+                      ]),
                   const Spacer(),
                   if (server.lastResponseMs != null)
                     Column(children: [
@@ -96,11 +117,13 @@ class MonitorDetailScreen extends ConsumerWidget {
 
             // Stats row
             Row(children: [
-              _StatBox('Uptime', '${server.uptimePercent.toStringAsFixed(2)}%', AppColors.success),
+              _StatBox('Uptime', '${server.uptimePercent.toStringAsFixed(2)}%',
+                  AppColors.success),
               const SizedBox(width: 10),
               _StatBox('Checks', '${server.history.length}', AppColors.primary),
               const SizedBox(width: 10),
-              _StatBox('Down', '${server.history.where((r) => !r.isUp).length}', AppColors.danger),
+              _StatBox('Down', '${server.history.where((r) => !r.isUp).length}',
+                  AppColors.danger),
             ]),
             const SizedBox(height: 16),
 
@@ -108,13 +131,18 @@ class MonitorDetailScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: context.adaptiveCard, borderRadius: BorderRadius.circular(10),
+                color: context.adaptiveCard,
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: context.adaptiveCardBorder),
               ),
               child: Row(children: [
-                Icon(Icons.link_rounded, size: 16, color: context.adaptiveTextSecondary),
+                Icon(Icons.link_rounded,
+                    size: 16, color: context.adaptiveTextSecondary),
                 const SizedBox(width: 8),
-                Expanded(child: Text(server.url, style: context.textStyles.codeSmall, overflow: TextOverflow.ellipsis)),
+                Expanded(
+                    child: Text(server.url,
+                        style: context.textStyles.codeSmall,
+                        overflow: TextOverflow.ellipsis)),
               ]),
             ),
             const SizedBox(height: 16),
@@ -128,7 +156,9 @@ class MonitorDetailScreen extends ConsumerWidget {
                 child: LineChart(LineChartData(
                   lineBarsData: [
                     LineChartBarData(
-                      spots: responseTimes.asMap().entries
+                      spots: responseTimes
+                          .asMap()
+                          .entries
                           .map((e) => FlSpot(e.key.toDouble(), e.value))
                           .toList(),
                       isCurved: true,
@@ -136,30 +166,36 @@ class MonitorDetailScreen extends ConsumerWidget {
                       barWidth: 2,
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                       ),
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                     ),
                   ],
                   lineTouchData: LineTouchData(
-                    touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
-                      if (event is FlPanDownEvent || event is FlPanUpdateEvent || event is FlTapDownEvent) {
+                    touchCallback:
+                        (FlTouchEvent event, LineTouchResponse? touchResponse) {
+                      if (event is FlPanDownEvent ||
+                          event is FlPanUpdateEvent ||
+                          event is FlTapDownEvent) {
                         HapticFeedback.selectionClick();
                       }
                     },
                     touchTooltipData: LineTouchTooltipData(
-                      getTooltipColor: (touchedSpot) => context.adaptiveOverlaySurface,
-                      tooltipBorder: BorderSide(color: AppColors.primary.withOpacity(0.5)),
-                      tooltipRoundedRadius: 8,
+                      getTooltipColor: (touchedSpot) =>
+                          context.adaptiveOverlaySurface,
+                      tooltipBorder: BorderSide(
+                          color: AppColors.primary.withValues(alpha: 0.5)),
                       getTooltipItems: (List<LineBarSpot> touchedSpots) {
                         return touchedSpots.map((spot) {
                           return LineTooltipItem(
                             '${spot.y.toInt()}ms\n',
-                            context.textStyles.codeBold.copyWith(color: AppColors.primary, fontSize: 16),
+                            context.textStyles.codeBold.copyWith(
+                                color: AppColors.primary, fontSize: 16),
                             children: [
                               TextSpan(
                                 text: 'Response',
-                                style: context.textStyles.caption.copyWith(color: context.adaptiveTextSecondary),
+                                style: context.textStyles.caption.copyWith(
+                                    color: context.adaptiveTextSecondary),
                               ),
                             ],
                           );
@@ -170,18 +206,25 @@ class MonitorDetailScreen extends ConsumerWidget {
                   gridData: FlGridData(
                     show: true,
                     drawHorizontalLine: true,
-                    getDrawingHorizontalLine: (_) => FlLine(color: context.adaptiveGlassBorder, strokeWidth: 0.5),
+                    getDrawingHorizontalLine: (_) => FlLine(
+                        color: context.adaptiveGlassBorder, strokeWidth: 0.5),
                     drawVerticalLine: false,
                   ),
                   borderData: FlBorderData(show: false),
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(sideTitles: SideTitles(
-                      showTitles: true, reservedSize: 40,
-                      getTitlesWidget: (v, _) => Text('${v.toInt()}ms', style: context.textStyles.caption),
+                    leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      getTitlesWidget: (v, _) => Text('${v.toInt()}ms',
+                          style: context.textStyles.caption),
                     )),
-                    bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                   ),
                 )),
               ),
@@ -195,17 +238,22 @@ class MonitorDetailScreen extends ConsumerWidget {
               height: 20,
               child: Row(
                 spacing: 2,
-                children: history.map((r) => Expanded(
-                  child: Tooltip(
-                    message: '${r.isUp ? "UP" : "DOWN"} — ${AppFormatters.dateTime(r.timestamp)}',
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: r.isUp ? AppColors.success : AppColors.danger,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                  ),
-                )).toList(),
+                children: history
+                    .map((r) => Expanded(
+                          child: Tooltip(
+                            message:
+                                '${r.isUp ? "UP" : "DOWN"} — ${AppFormatters.dateTime(r.timestamp)}',
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: r.isUp
+                                    ? AppColors.success
+                                    : AppColors.danger,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList(),
               ),
             ),
             const SizedBox(height: 16),
@@ -214,26 +262,40 @@ class MonitorDetailScreen extends ConsumerWidget {
             Text('Recent Events', style: context.textStyles.label),
             const SizedBox(height: 8),
             ...server.history.reversed.take(20).map((r) => Container(
-              margin: const EdgeInsets.only(bottom: 6),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: context.adaptiveCard, borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: r.isUp ? AppColors.success.withOpacity(0.2) : AppColors.danger.withOpacity(0.2)),
-              ),
-              child: Row(children: [
-                Icon(r.isUp ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                  size: 16, color: r.isUp ? AppColors.success : AppColors.danger),
-                const SizedBox(width: 10),
-                Text(AppFormatters.dateTime(r.timestamp), style: context.textStyles.codeSmall),
-                const Spacer(),
-                if (r.responseMs != null)
-                  Text('${r.responseMs}ms', style: context.textStyles.codeSmall.copyWith(color: AppColors.primary)),
-                if (r.statusCode != null) ...[
-                  const SizedBox(width: 8),
-                  Text('${r.statusCode}', style: context.textStyles.codeSmall.copyWith(color: AppColors.textMuted)),
-                ],
-              ]),
-            )),
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: context.adaptiveCard,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: r.isUp
+                            ? AppColors.success.withValues(alpha: 0.2)
+                            : AppColors.danger.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(children: [
+                    Icon(
+                        r.isUp
+                            ? Icons.check_circle_rounded
+                            : Icons.cancel_rounded,
+                        size: 16,
+                        color: r.isUp ? AppColors.success : AppColors.danger),
+                    const SizedBox(width: 10),
+                    Text(AppFormatters.dateTime(r.timestamp),
+                        style: context.textStyles.codeSmall),
+                    const Spacer(),
+                    if (r.responseMs != null)
+                      Text('${r.responseMs}ms',
+                          style: context.textStyles.codeSmall
+                              .copyWith(color: AppColors.primary)),
+                    if (r.statusCode != null) ...[
+                      const SizedBox(width: 8),
+                      Text('${r.statusCode}',
+                          style: context.textStyles.codeSmall
+                              .copyWith(color: AppColors.textMuted)),
+                    ],
+                  ]),
+                )),
           ],
         ),
       ),
@@ -253,14 +315,15 @@ class _StatBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.25)),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: context.textStyles.heading2.copyWith(color: color)),
+            Text(value,
+                style: context.textStyles.heading2.copyWith(color: color)),
             Text(label, style: context.textStyles.caption),
           ],
         ),

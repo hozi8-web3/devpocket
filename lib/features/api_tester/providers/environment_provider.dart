@@ -58,7 +58,7 @@ class EnvironmentNotifier extends StateNotifier<EnvironmentState> {
       }
     }).whereType<EnvironmentModel>().toList();
 
-    final activeId = settingsBox.get(_activeIdKey) as String?;
+    final activeId = settingsBox.get(_activeIdKey);
 
     state = state.copyWith(
       environments: envs,

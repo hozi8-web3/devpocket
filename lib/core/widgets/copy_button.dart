@@ -93,12 +93,12 @@ class _CopyButtonState extends State<CopyButton>
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: _copied
-                ? AppColors.success.withOpacity(0.15)
+                ? AppColors.success.withValues(alpha: 0.15)
                 : context.adaptiveSurface,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: _copied
-                  ? AppColors.success.withOpacity(0.4)
+                  ? AppColors.success.withValues(alpha: 0.4)
                   : context.adaptiveCardBorder,
             ),
           ),

@@ -135,7 +135,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: widget.iconColor.withOpacity(0.5),
+                    color: widget.iconColor.withValues(alpha: 0.5),
                   ),
                 ),
                 child: Row(

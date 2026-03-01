@@ -44,7 +44,8 @@ class _BodyEditorState extends State<BodyEditor> {
     widget.onBodyChanged(val);
     if (widget.bodyType == 'json') {
       setState(() {
-        _jsonError = val.isEmpty || Validators.isValidJson(val) ? null : 'Invalid JSON';
+        _jsonError =
+            val.isEmpty || Validators.isValidJson(val) ? null : 'Invalid JSON';
       });
     }
   }
@@ -59,7 +60,7 @@ class _BodyEditorState extends State<BodyEditor> {
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
         final content = await file.readAsString();
-        
+
         // Check if it's valid JSON if type is json
         if (widget.bodyType == 'json') {
           try {
@@ -69,12 +70,13 @@ class _BodyEditorState extends State<BodyEditor> {
             _jsonError = 'Imported file is not valid JSON';
           }
         }
-        
+
         _controller.text = content;
         widget.onBodyChanged(content);
         setState(() {});
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to import payload: $e')),
       );
@@ -97,9 +99,10 @@ class _BodyEditorState extends State<BodyEditor> {
                   label: Text(t.toUpperCase()),
                   selected: sel,
                   onSelected: (_) => widget.onTypeChanged(t),
-                  selectedColor: AppColors.primary.withOpacity(0.2),
+                  selectedColor: AppColors.primary.withValues(alpha: 0.2),
                   labelStyle: context.textStyles.labelSmall.copyWith(
-                    color: sel ? AppColors.primary : context.adaptiveTextSecondary,
+                    color:
+                        sel ? AppColors.primary : context.adaptiveTextSecondary,
                   ),
                 ),
               );

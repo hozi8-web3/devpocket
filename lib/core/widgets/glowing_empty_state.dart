@@ -55,10 +55,10 @@ class _GlowingEmptyStateState extends State<GlowingEmptyState>
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primary.withOpacity(0.05),
+                  color: AppColors.primary.withValues(alpha: 0.05),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.15 * _pulse.value),
+                      color: AppColors.primary.withValues(alpha: 0.15 * _pulse.value),
                       blurRadius: 30 * _pulse.value,
                       spreadRadius: 5 * _pulse.value,
                     )
@@ -67,7 +67,7 @@ class _GlowingEmptyStateState extends State<GlowingEmptyState>
                 child: Icon(
                   widget.icon,
                   size: 64,
-                  color: AppColors.primary.withOpacity(0.8),
+                  color: AppColors.primary.withValues(alpha: 0.8),
                 ),
               );
             },

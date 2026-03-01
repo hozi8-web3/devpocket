@@ -89,22 +89,37 @@ class _CronParserTabState extends State<_CronParserTab> {
     try {
       final parts = expr.trim().split(RegExp(r'\s+'));
       if (parts.length != 5) {
-        setState(() {
-          _error = 'Cron must have 5 fields: minute hour day-of-month month day-of-week';
-          _description = '';
-          _nextRuns = [];
-        });
+        if (!mounted) {
+          return;
+        }
+        setState(() => _error = 'Invalid cron expression (must have 5 parts)');
         return;
       }
 
+      // Assuming CronParser is a new class/utility that needs to be defined or imported.
+      // For now, I'll keep the original logic for _describe and _nextExecutions
+      // but apply the `if (!mounted)` change as requested.
+      // The instruction's code snippet for `final schedule = CronParser.parseString(expr);`
+      // and `s = _nextExecutions(parts, count: 5);` seems to be an incomplete or
+      // placeholder change. I will only apply the `if (!mounted)` bracket change
+      // and keep the existing logic for parsing and description.
+      // If CronParser is intended to be used, it needs to be provided.
+
       final desc = _describe(parts);
+      if (!mounted) {
+        return;
+      }
       final runs = _nextExecutions(parts, count: 5);
       setState(() {
         _description = desc;
         _nextRuns = runs;
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _description = ''; _nextRuns = []; });
+      setState(() {
+        _error = e.toString();
+        _description = '';
+        _nextRuns = [];
+      });
     }
   }
 
@@ -116,24 +131,42 @@ class _CronParserTabState extends State<_CronParserTab> {
     final dow = parts[4];
 
     final minutes = <String>[];
-    if (minute == '*') minutes.add('every minute');
-    else if (minute.startsWith('*/')) minutes.add('every ${minute.substring(2)} minutes');
-    else minutes.add('at minute${minute.contains(',') ? 's' : ''} $minute');
+    if (minute == '*') {
+      minutes.add('every minute');
+    } else if (minute.startsWith('*/')) {
+      minutes.add('every ${minute.substring(2)} minutes');
+    } else {
+      minutes.add('at minute${minute.contains(',') ? 's' : ''} $minute');
+    }
 
     final hours = <String>[];
-    if (hour == '*') hours.add('every hour');
-    else if (hour.startsWith('*/')) hours.add('every ${hour.substring(2)} hours');
-    else {
+    if (hour == '*') {
+      hours.add('every hour');
+    } else if (hour.startsWith('*/')) {
+      hours.add('every ${hour.substring(2)} hours');
+    } else {
       final hParts = hour.split(',').map((h) {
         final n = int.tryParse(h) ?? 0;
-        return n == 0 ? 'midnight' : n == 12 ? 'noon' : '$n:00';
+        return n == 0
+            ? 'midnight'
+            : n == 12
+                ? 'noon'
+                : '$n:00';
       });
       hours.add('at ${hParts.join(' and ')}');
     }
 
     final days = <String>[];
     if (dow != '*') {
-      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayNames = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ];
       if (dow.contains('-')) {
         final range = dow.split('-');
         final start = int.tryParse(range[0]) ?? 0;
@@ -151,8 +184,21 @@ class _CronParserTabState extends State<_CronParserTab> {
       days.add('on day $dom of the month');
     }
     if (month != '*') {
-      const monthNames = ['', 'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
+      const monthNames = [
+        '',
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
       days.add('in ${monthNames[int.tryParse(month) ?? 1]}');
     }
 
@@ -173,7 +219,9 @@ class _CronParserTabState extends State<_CronParserTab> {
     var dt = DateTime.now().add(const Duration(minutes: 1));
     dt = DateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute);
 
-    for (int attempts = 0; attempts < 50000 && results.length < count; attempts++) {
+    for (int attempts = 0;
+        attempts < 50000 && results.length < count;
+        attempts++) {
       if (_matchesCron(dt, minute, hour, dom, month, dow)) {
         results.add(dt);
         dt = dt.add(const Duration(minutes: 1));
@@ -184,7 +232,8 @@ class _CronParserTabState extends State<_CronParserTab> {
     return results;
   }
 
-  bool _matchesCron(DateTime dt, String minute, String hour, String dom, String month, String dow) {
+  bool _matchesCron(DateTime dt, String minute, String hour, String dom,
+      String month, String dow) {
     return _matchField(dt.minute, minute, 0, 59) &&
         _matchField(dt.hour, hour, 0, 23) &&
         _matchField(dt.day, dom, 1, 31) &&
@@ -205,7 +254,9 @@ class _CronParserTabState extends State<_CronParserTab> {
       return value >= start && value <= end;
     }
     if (field.contains(',')) {
-      return field.split(',').any((f) => _matchField(value, f.trim(), min, max));
+      return field
+          .split(',')
+          .any((f) => _matchField(value, f.trim(), min, max));
     }
     return value == (int.tryParse(field) ?? -1);
   }
@@ -224,7 +275,11 @@ class _CronParserTabState extends State<_CronParserTab> {
               color: AppColors.codeBackground,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.primary, width: 1.5),
-              boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.15), blurRadius: 12)],
+              boxShadow: [
+                BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    blurRadius: 12)
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +287,9 @@ class _CronParserTabState extends State<_CronParserTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('CRON EXPRESSION', style: context.textStyles.caption.copyWith(color: AppColors.primary, letterSpacing: 1)),
+                    Text('CRON EXPRESSION',
+                        style: context.textStyles.caption.copyWith(
+                            color: AppColors.primary, letterSpacing: 1)),
                     CopyButton(text: _controller.text),
                   ],
                 ),
@@ -240,17 +297,31 @@ class _CronParserTabState extends State<_CronParserTab> {
                 TextField(
                   controller: _controller,
                   onChanged: _parse,
-                  style: context.textStyles.codeMedium.copyWith(color: AppColors.secondary, fontSize: 22, letterSpacing: 6),
-                  decoration: const InputDecoration(border: InputBorder.none, filled: false),
+                  style: context.textStyles.codeMedium.copyWith(
+                      color: AppColors.secondary,
+                      fontSize: 22,
+                      letterSpacing: 6),
+                  decoration: const InputDecoration(
+                      border: InputBorder.none, filled: false),
                 ),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('MIN', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
-                    Text('HOUR', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
-                    Text('DAY', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
-                    Text('MONTH', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
-                    Text('DOW', style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+                    Text('MIN',
+                        style: TextStyle(
+                            color: AppColors.textMuted, fontSize: 10)),
+                    Text('HOUR',
+                        style: TextStyle(
+                            color: AppColors.textMuted, fontSize: 10)),
+                    Text('DAY',
+                        style: TextStyle(
+                            color: AppColors.textMuted, fontSize: 10)),
+                    Text('MONTH',
+                        style: TextStyle(
+                            color: AppColors.textMuted, fontSize: 10)),
+                    Text('DOW',
+                        style: TextStyle(
+                            color: AppColors.textMuted, fontSize: 10)),
                     SizedBox(width: 0),
                   ],
                 ),
@@ -264,10 +335,12 @@ class _CronParserTabState extends State<_CronParserTab> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.1),
+                color: AppColors.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(_error!, style: context.textStyles.body.copyWith(color: AppColors.danger)),
+              child: Text(_error!,
+                  style: context.textStyles.body
+                      .copyWith(color: AppColors.danger)),
             )
           else if (_description.isNotEmpty)
             Container(
@@ -278,9 +351,11 @@ class _CronParserTabState extends State<_CronParserTab> {
                 border: Border.all(color: context.adaptiveCardBorder),
               ),
               child: Row(children: [
-                const Icon(Icons.translate_rounded, size: 18, color: AppColors.secondary),
+                const Icon(Icons.translate_rounded,
+                    size: 18, color: AppColors.secondary),
                 const SizedBox(width: 10),
-                Expanded(child: Text(_description, style: context.textStyles.body)),
+                Expanded(
+                    child: Text(_description, style: context.textStyles.body)),
               ]),
             ),
 
@@ -288,22 +363,25 @@ class _CronParserTabState extends State<_CronParserTab> {
 
           // Next runs
           if (_nextRuns.isNotEmpty) ...[
-            Text('Next ${_nextRuns.length} Executions', style: context.textStyles.label),
+            Text('Next ${_nextRuns.length} Executions',
+                style: context.textStyles.label),
             const SizedBox(height: 8),
             ..._nextRuns.map((dt) => Container(
-              margin: const EdgeInsets.only(bottom: 6),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: context.adaptiveCard,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: context.adaptiveCardBorder),
-              ),
-              child: Row(children: [
-                const Icon(Icons.schedule_rounded, size: 16, color: AppColors.primary),
-                const SizedBox(width: 10),
-                Text(_formatDateTime(dt), style: context.textStyles.code),
-              ]),
-            )),
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: context.adaptiveCard,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: context.adaptiveCardBorder),
+                  ),
+                  child: Row(children: [
+                    const Icon(Icons.schedule_rounded,
+                        size: 16, color: AppColors.primary),
+                    const SizedBox(width: 10),
+                    Text(_formatDateTime(dt), style: context.textStyles.code),
+                  ]),
+                )),
           ],
 
           const SizedBox(height: 24),
@@ -314,13 +392,15 @@ class _CronParserTabState extends State<_CronParserTab> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _presets.map((p) => OutlinedButton(
-              onPressed: () {
-                _controller.text = p.$2;
-                _parse(p.$2);
-              },
-              child: Text(p.$1, style: context.textStyles.codeSmall),
-            )).toList(),
+            children: _presets
+                .map((p) => OutlinedButton(
+                      onPressed: () {
+                        _controller.text = p.$2;
+                        _parse(p.$2);
+                      },
+                      child: Text(p.$1, style: context.textStyles.codeSmall),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -329,7 +409,20 @@ class _CronParserTabState extends State<_CronParserTab> {
 
   String _formatDateTime(DateTime dt) {
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     return '${weekdays[dt.weekday - 1]}, ${months[dt.month - 1]} ${dt.day} ${dt.year} — ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 }
@@ -348,7 +441,8 @@ class _CronBuilderTabState extends State<_CronBuilderTab> {
 
   String get _expression => '$_minute $_hour $_dom $_month $_dow';
 
-  Widget _fieldGroup(String label, String value, String hint, ValueChanged<String> onChanged) {
+  Widget _fieldGroup(
+      String label, String value, String hint, ValueChanged<String> onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -358,7 +452,8 @@ class _CronBuilderTabState extends State<_CronBuilderTab> {
           controller: TextEditingController(text: value),
           onChanged: onChanged,
           style: context.textStyles.code,
-          decoration: InputDecoration(hintText: hint, contentPadding: const EdgeInsets.all(10)),
+          decoration: InputDecoration(
+              hintText: hint, contentPadding: const EdgeInsets.all(10)),
         ),
         const SizedBox(height: 10),
       ],
@@ -372,11 +467,16 @@ class _CronBuilderTabState extends State<_CronBuilderTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _fieldGroup('Minute (0–59)', _minute, '0, */5, 0-30', (v) => setState(() => _minute = v)),
-          _fieldGroup('Hour (0–23)', _hour, '0, 9, */2, 8-17', (v) => setState(() => _hour = v)),
-          _fieldGroup('Day of Month (1–31)', _dom, '*, 1, 15, 1-15', (v) => setState(() => _dom = v)),
-          _fieldGroup('Month (1–12)', _month, '*, 1, */3, 1-6', (v) => setState(() => _month = v)),
-          _fieldGroup('Day of Week (0=Sun, 6=Sat)', _dow, '*, 0, 1-5, 1,3,5', (v) => setState(() => _dow = v)),
+          _fieldGroup('Minute (0–59)', _minute, '0, */5, 0-30',
+              (v) => setState(() => _minute = v)),
+          _fieldGroup('Hour (0–23)', _hour, '0, 9, */2, 8-17',
+              (v) => setState(() => _hour = v)),
+          _fieldGroup('Day of Month (1–31)', _dom, '*, 1, 15, 1-15',
+              (v) => setState(() => _dom = v)),
+          _fieldGroup('Month (1–12)', _month, '*, 1, */3, 1-6',
+              (v) => setState(() => _month = v)),
+          _fieldGroup('Day of Week (0=Sun, 6=Sat)', _dow, '*, 0, 1-5, 1,3,5',
+              (v) => setState(() => _dow = v)),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -387,8 +487,9 @@ class _CronBuilderTabState extends State<_CronBuilderTab> {
             ),
             child: Row(children: [
               Expanded(
-                child: Text(_expression, style: context.textStyles.codeMedium.copyWith(
-                  color: AppColors.secondary, letterSpacing: 4)),
+                child: Text(_expression,
+                    style: context.textStyles.codeMedium.copyWith(
+                        color: AppColors.secondary, letterSpacing: 4)),
               ),
               CopyButton(text: _expression),
             ]),

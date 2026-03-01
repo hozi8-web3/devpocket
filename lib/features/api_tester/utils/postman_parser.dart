@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:uuid/uuid.dart';
 import '../models/request_model.dart';
 import '../models/response_model.dart';
@@ -9,14 +8,14 @@ class PostmanCollectionParser {
 
   /// Check if the JSON data is a valid Postman v2.1 collection
   static bool isPostmanCollection(Map<String, dynamic> data) {
-    return data.containsKey('info') && 
-           data.containsKey('item') && 
-           data['info'] is Map &&
-           (data['info'] as Map).containsKey('schema') &&
-           (data['info'] as Map)['schema'].toString().contains('collection.json');
+    return data.containsKey('info') &&
+        data.containsKey('item') &&
+        data['info'] is Map &&
+        (data['info'] as Map).containsKey('schema') &&
+        (data['info'] as Map)['schema'].toString().contains('collection.json');
   }
 
-  /// Parse Postman JSON into a pair of (Collection, List<Requests>)
+  /// Parse Postman JSON into a pair of (Collection, List of Requests)
   static Map<String, dynamic> parse(Map<String, dynamic> data) {
     final info = data['info'] as Map<String, dynamic>;
     final name = info['name'] ?? 'Imported Collection';
@@ -39,17 +38,18 @@ class PostmanCollectionParser {
     };
   }
 
-  static void _extractRequests(List items, List<RequestModel> results, String collectionId) {
+  static void _extractRequests(
+      List items, List<RequestModel> results, String collectionId) {
     for (var item in items) {
       if (item is! Map) continue;
-      
+
       // If it has 'request', it's a leaf node (API call)
       if (item.containsKey('request')) {
         final reqData = item['request'];
         final name = item['name'] ?? 'Unnamed Request';
 
         results.add(_mapToRequestModel(reqData, name, collectionId));
-      } 
+      }
       // If it has 'item', it's a folder, traverse it
       else if (item.containsKey('item')) {
         _extractRequests(item['item'] as List, results, collectionId);
@@ -57,7 +57,8 @@ class PostmanCollectionParser {
     }
   }
 
-  static RequestModel _mapToRequestModel(dynamic req, String name, String collectionId) {
+  static RequestModel _mapToRequestModel(
+      dynamic req, String name, String collectionId) {
     final method = req is Map ? req['method'] ?? 'GET' : 'GET';
     String urlStr = '';
     Map<String, String> headers = {};
@@ -104,14 +105,17 @@ class PostmanCollectionParser {
         if (type == 'bearer') {
           final bearer = auth['bearer'];
           if (bearer is List && bearer.isNotEmpty) {
-            final token = bearer.firstWhere((e) => e['key'] == 'token', orElse: () => {'value': ''})['value'];
+            final token = bearer.firstWhere((e) => e['key'] == 'token',
+                orElse: () => {'value': ''})['value'];
             headers['Authorization'] = 'Bearer $token';
           }
         } else if (type == 'basic') {
           final basic = auth['basic'];
           if (basic is List && basic.length >= 2) {
-            final user = basic.firstWhere((e) => e['key'] == 'username', orElse: () => {'value': ''})['value'];
-            final pass = basic.firstWhere((e) => e['key'] == 'password', orElse: () => {'value': ''})['value'];
+            final user = basic.firstWhere((e) => e['key'] == 'username',
+                orElse: () => {'value': ''})['value'];
+            final pass = basic.firstWhere((e) => e['key'] == 'password',
+                orElse: () => {'value': ''})['value'];
             final bytes = utf8.encode('$user:$pass');
             final base64Str = base64.encode(bytes);
             headers['Authorization'] = 'Basic $base64Str';

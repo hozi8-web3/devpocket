@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/copy_button.dart';
-import '../../core/widgets/section_header.dart';
 
 class EncodersScreen extends StatefulWidget {
   const EncodersScreen({super.key});
@@ -220,9 +219,9 @@ class _EncoderTabState extends State<_EncoderTab> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.1),
+                color: AppColors.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.danger.withOpacity(0.3)),
+                border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
               ),
               child: Text(_error!, style: context.textStyles.body.copyWith(color: AppColors.danger)),
             )

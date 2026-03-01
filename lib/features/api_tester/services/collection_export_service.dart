@@ -43,16 +43,22 @@ class CollectionExportService {
     try {
       final jsonString = await exportToJson();
       final directory = await getTemporaryDirectory();
-      
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.').first;
-      final file = File('${directory.path}/devpocket_collections_$timestamp.json');
-      
+
+      final timestamp = DateTime.now()
+          .toIso8601String()
+          .replaceAll(':', '-')
+          .split('.')
+          .first;
+      final file =
+          File('${directory.path}/devpocket_collections_$timestamp.json');
+
       await file.writeAsString(jsonString);
 
       if (context.mounted) {
         final box = context.findRenderObject() as RenderBox?;
+        // ignore: deprecated_member_use
         await Share.shareXFiles(
-          [XFile(file.path)], 
+          [XFile(file.path)],
           subject: 'DevPocket API Collections Backup',
           sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
         );
@@ -80,14 +86,15 @@ class CollectionExportService {
       if (result != null && result.files.single.path != null) {
         final file = File(result.files.single.path!);
         final jsonString = await file.readAsString();
-        
+
         final Map<String, dynamic> importData = jsonDecode(jsonString);
-        
+
         final requestsBox = await Hive.openBox<String>(_requestsBoxName);
         final collectionsBox = await Hive.openBox<String>(_collectionsBoxName);
 
         // Native DevPocket format check
-        if (importData.containsKey('collections') && importData.containsKey('requests')) {
+        if (importData.containsKey('collections') &&
+            importData.containsKey('requests')) {
           final rawCols = importData['collections'] as List;
           final rawReqs = importData['requests'] as List;
 
@@ -100,7 +107,7 @@ class CollectionExportService {
             final req = RequestModel.fromJson(rawReq);
             await requestsBox.put(req.id, jsonEncode(req.toJson()));
           }
-        } 
+        }
         // Postman v2.1 format check
         else if (PostmanCollectionParser.isPostmanCollection(importData)) {
           final result = PostmanCollectionParser.parse(importData);
@@ -111,9 +118,9 @@ class CollectionExportService {
           for (var req in reqs) {
             await requestsBox.put(req.id, jsonEncode(req.toJson()));
           }
-        } 
-        else {
-          throw Exception('Invalid DevPocket backup or Postman collection format');
+        } else {
+          throw Exception(
+              'Invalid DevPocket backup or Postman collection format');
         }
 
         if (context.mounted) {

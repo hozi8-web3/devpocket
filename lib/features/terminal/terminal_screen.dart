@@ -55,10 +55,10 @@ class _TerminalScreenState extends State<TerminalScreen>
   // Terminal theme
   static const _bg = Color(0xFF0C0C0C);
   static const _promptColor = Color(0xFF4EC9B0); // cyan-green
-  static const _pathColor = Color(0xFF569CD6);    // blue
-  static const _stdoutColor = Color(0xFFD4D4D4);  // light grey
-  static const _stderrColor = Color(0xFFF44747);  // red
-  static const _infoColor = Color(0xFF608B4E);    // dark green
+  static const _pathColor = Color(0xFF569CD6); // blue
+  static const _stdoutColor = Color(0xFFD4D4D4); // light grey
+  static const _stderrColor = Color(0xFFF44747); // red
+  static const _infoColor = Color(0xFF608B4E); // dark green
   static const _cursorColor = AppColors.primary;
   static const _fontFamily = 'monospace';
 
@@ -84,8 +84,7 @@ class _TerminalScreenState extends State<TerminalScreen>
     ));
     _sessions.add(s);
     _rebuildTabs(_sessions.length - 1);
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => s.focus.requestFocus());
+    WidgetsBinding.instance.addPostFrameCallback((_) => s.focus.requestFocus());
   }
 
   void _rebuildTabs(int index) {
@@ -239,8 +238,8 @@ class _TerminalScreenState extends State<TerminalScreen>
     if (normalized.existsSync()) {
       setState(() => s.cwd = normalized.path);
     } else {
-      setState(() => s.lines
-          .add(_Line('cd: $target: No such file or directory', _LineType.stderr)));
+      setState(() => s.lines.add(
+          _Line('cd: $target: No such file or directory', _LineType.stderr)));
     }
     _scrollToBottom(s);
   }
@@ -293,8 +292,7 @@ class _TerminalScreenState extends State<TerminalScreen>
     if (s.history.isEmpty) return;
     if (s.histIdx < s.history.length - 1) s.histIdx++;
     s.input.text = s.history[s.history.length - 1 - s.histIdx];
-    s.input.selection =
-        TextSelection.collapsed(offset: s.input.text.length);
+    s.input.selection = TextSelection.collapsed(offset: s.input.text.length);
   }
 
   void _historyDown(_Session s) {
@@ -305,8 +303,7 @@ class _TerminalScreenState extends State<TerminalScreen>
     }
     s.histIdx--;
     s.input.text = s.history[s.history.length - 1 - s.histIdx];
-    s.input.selection =
-        TextSelection.collapsed(offset: s.input.text.length);
+    s.input.selection = TextSelection.collapsed(offset: s.input.text.length);
   }
 
   // ─────────── Color helpers ───────────
@@ -360,13 +357,14 @@ class _TerminalScreenState extends State<TerminalScreen>
             // ─── Divider ───────────────────────────────────
             Container(height: 1, color: Colors.white12),
 
-            // ─── Prompt + input ────────────────────────────
-            _buildInputRow(s),
-
             // ─── Quick-command bar ─────────────────────────
             _buildQuickBar(s),
 
-            SizedBox(height: MediaQuery.of(context).padding.bottom),
+            // ─── Prompt + input ────────────────────────────
+            SafeArea(
+              top: false,
+              child: _buildInputRow(s),
+            ),
           ],
         ),
       ),
@@ -378,7 +376,8 @@ class _TerminalScreenState extends State<TerminalScreen>
       backgroundColor: const Color(0xFF111111),
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_rounded, color: Colors.grey, size: 20),
+        icon:
+            const Icon(Icons.arrow_back_rounded, color: Colors.grey, size: 20),
         onPressed: () => context.pop(),
       ),
       titleSpacing: 0,
@@ -389,9 +388,7 @@ class _TerminalScreenState extends State<TerminalScreen>
               Text(
                 _shortenPath(s.cwd),
                 style: const TextStyle(
-                    fontFamily: _fontFamily,
-                    fontSize: 12,
-                    color: _pathColor),
+                    fontFamily: _fontFamily, fontSize: 12, color: _pathColor),
                 overflow: TextOverflow.ellipsis,
               ),
             ])
@@ -470,9 +467,7 @@ class _TerminalScreenState extends State<TerminalScreen>
           child: RichText(
             text: TextSpan(
               style: const TextStyle(
-                  fontFamily: _fontFamily,
-                  fontSize: 13,
-                  height: 1.5),
+                  fontFamily: _fontFamily, fontSize: 13, height: 1.5),
               children: [
                 TextSpan(
                   text: promptPart,
@@ -512,19 +507,23 @@ class _TerminalScreenState extends State<TerminalScreen>
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Prompt label
-          RichText(
-            text: TextSpan(
-              style: const TextStyle(fontFamily: _fontFamily, fontSize: 13),
-              children: [
-                TextSpan(
-                  text: _shortenPath(s.cwd),
-                  style: const TextStyle(color: _pathColor),
-                ),
-                const TextSpan(
-                    text: ' \$ ',
-                    style: TextStyle(
-                        color: _promptColor, fontWeight: FontWeight.bold)),
-              ],
+          Flexible(
+            flex: 0,
+            child: RichText(
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: const TextStyle(fontFamily: _fontFamily, fontSize: 13),
+                children: [
+                  TextSpan(
+                    text: _shortenPath(s.cwd),
+                    style: const TextStyle(color: _pathColor),
+                  ),
+                  const TextSpan(
+                      text: ' \$ ',
+                      style: TextStyle(
+                          color: _promptColor, fontWeight: FontWeight.bold)),
+                ],
+              ),
             ),
           ),
 
@@ -546,9 +545,7 @@ class _TerminalScreenState extends State<TerminalScreen>
                 focusNode: s.focus,
                 enabled: !s.busy,
                 style: const TextStyle(
-                    fontFamily: _fontFamily,
-                    fontSize: 13,
-                    color: _stdoutColor),
+                    fontFamily: _fontFamily, fontSize: 13, color: _stdoutColor),
                 cursorColor: _cursorColor,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
@@ -568,58 +565,33 @@ class _TerminalScreenState extends State<TerminalScreen>
             ),
           ),
 
-          // History arrows
-          GestureDetector(
-            onTap: () => _historyUp(s),
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(Icons.keyboard_arrow_up_rounded,
-                  color: Colors.grey, size: 20),
-            ),
+          // History arrows & Run Button
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            icon: const Icon(Icons.keyboard_arrow_up_rounded,
+                color: Colors.grey, size: 22),
+            onPressed: () => _historyUp(s),
           ),
-          GestureDetector(
-            onTap: () => _historyDown(s),
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(Icons.keyboard_arrow_down_rounded,
-                  color: Colors.grey, size: 20),
-            ),
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                color: Colors.grey, size: 22),
+            onPressed: () => _historyDown(s),
           ),
-
-          // Run button
-          GestureDetector(
-            onTap: s.busy
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            icon: Icon(Icons.send_rounded,
+                color: s.busy ? Colors.grey : AppColors.primary, size: 18),
+            onPressed: s.busy
                 ? null
                 : () {
                     final v = s.input.text;
                     s.input.clear();
                     _run(v, s);
                   },
-            child: Container(
-              margin: const EdgeInsets.only(left: 4),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: s.busy
-                    ? Colors.grey.withOpacity(0.1)
-                    : AppColors.primary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                    color: s.busy
-                        ? Colors.grey.withOpacity(0.3)
-                        : AppColors.primary.withOpacity(0.5)),
-              ),
-              child: Text(
-                s.busy ? '…' : 'RUN',
-                style: TextStyle(
-                  color: s.busy ? Colors.grey : AppColors.primary,
-                  fontSize: 11,
-                  fontFamily: _fontFamily,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
           ),
         ],
       ),
@@ -656,15 +628,13 @@ class _TerminalScreenState extends State<TerminalScreen>
           return GestureDetector(
             onTap: () {
               s.input.text = cmd;
-              s.input.selection =
-                  TextSelection.collapsed(offset: cmd.length);
+              s.input.selection = TextSelection.collapsed(offset: cmd.length);
               s.focus.requestFocus();
             },
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.04),
+                color: Colors.white.withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: Colors.white12),
               ),

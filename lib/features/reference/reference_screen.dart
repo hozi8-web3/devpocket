@@ -62,7 +62,7 @@ class _ReferenceScreenState extends State<ReferenceScreen>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.15),
+                      AppColors.primary.withValues(alpha: 0.15),
                       Colors.transparent
                     ],
                     begin: Alignment.topCenter,
@@ -72,7 +72,7 @@ class _ReferenceScreenState extends State<ReferenceScreen>
                 child: Align(
                   alignment: const Alignment(0, -0.2),
                   child: Icon(Icons.library_books_rounded,
-                      size: 60, color: AppColors.primary.withOpacity(0.5)),
+                      size: 60, color: AppColors.primary.withValues(alpha: 0.5)),
                 ),
               ),
             ),
@@ -103,7 +103,7 @@ class _ReferenceScreenState extends State<ReferenceScreen>
                     color: context.adaptiveTextSecondary,
                     size: 20,
                   ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 ),
               ),
             ),
@@ -241,9 +241,9 @@ class _TypeBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(type == 'both' ? 'REQ/RES' : type.toUpperCase(),
           style: context.textStyles.labelSmall
@@ -301,7 +301,9 @@ class _GitTab extends StatelessWidget {
         .toList();
 
     final groups = <String, List<GitCommandEntry>>{};
-    for (final c in filtered) groups.putIfAbsent(c.category, () => []).add(c);
+    for (final c in filtered) {
+      groups.putIfAbsent(c.category, () => []).add(c);
+    }
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -349,7 +351,9 @@ class _LinuxTab extends StatelessWidget {
         .toList();
 
     final groups = <String, List<LinuxCommandEntry>>{};
-    for (final c in filtered) groups.putIfAbsent(c.category, () => []).add(c);
+    for (final c in filtered) {
+      groups.putIfAbsent(c.category, () => []).add(c);
+    }
 
     return ListView(
       padding: const EdgeInsets.all(16),

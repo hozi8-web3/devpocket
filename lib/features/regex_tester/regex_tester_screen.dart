@@ -101,7 +101,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                       color: context.adaptiveSurface,
                       gradient: LinearGradient(
                         colors: [
-                          AppColors.primary.withOpacity(0.12),
+                          AppColors.primary.withValues(alpha: 0.12),
                           context.adaptiveSurface,
                         ],
                         begin: Alignment.topCenter,
@@ -113,7 +113,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                       child: Icon(
                         Icons.rule_folder_rounded,
                         size: 48,
-                        color: AppColors.primary.withOpacity(0.4),
+                        color: AppColors.primary.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -169,7 +169,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 label: const Text('i — Case insensitive'),
                 selected: _caseInsensitive,
                 onSelected: (v) { setState(() => _caseInsensitive = v); _test(); },
-                selectedColor: AppColors.primary.withOpacity(0.2),
+                selectedColor: AppColors.primary.withValues(alpha: 0.2),
                 labelStyle: context.textStyles.labelSmall.copyWith(
                   color: _caseInsensitive ? AppColors.primary : AppColors.textMuted),
               ),
@@ -177,7 +177,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 label: const Text('m — Multiline'),
                 selected: _multiLine,
                 onSelected: (v) { setState(() => _multiLine = v); _test(); },
-                selectedColor: AppColors.primary.withOpacity(0.2),
+                selectedColor: AppColors.primary.withValues(alpha: 0.2),
                 labelStyle: context.textStyles.labelSmall.copyWith(
                   color: _multiLine ? AppColors.primary : AppColors.textMuted),
               ),
@@ -185,7 +185,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 label: const Text('s — Dot all'),
                 selected: _dotAll,
                 onSelected: (v) { setState(() => _dotAll = v); _test(); },
-                selectedColor: AppColors.primary.withOpacity(0.2),
+                selectedColor: AppColors.primary.withValues(alpha: 0.2),
                 labelStyle: context.textStyles.labelSmall.copyWith(
                   color: _dotAll ? AppColors.primary : AppColors.textMuted),
               ),
@@ -216,7 +216,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.1),
+                color: AppColors.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text('Error: $_error',
@@ -229,12 +229,12 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: _matches.isNotEmpty
-                    ? AppColors.success.withOpacity(0.08)
+                    ? AppColors.success.withValues(alpha: 0.08)
                     : AppColors.surface,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                     color: _matches.isNotEmpty
-                        ? AppColors.success.withOpacity(0.3)
+                        ? AppColors.success.withValues(alpha: 0.3)
                         : context.adaptiveCardBorder),
               ),
               child: Row(children: [
@@ -266,13 +266,13 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                 decoration: BoxDecoration(
                   color: context.adaptiveCard,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.25)),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
                 ),
                 child: Row(children: [
                   Container(
                     width: 24, height: 24,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.2),
+                      color: AppColors.primary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     alignment: Alignment.center,
@@ -329,7 +329,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                     label: Text(cat),
                     selected: sel,
                     onSelected: (_) => setState(() => _selectedCategory = cat),
-                    selectedColor: AppColors.primary.withOpacity(0.2),
+                    selectedColor: AppColors.primary.withValues(alpha: 0.2),
                     labelStyle: context.textStyles.labelSmall.copyWith(
                         color: sel ? AppColors.primary : AppColors.textMuted),
                   ),
@@ -366,7 +366,7 @@ class _RegexTesterScreenState extends State<RegexTesterScreen>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.12),
+                          color: AppColors.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(pattern.category, style: context.textStyles.labelSmall.copyWith(color: AppColors.primary)),
