@@ -37,9 +37,24 @@ class _HeadersEditorState extends State<HeadersEditor> {
   void didUpdateWidget(HeadersEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.pairs != oldWidget.pairs) {
-      _entries = widget.pairs.entries.toList();
-      _initControllers();
+      if (_isExternalChange(widget.pairs)) {
+        _entries = widget.pairs.entries.toList();
+        _initControllers();
+      }
     }
+  }
+
+  bool _isExternalChange(Map<String, String> newPairs) {
+    if (newPairs.length != _keyControllers.length) return true;
+    int i = 0;
+    for (final entry in newPairs.entries) {
+      if (_keyControllers[i].text != entry.key ||
+          _valControllers[i].text != entry.value) {
+        return true;
+      }
+      i++;
+    }
+    return false;
   }
 
   void _initControllers() {
@@ -105,7 +120,7 @@ class _HeadersEditorState extends State<HeadersEditor> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Empty state hint
-          if (_entries.isEmpty)
+          if (_keyControllers.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Row(
@@ -133,13 +148,15 @@ class _HeadersEditorState extends State<HeadersEditor> {
                     child: TextField(
                       controller: _keyControllers[i],
                       onChanged: (_) => _notify(),
-                      style: context.textStyles.codeSmall.copyWith(color: AppColors.primary),
+                      style: context.textStyles.codeSmall
+                          .copyWith(color: AppColors.primary),
                       decoration: InputDecoration(
                         hintText: widget.keyHint,
                         hintStyle: context.textStyles.codeSmall.copyWith(
                           color: context.adaptiveTextSecondary,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
                       ),
                     ),
                   ),
@@ -165,12 +182,14 @@ class _HeadersEditorState extends State<HeadersEditor> {
                         hintStyle: context.textStyles.codeSmall.copyWith(
                           color: context.adaptiveTextSecondary,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
+                    icon: const Icon(Icons.remove_circle_outline_rounded,
+                        size: 18),
                     color: context.adaptiveTextSecondary,
                     onPressed: () => _remove(i),
                     padding: EdgeInsets.zero,

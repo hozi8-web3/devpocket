@@ -643,6 +643,11 @@ class _AuthEditor extends StatefulWidget {
 
 class _AuthEditorState extends State<_AuthEditor> {
   String _type = 'none';
+  late final TextEditingController _bearerCtrl;
+  late final TextEditingController _basicUserCtrl;
+  late final TextEditingController _basicPassCtrl;
+  late final TextEditingController _apiKeyHeaderCtrl;
+  late final TextEditingController _apiKeyCtrl;
 
   @override
   void initState() {
@@ -653,6 +658,59 @@ class _AuthEditorState extends State<_AuthEditor> {
       _type = 'basic';
     } else if (widget.request.apiKey?.isNotEmpty == true) {
       _type = 'apikey';
+    }
+
+    _bearerCtrl = TextEditingController(text: widget.request.bearerToken ?? '');
+    _basicUserCtrl =
+        TextEditingController(text: widget.request.basicAuthUser ?? '');
+    _basicPassCtrl =
+        TextEditingController(text: widget.request.basicAuthPassword ?? '');
+    _apiKeyHeaderCtrl =
+        TextEditingController(text: widget.request.apiKeyHeader ?? '');
+    _apiKeyCtrl = TextEditingController(text: widget.request.apiKey ?? '');
+  }
+
+  @override
+  void dispose() {
+    _bearerCtrl.dispose();
+    _basicUserCtrl.dispose();
+    _basicPassCtrl.dispose();
+    _apiKeyHeaderCtrl.dispose();
+    _apiKeyCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(_AuthEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.request != oldWidget.request) {
+      if (widget.request.bearerToken != _bearerCtrl.text) {
+        _bearerCtrl.text = widget.request.bearerToken ?? '';
+      }
+      if (widget.request.basicAuthUser != _basicUserCtrl.text) {
+        _basicUserCtrl.text = widget.request.basicAuthUser ?? '';
+      }
+      if (widget.request.basicAuthPassword != _basicPassCtrl.text) {
+        _basicPassCtrl.text = widget.request.basicAuthPassword ?? '';
+      }
+      if (widget.request.apiKeyHeader != _apiKeyHeaderCtrl.text) {
+        _apiKeyHeaderCtrl.text = widget.request.apiKeyHeader ?? '';
+      }
+      if (widget.request.apiKey != _apiKeyCtrl.text) {
+        _apiKeyCtrl.text = widget.request.apiKey ?? '';
+      }
+
+      String newType = 'none';
+      if (widget.request.bearerToken?.isNotEmpty == true) {
+        newType = 'bearer';
+      } else if (widget.request.basicAuthUser?.isNotEmpty == true) {
+        newType = 'basic';
+      } else if (widget.request.apiKey?.isNotEmpty == true) {
+        newType = 'apikey';
+      }
+      if (_type != newType) {
+        _type = newType;
+      }
     }
   }
 
@@ -682,42 +740,35 @@ class _AuthEditorState extends State<_AuthEditor> {
           TextField(
             decoration: const InputDecoration(hintText: 'Bearer token'),
             onChanged: widget.onBearerChanged,
-            controller:
-                TextEditingController(text: widget.request.bearerToken ?? ''),
+            controller: _bearerCtrl,
             style: context.textStyles.code,
           ),
         if (_type == 'basic') ...[
           TextField(
             decoration: const InputDecoration(hintText: 'Username'),
-            onChanged: (v) => widget.onBasicChanged(
-                v, widget.request.basicAuthPassword ?? ''),
-            controller:
-                TextEditingController(text: widget.request.basicAuthUser ?? ''),
+            onChanged: (v) => widget.onBasicChanged(v, _basicPassCtrl.text),
+            controller: _basicUserCtrl,
           ),
           const SizedBox(height: 8),
           TextField(
             decoration: const InputDecoration(hintText: 'Password'),
             obscureText: true,
-            onChanged: (v) =>
-                widget.onBasicChanged(widget.request.basicAuthUser ?? '', v),
+            onChanged: (v) => widget.onBasicChanged(_basicUserCtrl.text, v),
+            controller: _basicPassCtrl,
           ),
         ],
         if (_type == 'apikey') ...[
           TextField(
             decoration:
                 const InputDecoration(hintText: 'Header name (e.g. X-API-Key)'),
-            onChanged: (v) =>
-                widget.onApiKeyChanged(widget.request.apiKey ?? '', v),
-            controller:
-                TextEditingController(text: widget.request.apiKeyHeader ?? ''),
+            onChanged: (v) => widget.onApiKeyChanged(_apiKeyCtrl.text, v),
+            controller: _apiKeyHeaderCtrl,
           ),
           const SizedBox(height: 8),
           TextField(
             decoration: const InputDecoration(hintText: 'API Key value'),
-            onChanged: (v) =>
-                widget.onApiKeyChanged(v, widget.request.apiKeyHeader ?? ''),
-            controller:
-                TextEditingController(text: widget.request.apiKey ?? ''),
+            onChanged: (v) => widget.onApiKeyChanged(v, _apiKeyHeaderCtrl.text),
+            controller: _apiKeyCtrl,
           ),
         ],
       ],

@@ -40,6 +40,14 @@ class _BodyEditorState extends State<BodyEditor> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(BodyEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.body != oldWidget.body && widget.body != _controller.text) {
+      _controller.text = widget.body;
+    }
+  }
+
   void _onBodyChanged(String val) {
     widget.onBodyChanged(val);
     if (widget.bodyType == 'json') {
