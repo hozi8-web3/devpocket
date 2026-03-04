@@ -11,25 +11,28 @@ class NetworkServices {
   // --- Ping ---
   static Future<PingResult> ping(String host, {int count = 4}) async {
     final times = <int?>[];
-    final cleanHost = host.replaceAll(RegExp(r'https?://'), '').split('/').first;
+    final cleanHost =
+        host.replaceAll(RegExp(r'https?://'), '').split('/').first;
 
     for (int i = 0; i < count; i++) {
       try {
         final sw = Stopwatch()..start();
-        await _dio.get('http://$cleanHost', options: Options(
-          sendTimeout: const Duration(seconds: 3),
-          receiveTimeout: const Duration(seconds: 3),
-        ));
+        await _dio.get('http://$cleanHost',
+            options: Options(
+              sendTimeout: const Duration(seconds: 3),
+              receiveTimeout: const Duration(seconds: 3),
+            ));
         sw.stop();
         times.add(sw.elapsedMilliseconds);
       } catch (e) {
         // Try HTTPS
         try {
           final sw = Stopwatch()..start();
-          await _dio.get('https://$cleanHost', options: Options(
-            sendTimeout: const Duration(seconds: 3),
-            receiveTimeout: const Duration(seconds: 3),
-          ));
+          await _dio.get('https://$cleanHost',
+              options: Options(
+                sendTimeout: const Duration(seconds: 3),
+                receiveTimeout: const Duration(seconds: 3),
+              ));
           sw.stop();
           times.add(sw.elapsedMilliseconds);
         } catch (_) {
@@ -42,29 +45,51 @@ class NetworkServices {
     return PingResult(
       host: cleanHost,
       responseTimes: times,
-      avgMs: successful.isEmpty ? null : successful.reduce((a, b) => a + b) ~/ successful.length,
-      minMs: successful.isEmpty ? null : successful.reduce((a, b) => a < b ? a : b),
-      maxMs: successful.isEmpty ? null : successful.reduce((a, b) => a > b ? a : b),
+      avgMs: successful.isEmpty
+          ? null
+          : successful.reduce((a, b) => a + b) ~/ successful.length,
+      minMs: successful.isEmpty
+          ? null
+          : successful.reduce((a, b) => a < b ? a : b),
+      maxMs: successful.isEmpty
+          ? null
+          : successful.reduce((a, b) => a > b ? a : b),
       packetLoss: (times.length - successful.length) / times.length,
     );
   }
 
   // --- DNS Lookup via DoH ---
   static Future<DnsResult> dnsLookup(String host, List<String> types) async {
-    final cleanHost = host.replaceAll(RegExp(r'https?://'), '').split('/').first;
+    final cleanHost =
+        host.replaceAll(RegExp(r'https?://'), '').split('/').first;
     final records = <String, List<String>>{};
 
     for (final type in types) {
       try {
-        final response = await _dio.get(
-          'https://dns.google/resolve',
-          queryParameters: {'name': cleanHost, 'type': type},
-          options: Options(headers: {'Accept': 'application/dns-json'}),
-        );
+        Response response;
+        try {
+          response = await _dio.get(
+            'https://dns.adguard-dns.com/resolve',
+            queryParameters: {'name': cleanHost, 'type': type},
+            options: Options(headers: {'Accept': 'application/dns-json'}),
+          );
+        } catch (_) {
+          // Fallback to Google DNS if AdGuard fails
+          response = await _dio.get(
+            'https://dns.google/resolve',
+            queryParameters: {'name': cleanHost, 'type': type},
+            options: Options(headers: {'Accept': 'application/dns-json'}),
+          );
+        }
+
         if (response.statusCode == 200) {
-          final data = response.data is String ? jsonDecode(response.data as String) : response.data as Map<String, dynamic>;
+          final data = response.data is String
+              ? jsonDecode(response.data as String)
+              : response.data as Map<String, dynamic>;
           final answers = (data['Answer'] as List<dynamic>? ?? []);
-          records[type] = answers.map((a) => (a as Map<String, dynamic>)['data'].toString()).toList();
+          records[type] = answers
+              .map((a) => (a as Map<String, dynamic>)['data'].toString())
+              .toList();
         }
       } catch (_) {}
     }
@@ -74,7 +99,8 @@ class NetworkServices {
 
   // --- SSL Certificate ---
   static Future<SslResult> checkSsl(String host) async {
-    final cleanHost = host.replaceAll(RegExp(r'https?://'), '').split('/').first;
+    final cleanHost =
+        host.replaceAll(RegExp(r'https?://'), '').split('/').first;
     try {
       // Use crt.sh API for certificate info
       final response = await _dio.get(
@@ -92,7 +118,8 @@ class NetworkServices {
           final cert = data.first as Map<String, dynamic>;
           DateTime? notAfter;
           try {
-            notAfter = DateTime.parse(cert['not_after'].toString().replaceAll(' ', 'T'));
+            notAfter = DateTime.parse(
+                cert['not_after'].toString().replaceAll(' ', 'T'));
           } catch (_) {}
 
           final daysLeft = notAfter?.difference(now).inDays;
@@ -125,15 +152,18 @@ class NetworkServices {
       final response = await _dio.head(url);
       final headers = <String, String>{};
       response.headers.forEach((k, v) => headers[k] = v.join(', '));
-      return HeadersResult(url: url, headers: headers, statusCode: response.statusCode ?? 0);
+      return HeadersResult(
+          url: url, headers: headers, statusCode: response.statusCode ?? 0);
     } catch (e) {
       try {
         final response = await _dio.get(url);
         final headers = <String, String>{};
         response.headers.forEach((k, v) => headers[k] = v.join(', '));
-        return HeadersResult(url: url, headers: headers, statusCode: response.statusCode ?? 0);
+        return HeadersResult(
+            url: url, headers: headers, statusCode: response.statusCode ?? 0);
       } catch (_) {
-        return HeadersResult(url: url, headers: {}, statusCode: 0, error: e.toString());
+        return HeadersResult(
+            url: url, headers: {}, statusCode: 0, error: e.toString());
       }
     }
   }
@@ -148,7 +178,9 @@ class NetworkServices {
 
       final response = await _dio.get(url);
       if (response.statusCode == 200) {
-        final data = response.data is String ? jsonDecode(response.data as String) : response.data as Map<String, dynamic>;
+        final data = response.data is String
+            ? jsonDecode(response.data as String)
+            : response.data as Map<String, dynamic>;
         if (data['status'] == 'success') {
           return IpResult(
             ip: data['query']?.toString() ?? '',
@@ -179,7 +211,9 @@ class PingResult {
   const PingResult({
     required this.host,
     required this.responseTimes,
-    this.avgMs, this.minMs, this.maxMs,
+    this.avgMs,
+    this.minMs,
+    this.maxMs,
     required this.packetLoss,
   });
 }
@@ -236,8 +270,16 @@ class IpResult {
 
   const IpResult({
     required this.ip,
-    this.country, this.countryCode, this.region, this.city,
-    this.isp, this.org, this.asn, this.timezone,
-    this.lat, this.lon, this.error,
+    this.country,
+    this.countryCode,
+    this.region,
+    this.city,
+    this.isp,
+    this.org,
+    this.asn,
+    this.timezone,
+    this.lat,
+    this.lon,
+    this.error,
   });
 }
