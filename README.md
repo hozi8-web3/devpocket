@@ -8,12 +8,20 @@
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.4.0-brightgreen?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-1.4.6-brightgreen?style=for-the-badge)
 [![Docs](https://img.shields.io/badge/Docs-GitBook-3884FF?style=for-the-badge&logo=gitbook&logoColor=white)](https://devpocket.gitbook.io/devpocket/)
 
 DevPocket is a premium, beautifully crafted multi-tool designed specifically for developers. It brings essential utilities like API testing, JWT decoding, server monitoring, and a real Linux-like terminal directly to your mobile device — fully functional offline.
 
-📋 **[View Full Changelog →](./CHANGELOG.md)**  &nbsp; 📖 **[Read the Docs →](https://devpocket.gitbook.io/devpocket/)**
+<div align="center">
+  <a href="./README.md">📖 <b>README</b></a> &nbsp;&bull;&nbsp;
+  <a href="./CHANGELOG.md">📝 <b>CHANGELOG</b></a> &nbsp;&bull;&nbsp;
+  <a href="./LICENSE">⚖️ <b>LICENSE</b></a>
+</div>
+
+<br>
+
+**[📖 Read the Full Documentation →](https://devpocket.gitbook.io/devpocket/)**
 
 ## 📸 Screenshots
 <p align="center">

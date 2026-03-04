@@ -1,3 +1,11 @@
+<div align="center">
+  <a href="./README.md">📖 <b>README</b></a> &nbsp;&bull;&nbsp;
+  <a href="./CHANGELOG.md">📝 <b>CHANGELOG</b></a> &nbsp;&bull;&nbsp;
+  <a href="./LICENSE">⚖️ <b>LICENSE</b></a>
+</div>
+
+<br>
+
 # Changelog
 
 All notable changes to **DevPocket** are documented here.
