@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.6] – 2026-03-04
+
+### Fixed
+- **DNS Lookup Tool** — Switched the default DoH (DNS-over-HTTPS) provider from `dns.google` to `dns.adguard-dns.com` to bypass restrictive ISP blocks that were causing handshake exceptions. Google DNS is now used as a fallback.
+
+---
+
 ## [1.4.4] – 2026-03-01
 
 ### Fixed
